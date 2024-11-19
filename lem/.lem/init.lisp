@@ -244,27 +244,32 @@
 (define-key lem-vi-mode:*normal-keymap* "Space a" 'execute-command)
 (define-key lem-vi-mode:*normal-keymap* "g a" 'execute-command)
 
+(define-key lem-vi-mode:*normal-keymap* "g f" 'lem-core/commands/project:project-find-file)
+
 (define-key lem-vi-mode:*normal-keymap* "g d" 'lem-lisp-mode/internal::find-definitions)
 (define-key lem-vi-mode:*normal-keymap* "g r" 'lem-lisp-mode/internal::find-references)
 
 (define-key lem-vi-mode:*normal-keymap* "g m" 'lem-vi-mode/binds::vi-move-to-matching-item)
 (define-key lem-vi-mode:*normal-keymap* "g T" 'lem/grep::project-grep)
 
+(define-key lem-vi-mode:*normal-keymap* "g n" 'lem/filer::filer)
+
 ;; -- trace --
-(define-key lem-vi-mode:*normal-keymap* "Leader t t" 'lem-lisp-mode/trace::lisp-toggle-trace)
-(define-key lem-vi-mode:*normal-keymap* "Leader t a" 'lem-lisp-mode/trace::lisp-trace-list)
+;; The trace should be read in repl message buffer.
+(define-key lem-vi-mode:*normal-keymap* "Space t t" 'lem-lisp-mode/trace::lisp-toggle-trace)
+(define-key lem-vi-mode:*normal-keymap* "Space t T" 'lem-lisp-mode/trace::lisp-trace-list)
 
 ;; -- describe --
-(define-key lem-vi-mode:*normal-keymap* "Space d d" 'apropos-command)
+(define-key lem-vi-mode:*normal-keymap* "Space d d" 'lem-lisp-mode/internal::lisp-apropos)
 (define-key lem-vi-mode:*normal-keymap* "Space d a" 'lem-lisp-mode/internal::lisp-apropos-all)
-(define-key lem-vi-mode:*normal-keymap* "Space d f" 'lem-lisp-mode/internal::lisp-apropos)
 (define-key lem-vi-mode:*normal-keymap* "Space d p" 'lem-lisp-mode/internal::lisp-apropos-package)
-
-(define-key lem-vi-mode:*normal-keymap* "Space d D" 'documentation-describe-bindings)
-(define-key lem-vi-mode:*normal-keymap* "Space d b" 'describe-bindings)
-(define-key lem-vi-mode:*normal-keymap* "Space d k" 'describe-key)
-(define-key lem-vi-mode:*normal-keymap* "Space d m" 'list-modes)
 (define-key lem-vi-mode:*normal-keymap* "Space d s" 'lem-lisp-mode/internal::lisp-describe-symbol)
+(define-key lem-vi-mode:*normal-keymap* "Space d c" 'apropos-command)
+
+(define-key lem-vi-mode:*normal-keymap* "Space d k" 'describe-key)
+(define-key lem-vi-mode:*normal-keymap* "Space d b" 'describe-bindings)
+(define-key lem-vi-mode:*normal-keymap* "Space d m" 'list-modes)
+(define-key lem-vi-mode:*normal-keymap* "Space d D" 'documentation-describe-bindings)
 ;; use M-a to autodoc
 
 ;; -- file --
@@ -278,7 +283,6 @@
 
 ;; -- project --
 (define-key lem-vi-mode:*normal-keymap* "Space o p" 'lem-core/commands/project:project-switch)
-
 (define-key lem-vi-mode:*normal-keymap* "Space p r" 'lem-core/commands/project:project-root-directory)
 
 ;; -- dashboard --
