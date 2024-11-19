@@ -1,4 +1,4 @@
-cp -r ~/.lem ./lem/ 
+cp ~/.lem/init.lisp ./lem/ 
 
 cp ~/.ideavimrc ./ideavim/
 
