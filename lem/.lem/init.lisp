@@ -31,6 +31,8 @@
 ;; line wrap
 (setf (variable-value 'line-wrap :global) t)
 
+;;(lem:add-hook lem-lisp-mode:*lisp-repl-mode-hook* 'toggle-line-wrap)
+
 (define-key lem-vi-mode:*normal-keymap* "Space l w" 'lem-core/commands/window::toggle-line-wrap)
 
 ;; cursor color
@@ -141,36 +143,31 @@
 (define-key lem-vi-mode:*normal-keymap* "Space 9" 'lem/frame-multiplexer::frame-multiplexer-switch-9)
 
 ;; -- [] --
-(defun define-paired-commands ()
-  (define-key lem-vi-mode:*normal-keymap* "[ b" 'previous-buffer)
-  (define-key lem-vi-mode:*normal-keymap* "] b" 'next-buffer)
+(define-key lem-vi-mode:*normal-keymap* "[ b" 'previous-buffer)
+(define-key lem-vi-mode:*normal-keymap* "] b" 'next-buffer)
 
-  (define-key lem-vi-mode:*normal-keymap* "[ w" 'previous-window)
-  (define-key lem-vi-mode:*normal-keymap* "] w" 'next-window)
+(define-key lem-vi-mode:*normal-keymap* "[ w" 'previous-window)
+(define-key lem-vi-mode:*normal-keymap* "] w" 'next-window)
 
-  (define-key lem-vi-mode:*normal-keymap* "[ t" 'lem/frame-multiplexer::frame-multiplexer-prev)
-  (define-key lem-vi-mode:*normal-keymap* "] t" 'lem/frame-multiplexer::frame-multiplexer-next)
+(define-key lem-vi-mode:*normal-keymap* "[ t" 'lem/frame-multiplexer::frame-multiplexer-prev)
+(define-key lem-vi-mode:*normal-keymap* "] t" 'lem/frame-multiplexer::frame-multiplexer-next)
 
-  (define-key lem-vi-mode:*normal-keymap* "[ s" 'backward-sexp)
-  (define-key lem-vi-mode:*normal-keymap* "] s" 'forward-sexp)
+(define-key lem-vi-mode:*normal-keymap* "[ s" 'backward-sexp)
+(define-key lem-vi-mode:*normal-keymap* "] s" 'forward-sexp)
 
-  (define-key lem-vi-mode:*normal-keymap* "[ l" 'up-list)
-  (define-key lem-vi-mode:*normal-keymap* "] l" 'down-list)
+(define-key lem-vi-mode:*normal-keymap* "[ l" 'up-list)
+(define-key lem-vi-mode:*normal-keymap* "] l" 'down-list)
 
-  (define-key lem-vi-mode:*normal-keymap* "[ f" 'lem/language-mode::beginning-of-defun)
-  (define-key lem-vi-mode:*normal-keymap* "] f" 'lem/language-mode::end-of-defun)
-  
-  (define-key lem-vi-mode:*normal-keymap* "[ i" 'lem-vi-mode/commands::vi-search-backward-symbol-at-point)
-  (define-key lem-vi-mode:*normal-keymap* "] i" 'lem-vi-mode/commands::vi-search-forward-symbol-at-point)
-  )
+(define-key lem-vi-mode:*normal-keymap* "[ f" 'lem/language-mode::beginning-of-defun)
+(define-key lem-vi-mode:*normal-keymap* "] f" 'lem/language-mode::end-of-defun)
+
+(define-key lem-vi-mode:*normal-keymap* "[ i" 'lem-vi-mode/commands::vi-search-backward-symbol-at-point)
+(define-key lem-vi-mode:*normal-keymap* "] i" 'lem-vi-mode/commands::vi-search-forward-symbol-at-point)
 
 ;; M-()
 ;; automatically load paredit when opening a lisp file
 (defun pared-hook ()
-  (lem-paredit-mode:paredit-mode t)
-  ;; fixme: conflits with paredit default keymaps
-  (define-paired-commands)
-  )
+  (lem-paredit-mode:paredit-mode t))
 (add-hook lem-lisp-mode:*lisp-mode-hook* #'pared-hook)
 
 ;; -- s-exp --
@@ -180,10 +177,11 @@
 (define-key lem-vi-mode:*normal-keymap* "Space s w" 'lem-paredit-mode:paredit-wrap-round)
 (define-key lem-vi-mode:*normal-keymap* "Space s W" 'lem-paredit-mode:paredit-splice)
 
-(define-key lem-vi-mode:*normal-keymap* "Space s t" 'transpose-sexps)
+(define-key lem-vi-mode:*normal-keymap* "Space s b" 'lem-paredit-mode:paredit-barf)
+(define-key lem-vi-mode:*normal-keymap* "Space s s" 'lem-paredit-mode:paredit-slurp)
 
-(define-key lem-vi-mode:*normal-keymap* "Space s r" 'lem-paredit-mode:paredit-slurp)
-(define-key lem-vi-mode:*normal-keymap* "Space s l" 'lem-paredit-mode:paredit-barf)
+(define-key lem-vi-mode:*normal-keymap* "Space s t" 'transpose-sexps)
+(define-key lem-vi-mode:*normal-keymap* "Space s r" 'lem-paredit-mode:paredit-raise)
 
 ;; -- repl --
 (define-command slime-start () ()
@@ -218,7 +216,7 @@
 (define-key lem-lisp-mode/internal:*lisp-repl-mode-keymap* "M-c" 'lem/listener-mode::listener-clear-input)
 (define-key lem-lisp-mode/internal:*lisp-repl-mode-keymap* "M-C" 'lem/listener-mode::listener-clear-buffer)
 
-(define-key lem-lisp-mode/internal:*lisp-mode-keymap* "M-i" 'delete-indentation)
+(define-key lem-lisp-mode/internal:*lisp-mode-keymap* "M-j" 'delete-indentation)
 
 ;; -- inspector --
 ;; q -> quit
@@ -252,9 +250,9 @@
 (define-key lem-vi-mode:*normal-keymap* "g m" 'lem-vi-mode/binds::vi-move-to-matching-item)
 (define-key lem-vi-mode:*normal-keymap* "g T" 'lem/grep::project-grep)
 
-;; -- debug --
-(define-key lem-vi-mode:*normal-keymap* "Leader t t" 'lisp-toggle-trace)
-(define-key lem-vi-mode:*normal-keymap* "Leader t a" 'lisp-trace-list)
+;; -- trace --
+(define-key lem-vi-mode:*normal-keymap* "Leader t t" 'lem-lisp-mode/trace::lisp-toggle-trace)
+(define-key lem-vi-mode:*normal-keymap* "Leader t a" 'lem-lisp-mode/trace::lisp-trace-list)
 
 ;; -- describe --
 (define-key lem-vi-mode:*normal-keymap* "Space d d" 'apropos-command)
