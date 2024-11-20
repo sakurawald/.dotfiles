@@ -8,7 +8,7 @@ cp ~/.ideavimrc ./ideavim/
 cp ~/.config/nvim/init.vim ./nvim/
 
 # i3 window manager
-cp ~/.i3/config ./i3/.i3
+cp ~/.i3/config ./i3/.i3/
 
 # roswell launcher
 cp ~/.roswell/init.lisp ./roswell/.roswell/
