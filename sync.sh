@@ -29,6 +29,9 @@ cp ~/.config/sioyek/keys_user.config ./sioyek/
 # alacritty
 cp ~/.config/alacritty/alacritty.toml ./alacritty/
 
+# spectacle
+# cp ~/.config/spectaclerc ./spectacle/
+
 # git
 git add .
 git commit -m "sync"
