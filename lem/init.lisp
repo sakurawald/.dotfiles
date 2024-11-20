@@ -4,9 +4,7 @@
 ;;(push "~/.roswell/lisp/quicklisp/quicklisp/" asdf:*central-registry*)
 
 ;; window opacity
-;; If you are using kwin, see https://kde-bugs-dist.kde.narkive.com/ti0RQpQv/kwin-bug-371480-new-sdl2-apps-causing-desktop-effects-to-disappear-task-manager-function-weirdly
-(sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.9 'single-float))
-;;(sdl2-ffi.functions:sdl-get-hint "a")
+(sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.95 'single-float))
 
 ;; start in vi-mode
 (lem-vi-mode:vi-mode)
