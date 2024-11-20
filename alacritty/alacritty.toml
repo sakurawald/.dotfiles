@@ -1,0 +1,50 @@
+[window.dimensions]
+columns = 150
+lines = 40
+
+[window]
+decorations = "full"
+opacity = 0.9
+dynamic_padding = true
+dynamic_title = true
+
+[window.padding]
+x = 0
+y = 0
+
+[font.normal]
+family = "Source Code Pro"
+style = "Light"
+
+[font.bold]
+family = "Source Code Pro"
+style = "Medium"
+
+[font.italic]
+family = "Source Code Pro"
+style = "Light Italic"
+
+[font.offset]
+x = 0
+y = 0
+
+[font.glyph_offset]
+x = 0
+y = 0
+
+[cursor]
+style = "block"
+unfocused_hollow = true
+
+#[scrolling]
+
+
+[[keyboard.bindings]]
+key = "q"
+mods = "Command"
+action = "Quit"
+
+[shell]
+program = "/usr/bin/zsh"
+args = [ "-l", "-c", "tmux" ]
+

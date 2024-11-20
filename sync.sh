@@ -26,6 +26,9 @@ cp ~/.config/ranger/rifle.conf ./ranger/
 # sioyek
 cp ~/.config/sioyek/keys_user.config ./sioyek/
 
+# alacritty
+cp ~/.config/alacritty/alacritty.toml ./alacritty/
+
 # git
 git add .
 git commit -m "sync"
