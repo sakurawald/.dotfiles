@@ -3,40 +3,35 @@
 ;; some useful commands: list-modes, load-library, ollama
 ;;(push "~/.roswell/lisp/quicklisp/quicklisp/" asdf:*central-registry*)
 
-;; window opacity
+;; -- appearence --
 (sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.95 'single-float))
+(setf lem-vi-mode/core::*default-cursor-color* "#ffffff")
 
-;; start in vi-mode
+;; -- vi mode --
 (lem-vi-mode:vi-mode)
 
 ;; load lem ollama lib
 ;;(lem-core::maybe-load-systems "lem-ollama")
 
-;; set timeout for finder
-(setf *find-program-timeout* 3)
-
-;; line numbers
+;; -- line numbers --
 (lem/line-numbers:toggle-line-numbers)
 
-;; auto save
+;; -- auto save --
 (setf (lem:variable-value 'lem/auto-save::auto-save-checkpoint-frequency :global) 1.5)
 
-;; don't set to 0, or the undo will fail in some case
+;; note: don't set the threshold to 0, or in some cases, the `undo` command will conflit with the `auto-save` and `foramtter`.
 (setf (lem:variable-value 'lem/auto-save::auto-save-key-count-threshold :global) 8)
 (lem/auto-save::auto-save-mode t)
 
-;; auto format
+;; -- formatter --
 (setf lem:*auto-format* t)
 
-;; line wrap
+;; -- line wrap --
 (setf (variable-value 'line-wrap :global) t)
 
 ;;(lem:add-hook lem-lisp-mode:*lisp-repl-mode-hook* 'toggle-line-wrap)
 
 (define-key lem-vi-mode:*normal-keymap* "Space l w" 'lem-core/commands/window::toggle-line-wrap)
-
-;; cursor color
-(setf lem-vi-mode/core::*default-cursor-color* "#ffffff")
 
 ;; tab bar (the tar bar, is named "buffer" in vim actually.)
 ;;(lem/tabbar::toggle-tabbar)
@@ -47,9 +42,8 @@
 ;; For SLDB mode, change the vi-mode to NORMAL.
 (lem:add-hook lem-lisp-mode:*lisp-sldb-mode-hook* 'lem-vi-mode/commands:vi-normal)
 
-;; keep lines above and below the cursor
+;; -- paginator --
 (setf (lem-vi-mode:option-value "scrolloff") 5)
-
 
 ;; adjust for M-x popup window
 ;;(setf lem-core::*default-prompt-gravity* :center)
@@ -70,11 +64,11 @@
   (lem/completion-mode::completion-end))
 (define-key lem/completion-mode::*completion-mode-keymap* "j k" 'completion-end)
 
-;; use C-j/C-k to select tab item.
+;;(define-key lem/isearch::*isearch-keymap* "j k" 'lem/isearch::isearch-finish)
+
+;; -- completion --
 (define-key lem/completion-mode::*completion-mode-keymap* "C-j" 'lem/completion-mode::completion-narrowing-down-or-next-line)
 (define-key lem/completion-mode::*completion-mode-keymap* "C-k" 'lem/completion-mode::completion-previous-line)
-
-;;(define-key lem/isearch::*isearch-keymap* "j k" 'lem/isearch::isearch-finish)
 
 ;; -- text object --
 (define-key lem-vi-mode/binds::*inner-text-objects-keymap* "p" 'lem-vi-mode/binds::vi-inner-paren)
@@ -97,6 +91,7 @@
 (define-key lem-vi-mode:*visual-keymap* "L" 'move-to-end-of-line)
 
 ;; -- find and replace --
+(setf *find-program-timeout* 3)
 (define-key lem-vi-mode:*normal-keymap* "Space n h" 'lem/isearch::isearch-abort)
 (setf (lem-vi-mode:option-value "ignorecase") t)
 
