@@ -6,6 +6,7 @@
 ;; -- appearence --
 (sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.95 'single-float))
 (setf lem-vi-mode/core::*default-cursor-color* "#ffffff")
+(lem-sdl2/frame:maximize-frame)
 
 ;; -- vi mode --
 (lem-vi-mode:vi-mode)
@@ -25,6 +26,8 @@
 
 ;; -- formatter --
 (setf lem:*auto-format* t)
+
+(define-key lem-lisp-mode/internal:*lisp-mode-keymap* "M-j" 'delete-indentation)
 
 ;; -- line wrap --
 (setf (variable-value 'line-wrap :global) t)
@@ -213,7 +216,6 @@
 (define-key lem-lisp-mode/internal:*lisp-repl-mode-keymap* "M-c" 'lem/listener-mode::listener-clear-input)
 (define-key lem-lisp-mode/internal:*lisp-repl-mode-keymap* "M-C" 'lem/listener-mode::listener-clear-buffer)
 
-(define-key lem-lisp-mode/internal:*lisp-mode-keymap* "M-j" 'delete-indentation)
 
 ;; -- inspector --
 ;; q -> quit
