@@ -4,7 +4,7 @@
 ;;(push "~/.roswell/lisp/quicklisp/quicklisp/" asdf:*central-registry*)
 
 ;; window opacity
-(sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.9 'single-float))
+(sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.75 'single-float))
 
 ;; start in vi-mode
 (lem-vi-mode:vi-mode)
@@ -49,6 +49,7 @@
 
 ;; keep lines above and below the cursor
 (setf (lem-vi-mode:option-value "scrolloff") 5)
+
 
 ;; adjust for M-x popup window
 ;;(setf lem-core::*default-prompt-gravity* :center)
@@ -97,6 +98,7 @@
 
 ;; -- find and replace --
 (define-key lem-vi-mode:*normal-keymap* "Space n h" 'lem/isearch::isearch-abort)
+(setf (lem-vi-mode:option-value "ignorecase") t)
 
 ;; -- case switch --
 (define-key lem-vi-mode:*normal-keymap* "~" 'lem-vi-mode/binds::vi-swapcase)
