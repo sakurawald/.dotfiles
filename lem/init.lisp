@@ -6,7 +6,7 @@
 ;; -- appearence --
 (sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.95 'single-float))
 (setf lem-vi-mode/core::*default-cursor-color* "#ffffff")
-(lem-sdl2/frame:maximize-frame)
+(lem-core/commands/frame::maximize-frame)
 
 ;; -- vi mode --
 (lem-vi-mode:vi-mode)

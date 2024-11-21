@@ -1,0 +1,3 @@
+mkdir /etc/opt/chrome/policies/managed
+cd /etc/opt/chrome/policies/managed
+touch custom_policy.json
