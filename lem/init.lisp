@@ -98,9 +98,6 @@
 (define-key lem-vi-mode:*normal-keymap* "Space n h" 'lem/isearch::isearch-abort)
 (setf (lem-vi-mode:option-value "ignorecase") t)
 
-;; -- case switch --
-(define-key lem-vi-mode:*normal-keymap* "~" 'lem-vi-mode/binds::vi-swapcase)
-
 ;; -- location --
 (define-key lem-vi-mode:*normal-keymap* "M-i" 'lem-vi-mode/binds::vi-jump-next)
 (define-key lem-vi-mode:*normal-keymap* "M-o" 'lem-vi-mode/binds::vi-jump-back)
