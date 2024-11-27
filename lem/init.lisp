@@ -161,7 +161,6 @@
 (define-key lem-vi-mode:*normal-keymap* "[ i" 'lem-vi-mode/commands::vi-search-backward-symbol-at-point)
 (define-key lem-vi-mode:*normal-keymap* "] i" 'lem-vi-mode/commands::vi-search-forward-symbol-at-point)
 
-;; M-()
 ;; automatically load paredit when opening a lisp file
 (defun pared-hook ()
   (lem-paredit-mode:paredit-mode t))
@@ -181,9 +180,9 @@
 (define-key lem-vi-mode:*normal-keymap* "Space s r" 'lem-paredit-mode:paredit-raise)
 
 ;; -- repl --
-(define-command slime-start () ()
+(define-command slime* () ()
   (lem-lisp-mode:run-slime "ros dynamic-space-size=4GiB run"))
-(define-key lem-vi-mode:*normal-keymap* "Space r R" 'slime-start)
+(define-key lem-vi-mode:*normal-keymap* "Space r R" 'slime*)
 (define-key lem-vi-mode:*normal-keymap* "Space r r" 'lem-lisp-mode/internal::slime-restart)
 
 (define-key lem-vi-mode:*normal-keymap* "Space r l" 'lem-lisp-mode/connection-list::lisp-connection-list)
@@ -213,7 +212,6 @@
 (define-key lem-lisp-mode/internal:*lisp-repl-mode-keymap* "M-c" 'lem/listener-mode::listener-clear-input)
 (define-key lem-lisp-mode/internal:*lisp-repl-mode-keymap* "M-C" 'lem/listener-mode::listener-clear-buffer)
 
-
 ;; -- inspector --
 ;; q -> quit
 ;; l -> left
@@ -224,6 +222,7 @@
 ;; d -> describe
 ;; v -> verbose
 ;; r -> re-inspect
+
 (define-key lem-lisp-mode/inspector::*lisp-inspector-keymap* "r" 'lem-lisp-mode/inspector::lisp-inspector-reinspect)
 
 (define-key lem-vi-mode:*normal-keymap* "Space i i" 'lem-lisp-mode/inspector::lisp-inspect)
