@@ -1,6 +1,5 @@
 (in-package :lem-user)
 
-;; some useful commands: list-modes, load-library, ollama
 ;;(push "~/.roswell/lisp/quicklisp/quicklisp/" asdf:*central-registry*)
 
 ;; -- appearence --
@@ -10,8 +9,10 @@
 
 ;; -- vi mode --
 (lem-vi-mode:vi-mode)
+(lem:add-hook lem-lisp-mode:*lisp-repl-mode-hook* 'lem-vi-mode/commands:vi-insert)
+(lem:add-hook lem-lisp-mode:*lisp-sldb-mode-hook* 'lem-vi-mode/commands:vi-normal)
 
-;; load lem ollama lib
+;; -- ollama --
 ;;(lem-core::maybe-load-systems "lem-ollama")
 
 ;; -- line numbers --
@@ -31,27 +32,7 @@
 
 ;; -- line wrap --
 (setf (variable-value 'line-wrap :global) t)
-
-;;(lem:add-hook lem-lisp-mode:*lisp-repl-mode-hook* 'toggle-line-wrap)
-
 (define-key lem-vi-mode:*normal-keymap* "Space l w" 'lem-core/commands/window::toggle-line-wrap)
-
-;; tab bar (the tar bar, is named "buffer" in vim actually.)
-;;(lem/tabbar::toggle-tabbar)
-
-;; For REPL mode, change the vi-mode to INSERT on startup.
-(lem:add-hook lem-lisp-mode:*lisp-repl-mode-hook* 'lem-vi-mode/commands:vi-insert)
-
-;; For SLDB mode, change the vi-mode to NORMAL.
-(lem:add-hook lem-lisp-mode:*lisp-sldb-mode-hook* 'lem-vi-mode/commands:vi-normal)
-
-;; -- paginator --
-(setf (lem-vi-mode:option-value "scrolloff") 5)
-
-;; adjust for M-x popup window
-;;(setf lem-core::*default-prompt-gravity* :center)
-;;(setf lem/prompt-window::*prompt-completion-window-gravity* :horizontally-above-window)
-;;(setf lem/prompt-window::*fill-width* t)
 
 ;; -- better escape -- 
 ;; use jk to escape vim. (use v key to switch from visual-mode to normal-mode)
@@ -66,8 +47,6 @@
 (define-command completion-end () ()
   (lem/completion-mode::completion-end))
 (define-key lem/completion-mode::*completion-mode-keymap* "j k" 'completion-end)
-
-;;(define-key lem/isearch::*isearch-keymap* "j k" 'lem/isearch::isearch-finish)
 
 ;; -- completion --
 (define-key lem/completion-mode::*completion-mode-keymap* "C-j" 'lem/completion-mode::completion-narrowing-down-or-next-line)
@@ -95,8 +74,11 @@
 
 ;; -- find and replace --
 (setf *find-program-timeout* 3)
-(define-key lem-vi-mode:*normal-keymap* "Space n h" 'lem/isearch::isearch-abort)
 (setf (lem-vi-mode:option-value "ignorecase") t)
+
+(define-command isearch-end () ()
+  (lem/isearch::isearch-end))
+(define-key lem-vi-mode:*normal-keymap* "Space n h" 'isearch-end)
 
 ;; -- location --
 (define-key lem-vi-mode:*normal-keymap* "C-i" 'lem-vi-mode/binds::vi-jump-next)
