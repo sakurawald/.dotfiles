@@ -265,7 +265,7 @@ set NERDTree
 " usage: https://github.com/vim-scripts/ReplaceWithRegister
 set ReplaceWithRegister
 
-" continuous shift
+" continuous shift (a formatter should help you)
 xnoremap < <gv
 xnoremap > >gv
 

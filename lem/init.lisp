@@ -99,8 +99,9 @@
 (setf (lem-vi-mode:option-value "ignorecase") t)
 
 ;; -- location --
-(define-key lem-vi-mode:*normal-keymap* "M-i" 'lem-vi-mode/binds::vi-jump-next)
-(define-key lem-vi-mode:*normal-keymap* "M-o" 'lem-vi-mode/binds::vi-jump-back)
+(define-key lem-vi-mode:*normal-keymap* "C-i" 'lem-vi-mode/binds::vi-jump-next)
+(define-key lem-vi-mode:*normal-keymap* "C-o" 'lem-vi-mode/binds::vi-jump-back)
+(define-key lem-vi-mode:*normal-keymap* "C-p" 'switch-to-last-focused-window)
 
 ;; -- buffer --
 (define-key lem-vi-mode:*normal-keymap* "Space b b" 'select-buffer)
