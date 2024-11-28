@@ -241,11 +241,12 @@
 
 (define-key lem-vi-mode:*normal-keymap* "g f" 'lem-core/commands/project:project-find-file)
 
+;; use `M-,` to pop definition stack, and use `M-.` vice verse.
 (define-key lem-vi-mode:*normal-keymap* "g d" 'lem-lisp-mode/internal::find-definitions)
 (define-key lem-vi-mode:*normal-keymap* "g r" 'lem-lisp-mode/internal::find-references)
 
 (define-key lem-vi-mode:*normal-keymap* "g m" 'lem-vi-mode/binds::vi-move-to-matching-item)
-(define-key lem-vi-mode:*normal-keymap* "g T" 'lem/grep::project-grep)
+(define-key lem-vi-mode:*normal-keymap* "g t" 'lem/grep::project-grep)
 
 (define-key lem-vi-mode:*normal-keymap* "g n" 'lem/filer::filer)
 
