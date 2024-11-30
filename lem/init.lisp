@@ -1,3 +1,5 @@
+;; WARNNING: This configuration file may contains some options that requires the latest build of lem editor in github.
+
 (in-package :lem-user)
 
 ;; -- quicklisp --
@@ -18,7 +20,7 @@
   :base03 "#777777" ;; comment
   :base04 "#b4b7b4"
   :base05 "#cccccc"
-  :base06 "#800080" ;; repl value
+  :base06 "#ff00ff" ;; repl value
   :base07 "#ffffff" ;; line numbers
   :base08 "#ff7f7b" ;; sldb condition
   :base09 "#ffbf70" ;; sldb restart
