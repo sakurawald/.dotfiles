@@ -4,8 +4,45 @@
 
 ;; -- appearence --
 (sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.95 'single-float))
-(setf lem-vi-mode/core::*default-cursor-color* "#ffffff")
 (lem-core/commands/frame::maximize-frame)
+
+(setf lem-vi-mode/core::*default-cursor-color* "#ffffff")
+(setf (lem:variable-value 'lem-core::highlight-line-color :global) "#000066")
+
+(lem-core:define-color-theme "sakurawald"
+    nil
+  (:display-background-mode :dark)
+  (:foreground "#cccccc")
+  (:background "#131314")
+  (:inactive-window-background "#131314")
+  (lem-core:region :foreground nil :background "#515151")
+  (lem-core:syntax-warning-attribute :foreground "#ff7f7b")
+  (lem/buffer/internal:syntax-string-attribute :foreground "#54b33e")
+  (lem/buffer/internal:syntax-comment-attribute :foreground "#777777")
+  (lem/buffer/internal:syntax-keyword-attribute :foreground "#fc54fc")
+  (lem/buffer/internal:syntax-constant-attribute :foreground "#ffbf70")
+  (lem/buffer/internal:syntax-function-name-attribute :foreground "#5454fc")
+  (lem/buffer/internal:syntax-variable-attribute :foreground "#ff7f7b")
+  (lem/buffer/internal:syntax-type-attribute :foreground "#ffd67c")
+  (lem-core:syntax-builtin-attribute :foreground "#54fcfc")
+  (:base00 "#131314") ;; background
+  (:base01 "#393939")
+  (:base02 "#515151") ;; selection
+  (:base03 "#777777")
+  (:base04 "#b4b7b4")
+  (:base05 "#cccccc")
+  (:base06 "#e0e0e0")
+  (:base07 "#ffffff")
+  (:base08 "#ff7f7b")
+  (:base09 "#ffbf70")
+  (:base0a "#ffd67c")
+  (:base0b "#54b33e") ;; string
+  (:base0c "#54fcfc") ;; keyword symbol
+  (:base0d "#5454fc") ;; function name
+  (:base0e "#fc54fc") ;; operator
+  (:base0f "#ed864a"))
+
+(lem-core:load-theme "sakurawald")
 
 ;; -- vi mode --
 (lem-vi-mode:vi-mode)
@@ -47,6 +84,11 @@
 (define-command completion-end () ()
   (lem/completion-mode::completion-end))
 (define-key lem/completion-mode::*completion-mode-keymap* "j k" 'completion-end)
+
+;; -- prompt window--
+(setf lem-core::*default-prompt-gravity* :bottom-display)
+(setf lem/prompt-window::*prompt-completion-window-gravity* :horizontally-above-window)
+(setf lem/prompt-window::*fill-width* t)
 
 ;; -- completion --
 (define-key lem/completion-mode::*completion-mode-keymap* "C-j" 'lem/completion-mode::completion-narrowing-down-or-next-line)
