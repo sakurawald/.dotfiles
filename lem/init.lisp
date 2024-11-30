@@ -111,12 +111,17 @@
 
 ;; -- buffer --
 (define-key lem-vi-mode:*normal-keymap* "Space b b" 'select-buffer)
+(define-key lem-vi-mode:*normal-keymap* "Space b p" 'previous-buffer)
+(define-key lem-vi-mode:*normal-keymap* "Space b n" 'next-buffer)
 (define-key lem-vi-mode:*normal-keymap* "Space b B" 'select-buffer-next-window)
 (define-key lem-vi-mode:*normal-keymap* "Space b d" 'kill-buffer)
 
 ;; -- window --
 (define-key lem-vi-mode:*normal-keymap* "Space s H" 'split-active-window-horizontally)
 (define-key lem-vi-mode:*normal-keymap* "Space s V" 'split-active-window-vertically)
+
+(define-key lem-vi-mode:*normal-keymap* "Space w n" 'next-window)
+(define-key lem-vi-mode:*normal-keymap* "Space w p" 'previous-window)
 
 (define-key lem-vi-mode:*normal-keymap* "C-Tab" 'switch-to-last-focused-window)
 
@@ -147,15 +152,6 @@
 (define-key lem-vi-mode:*normal-keymap* "Space 9" 'lem/frame-multiplexer::frame-multiplexer-switch-9)
 
 ;; -- [] --
-(define-key lem-vi-mode:*normal-keymap* "[ b" 'previous-buffer)
-(define-key lem-vi-mode:*normal-keymap* "] b" 'next-buffer)
-
-(define-key lem-vi-mode:*normal-keymap* "[ w" 'previous-window)
-(define-key lem-vi-mode:*normal-keymap* "] w" 'next-window)
-
-(define-key lem-vi-mode:*normal-keymap* "[ t" 'lem/frame-multiplexer::frame-multiplexer-prev)
-(define-key lem-vi-mode:*normal-keymap* "] t" 'lem/frame-multiplexer::frame-multiplexer-next)
-
 (define-key lem-vi-mode:*normal-keymap* "[ s" 'backward-sexp)
 (define-key lem-vi-mode:*normal-keymap* "] s" 'forward-sexp)
 
@@ -164,9 +160,6 @@
 
 (define-key lem-vi-mode:*normal-keymap* "[ f" 'lem/language-mode::beginning-of-defun)
 (define-key lem-vi-mode:*normal-keymap* "] f" 'lem/language-mode::end-of-defun)
-
-(define-key lem-vi-mode:*normal-keymap* "[ i" 'lem-vi-mode/commands::vi-search-backward-symbol-at-point)
-(define-key lem-vi-mode:*normal-keymap* "] i" 'lem-vi-mode/commands::vi-search-forward-symbol-at-point)
 
 ;; automatically load paredit when opening a lisp file
 (defun pared-hook ()
@@ -219,20 +212,45 @@
 (define-key lem-lisp-mode/internal:*lisp-repl-mode-keymap* "M-C" 'lem/listener-mode::listener-clear-buffer)
 
 ;; -- inspector --
-;; q -> quit
-;; l -> left
-;; h -> history
-;; enter -> fetch
-;; p -> part 
-;; e -> eval
-;; d -> describe
 ;; v -> verbose
-;; r -> re-inspect
+
+;; h -> history entries
+;; enter -> fetch
+;; > -> fetch all
+;; l -> prev entry (left)
+;; n -> next entry
+;; q -> quit
+
+;; M-Ret -> copy down to repl
+;; r/g -> re-inspect
+
+;; p -> pprint
+;; d -> describe
+;; e -> eval
+;; . -> show-source
 
 (define-key lem-lisp-mode/inspector::*lisp-inspector-keymap* "r" 'lem-lisp-mode/inspector::lisp-inspector-reinspect)
 
 (define-key lem-vi-mode:*normal-keymap* "Space i i" 'lem-lisp-mode/inspector::lisp-inspect)
 (define-key lem-vi-mode:*normal-keymap* "Space i c" 'lem-lisp-mode/class-browser::lisp-browse-class-as-tree)
+
+;; -- sldb --
+;; n -> down
+;; p -> up
+;; M-n -> details down
+;; M-p -> details up
+;; c -> continue
+;; a -> abort
+;; r -> restart
+;; 0..9 -> invoke restart by number
+;; I -> invoke restart by name
+;; v -> frame source
+;; d -> eval in frame
+;; s -> step
+;; x -> next
+;; o -> out
+;; b -> break on return
+;; C -> inspect condition
 
 ;; -- comment --
 (define-key lem-vi-mode:*visual-keymap* "Space c" 'lem/language-mode::comment-or-uncomment-region)
