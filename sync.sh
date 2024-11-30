@@ -1,5 +1,5 @@
 # lem editor
-cp ~/.lem/init.lisp ./lem/ 
+cp ~/.lem/init.lisp ./lem/.lem/ 
 
 # jetbrains: ideavim plugin
 cp ~/.ideavimrc ./ideavim/
