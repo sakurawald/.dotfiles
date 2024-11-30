@@ -1,6 +1,8 @@
 (in-package :lem-user)
 
+;; -- quicklisp --
 ;;(push "~/.roswell/lisp/quicklisp/quicklisp/" asdf:*central-registry*)
+;;(push "~/.roswell/lisp/quicklisp/local-projects/" ql:*local-project-directories*)
 
 ;; -- appearence --
 (sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.95 'single-float))
@@ -184,7 +186,6 @@
   (lem-lisp-mode:run-slime "ros dynamic-space-size=4GiB run"))
 (define-key lem-vi-mode:*normal-keymap* "Space r R" 'slime*)
 (define-key lem-vi-mode:*normal-keymap* "Space r r" 'lem-lisp-mode/internal::slime-restart)
-
 (define-key lem-vi-mode:*normal-keymap* "Space r l" 'lem-lisp-mode/connection-list::lisp-connection-list)
 
 (define-key lem-vi-mode:*normal-keymap* "Space r c" 'lem-lisp-mode/internal::lisp-repl-shortcut)
@@ -263,11 +264,11 @@
 (define-key lem-vi-mode:*normal-keymap* "Space a" 'execute-command)
 (define-key lem-vi-mode:*normal-keymap* "g a" 'execute-command)
 
-(define-key lem-vi-mode:*normal-keymap* "g f" 'lem-core/commands/project:project-find-file)
-
 ;; use `M-,` to pop definition stack, and use `M-.` vice verse.
-(define-key lem-vi-mode:*normal-keymap* "g d" 'lem-lisp-mode/internal::find-definitions)
-(define-key lem-vi-mode:*normal-keymap* "g r" 'lem-lisp-mode/internal::find-references)
+(define-key lem-vi-mode:*normal-keymap* "g d" 'lem/language-mode::find-definitions)
+(define-key lem-vi-mode:*normal-keymap* "g r" 'lem/language-mode::find-references)
+
+(define-key lem-vi-mode:*normal-keymap* "g f" 'lem/language-mode::beginning-of-defun)
 
 (define-key lem-vi-mode:*normal-keymap* "g m" 'lem-vi-mode/binds::vi-move-to-matching-item)
 (define-key lem-vi-mode:*normal-keymap* "g t" 'lem/grep::project-grep)
