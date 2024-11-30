@@ -9,38 +9,23 @@
 (setf lem-vi-mode/core::*default-cursor-color* "#ffffff")
 (setf (lem:variable-value 'lem-core::highlight-line-color :global) "#000066")
 
-(lem-core:define-color-theme "sakurawald"
-    nil
-  (:display-background-mode :dark)
-  (:foreground "#cccccc")
-  (:background "#131314")
-  (:inactive-window-background "#131314")
-  (lem-core:region :foreground nil :background "#515151")
-  (lem-core:syntax-warning-attribute :foreground "#ff7f7b")
-  (lem/buffer/internal:syntax-string-attribute :foreground "#54b33e")
-  (lem/buffer/internal:syntax-comment-attribute :foreground "#777777")
-  (lem/buffer/internal:syntax-keyword-attribute :foreground "#fc54fc")
-  (lem/buffer/internal:syntax-constant-attribute :foreground "#ffbf70")
-  (lem/buffer/internal:syntax-function-name-attribute :foreground "#5454fc")
-  (lem/buffer/internal:syntax-variable-attribute :foreground "#ff7f7b")
-  (lem/buffer/internal:syntax-type-attribute :foreground "#ffd67c")
-  (lem-core:syntax-builtin-attribute :foreground "#54fcfc")
-  (:base00 "#131314") ;; background
-  (:base01 "#393939")
-  (:base02 "#515151") ;; selection
-  (:base03 "#777777")
-  (:base04 "#b4b7b4")
-  (:base05 "#cccccc")
-  (:base06 "#e0e0e0")
-  (:base07 "#ffffff")
-  (:base08 "#ff7f7b")
-  (:base09 "#ffbf70")
-  (:base0a "#ffd67c")
-  (:base0b "#54b33e") ;; string
-  (:base0c "#54fcfc") ;; keyword symbol
-  (:base0d "#5454fc") ;; function name
-  (:base0e "#fc54fc") ;; operator
-  (:base0f "#ed864a"))
+(lem-base16-themes::define-base16-color-theme "sakurawald"
+  :base00 "#131314" ;; default background
+  :base01 "#393939" ;; status bar, line numbers and folding marks
+  :base02 "#515151" ;; selection
+  :base03 "#777777" ;; comment
+  :base04 "#b4b7b4"
+  :base05 "#cccccc"
+  :base06 "#800080" ;; repl value
+  :base07 "#ffffff" ;; line numbers
+  :base08 "#ff7f7b" ;; sldb condition
+  :base09 "#ffbf70" ;; sldb restart
+  :base0a "#fbf305" ;; multiplexier
+  :base0b "#54b33e" ;; string
+  :base0c "#54fcfc" ;; keyword symbol
+  :base0d "#5454fc" ;; function name
+  :base0e "#fc54fc" ;; operator
+  :base0f "#ed864a")
 
 (lem-core:load-theme "sakurawald")
 
@@ -48,9 +33,6 @@
 (lem-vi-mode:vi-mode)
 (lem:add-hook lem-lisp-mode:*lisp-repl-mode-hook* 'lem-vi-mode/commands:vi-insert)
 (lem:add-hook lem-lisp-mode:*lisp-sldb-mode-hook* 'lem-vi-mode/commands:vi-normal)
-
-;; -- ollama --
-;;(lem-core::maybe-load-systems "lem-ollama")
 
 ;; -- line numbers --
 (lem/line-numbers:toggle-line-numbers)
@@ -227,7 +209,6 @@
 (define-key lem-vi-mode:*normal-keymap* "Space e t" 'lem-lisp-mode/test-runner::lisp-test-runner-run-buffer)
 (define-key lem-vi-mode:*normal-keymap* "Space e T" 'lem-lisp-mode/test-runner::lisp-test-runner-run-current)
 
-;; fixme: start slime* if no repl connection.
 (define-key lem-vi-mode:*normal-keymap* "Space e q" 'lem-lisp-mode/internal::lisp-quickload)
 
 (define-key lem-vi-mode:*normal-keymap* "Space e w" 'lem-lisp-mode/internal::lisp-switch-to-repl-buffer)
