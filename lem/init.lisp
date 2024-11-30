@@ -1,5 +1,4 @@
 ;; WARNNING: This configuration file may contains some options that requires the latest build of lem editor in github.
-
 (in-package :lem-user)
 
 ;; -- quicklisp --
@@ -267,6 +266,7 @@
 (define-key lem-vi-mode:*normal-keymap* "g a" 'execute-command)
 
 ;; use `M-,` to pop definition stack, and use `M-.` vice verse.
+;; (sb-ext:set-sbcl-source-location "~/.roswell/src/sbcl-2.4.10/")
 (define-key lem-vi-mode:*normal-keymap* "g d" 'lem/language-mode::find-definitions)
 (define-key lem-vi-mode:*normal-keymap* "g r" 'lem/language-mode::find-references)
 
