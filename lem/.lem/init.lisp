@@ -207,7 +207,7 @@
 (define-key lem-vi-mode:*normal-keymap* "Space e q" 'lem-lisp-mode/internal::lisp-quickload)
 
 (define-key lem-vi-mode:*normal-keymap* "Space e w" 'lem-lisp-mode/internal::lisp-switch-to-repl-buffer)
-(define-key lem-vi-mode:*normal-keymap* "Space e c" 'lem-lisp-mode/internal::lisp-repl-copy-down)
+(define-key lem-vi-mode:*normal-keymap* "Space e c" 'lem-lisp-mode/internal::lisp-repl-copy-down) ;; M-Ret
 
 (define-key lem-lisp-mode/internal:*lisp-repl-mode-keymap* "M-r" 'lem/listener-mode::listener-isearch-history)
 (define-key lem-lisp-mode/internal:*lisp-repl-mode-keymap* "M-c" 'lem/listener-mode::listener-clear-input)
@@ -262,8 +262,11 @@
 (define-key lem-vi-mode:*normal-keymap* "Space z" 'toggle-frame-fullscreen)
 
 ;; -- goto --
+(define-key lem-vi-mode:*normal-keymap* "Space Space" 'execute-command)
 (define-key lem-vi-mode:*normal-keymap* "Space a" 'execute-command)
 (define-key lem-vi-mode:*normal-keymap* "g a" 'execute-command)
+
+(define-key lem-vi-mode:*normal-keymap* "g c" 'recenter)
 
 ;; use `M-,` to pop definition stack, and use `M-.` vice verse.
 ;; (sb-ext:set-sbcl-source-location "~/.roswell/src/sbcl-2.4.10/")
@@ -273,6 +276,7 @@
 (define-key lem-vi-mode:*normal-keymap* "g f" 'lem/language-mode::beginning-of-defun)
 
 (define-key lem-vi-mode:*normal-keymap* "g m" 'lem-vi-mode/binds::vi-move-to-matching-item)
+;; TIP: Then use `M-x query-replace` in result window
 (define-key lem-vi-mode:*normal-keymap* "g t" 'lem/grep::project-grep)
 
 (define-key lem-vi-mode:*normal-keymap* "g n" 'lem/filer::filer)
@@ -298,6 +302,7 @@
 ;; -- file --
 (define-key lem-vi-mode:*normal-keymap* "Space f t" 'lem/filer::filer)
 (define-key lem-vi-mode:*normal-keymap* "Space o f" 'lem-core/commands/project:project-find-file)
+(define-key lem-vi-mode:*normal-keymap* "Space o F" 'find-file-next-window)
 (define-key lem-vi-mode:*normal-keymap* "Space r f" 'lem-core/commands/file:find-history-file)
 
 (define-key lem-vi-mode:*normal-keymap* "Space f s" 'lem-core/commands/file:save-current-buffer)
