@@ -9,6 +9,7 @@
 (sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.95 'single-float))
 (lem-core/commands/frame::maximize-frame)
 
+;; TIP: To tweak the color, use `M-x color-preview`.
 (setf lem-vi-mode/core::*default-cursor-color* "#ffffff")
 (setf (lem:variable-value 'lem-core::highlight-line-color :global) "#000066")
 
@@ -26,7 +27,7 @@
   :base0a "#fbf305" ;; multiplexier
   :base0b "#54b33e" ;; string
   :base0c "#54fcfc" ;; keyword symbol
-  :base0d "#5454fc" ;; function name
+  :base0d "#4a4ffc" ;; function name
   :base0e "#fc54fc" ;; operator
   :base0f "#ed864a")
 
@@ -57,7 +58,7 @@
 (define-key lem-vi-mode:*normal-keymap* "Space l w" 'lem-core/commands/window::toggle-line-wrap)
 
 ;; -- better escape -- 
-;; use jk to escape vim. (use v key to switch from visual-mode to normal-mode)
+;; use jk or C-g to escape in vim-mode. (use v key to switch from visual-mode to normal-mode)
 (define-key lem-vi-mode:*insert-keymap* "j k" 'lem-vi-mode/commands:vi-normal)
 (define-key lem-vi-mode:*ex-keymap* "j k" 'lem-vi-mode/commands:vi-normal)
 
@@ -203,6 +204,7 @@
 (define-key lem-vi-mode:*normal-keymap* "Space e P" 'lem-lisp-mode/eval::lisp-eval-at-point)
 (define-key lem-vi-mode:*normal-keymap* "Space e t" 'lem-lisp-mode/test-runner::lisp-test-runner-run-buffer)
 (define-key lem-vi-mode:*normal-keymap* "Space e T" 'lem-lisp-mode/test-runner::lisp-test-runner-run-current)
+(define-key lem-vi-mode:*normal-keymap* "Space e I" 'lem-lisp-mode/internal::lisp-interrupt)
 
 (define-key lem-vi-mode:*normal-keymap* "Space e q" 'lem-lisp-mode/internal::lisp-quickload)
 
@@ -288,10 +290,13 @@
 
 ;; -- describe --
 (define-key lem-vi-mode:*normal-keymap* "Space d d" 'lem-lisp-mode/internal::lisp-apropos)
+(define-key lem-vi-mode:*normal-keymap* "Space d c" 'apropos-command)
 (define-key lem-vi-mode:*normal-keymap* "Space d a" 'lem-lisp-mode/internal::lisp-apropos-all)
 (define-key lem-vi-mode:*normal-keymap* "Space d p" 'lem-lisp-mode/internal::lisp-apropos-package)
 (define-key lem-vi-mode:*normal-keymap* "Space d s" 'lem-lisp-mode/internal::lisp-describe-symbol)
-(define-key lem-vi-mode:*normal-keymap* "Space d c" 'apropos-command)
+(define-key lem-vi-mode:*normal-keymap* "Space d S" 'lem-lisp-mode/internal::lisp-search-symbol)
+(define-key lem-vi-mode:*normal-keymap* "Space d h" 'lem-lisp-mode/hyperspec::hyperspec-at-point)
+(define-key lem-vi-mode:*normal-keymap* "Space d H" 'lem-lisp-mode/hyperspec::hyperspec-lookup)
 
 (define-key lem-vi-mode:*normal-keymap* "Space d k" 'describe-key)
 (define-key lem-vi-mode:*normal-keymap* "Space d b" 'describe-bindings)
