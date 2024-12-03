@@ -77,6 +77,7 @@
 (setf lem/prompt-window::*fill-width* t)
 
 ;; -- completion --
+;; Use tab or C-p in insert-mode to trigger completion window
 (define-key lem/completion-mode::*completion-mode-keymap* "C-j" 'lem/completion-mode::completion-narrowing-down-or-next-line)
 (define-key lem/completion-mode::*completion-mode-keymap* "C-k" 'lem/completion-mode::completion-previous-line)
 
@@ -88,6 +89,7 @@
 (define-key lem-vi-mode/binds::*outer-text-objects-keymap* "s" 'mark-sexp)
 
 ;; -- better HJKL --
+;; TIP: use `zz` to center current line.
 (define-key lem-vi-mode:*normal-keymap* "H" 'move-to-beginning-of-line)
 (define-key lem-vi-mode:*visual-keymap* "H" 'move-to-beginning-of-line)
 
@@ -107,8 +109,13 @@
 (define-command isearch-end () ()
   (lem/isearch::isearch-end))
 (define-key lem-vi-mode:*normal-keymap* "Space n h" 'isearch-end)
-
+  
 ;; -- location --
+;; TIP: The `C-i` and `C-o` will jump in a jumplist, while the `''` will jump only between 2 entries.
+;; NOTE: The `C-i` is equal to `Tab` key, if you bind the `Tab` key to a command, then `C-i` binding will not work.
+(define-key lem-vi-mode:*normal-keymap* "C-Tab" 'lem/frame-multiplexer::frame-multiplexer-next)
+(define-key lem-vi-mode:*normal-keymap* "C-Shift-Tab" 'lem/frame-multiplexer::frame-multiplexer-prev)
+
 (define-key lem-vi-mode:*normal-keymap* "C-i" 'lem-vi-mode/binds::vi-jump-next)
 (define-key lem-vi-mode:*normal-keymap* "C-o" 'lem-vi-mode/binds::vi-jump-back)
 (define-key lem-vi-mode:*normal-keymap* "C-p" 'switch-to-last-focused-window)
@@ -127,8 +134,6 @@
 (define-key lem-vi-mode:*normal-keymap* "Space w n" 'next-window)
 (define-key lem-vi-mode:*normal-keymap* "Space w p" 'previous-window)
 
-(define-key lem-vi-mode:*normal-keymap* "C-Tab" 'switch-to-last-focused-window)
-
 (define-key lem-vi-mode:*normal-keymap* "C-h" 'window-move-left)
 (define-key lem-vi-mode:*normal-keymap* "C-j" 'window-move-down)
 (define-key lem-vi-mode:*normal-keymap* "C-k" 'window-move-up)
@@ -138,9 +143,6 @@
 (define-key lem-vi-mode:*normal-keymap* "Space x o" 'delete-other-windows)
 
 ;; -- tab --
-(define-key lem-vi-mode:*normal-keymap* "Tab" 'lem/frame-multiplexer::frame-multiplexer-next)
-(define-key lem-vi-mode:*normal-keymap* "Shift-Tab" 'lem/frame-multiplexer::frame-multiplexer-prev)
-
 (define-key lem-vi-mode:*normal-keymap* "Space t c" 'lem/frame-multiplexer::frame-multiplexer-create-with-previous-buffer)
 (define-key lem-vi-mode:*normal-keymap* "Space t d" 'lem/frame-multiplexer::frame-multiplexer-delete)
 
@@ -264,6 +266,10 @@
 (define-key lem-vi-mode:*normal-keymap* "Space z" 'toggle-frame-fullscreen)
 
 ;; -- goto --
+;; gj / gk -> logical line
+;; ge / GE -> backward word end / backward broad word end
+;; GJ -> join line
+;; Gu / GU -> downcase / upcase
 (define-key lem-vi-mode:*normal-keymap* "Space Space" 'execute-command)
 (define-key lem-vi-mode:*normal-keymap* "Space a" 'execute-command)
 (define-key lem-vi-mode:*normal-keymap* "g a" 'execute-command)
@@ -274,6 +280,7 @@
 ;; (sb-ext:set-sbcl-source-location "~/.roswell/src/sbcl-2.4.10/")
 (define-key lem-vi-mode:*normal-keymap* "g d" 'lem/language-mode::find-definitions)
 (define-key lem-vi-mode:*normal-keymap* "g r" 'lem/language-mode::find-references)
+(define-key lem-vi-mode:*normal-keymap* "g s" 'lem-lisp-mode/internal::lisp-search-symbol)
 
 (define-key lem-vi-mode:*normal-keymap* "g f" 'lem/language-mode::beginning-of-defun)
 
