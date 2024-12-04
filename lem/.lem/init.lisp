@@ -237,6 +237,7 @@
 
 (define-key lem-lisp-mode/inspector::*lisp-inspector-keymap* "r" 'lem-lisp-mode/inspector::lisp-inspector-reinspect)
 
+;; TIP: if there is no symbol under cursor, then the command will ask for a form to inspect.
 (define-key lem-vi-mode:*normal-keymap* "Space i i" 'lem-lisp-mode/inspector::lisp-inspect)
 (define-key lem-vi-mode:*normal-keymap* "Space i c" 'lem-lisp-mode/class-browser::lisp-browse-class-as-tree)
 
