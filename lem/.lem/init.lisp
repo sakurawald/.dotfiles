@@ -290,6 +290,7 @@
 (define-key lem-vi-mode:*normal-keymap* "g t" 'lem/grep::project-grep)
 
 (define-key lem-vi-mode:*normal-keymap* "g n" 'lem/filer::filer)
+(define-key lem-vi-mode:*normal-keymap* "g N" 'lem/filer::filer-directory)
 
 ;; -- trace --
 ;; The trace should be read in repl message buffer.
@@ -314,6 +315,8 @@
 
 ;; -- file --
 (define-key lem-vi-mode:*normal-keymap* "Space f t" 'lem/filer::filer)
+(define-key lem-vi-mode:*normal-keymap* "Space f i" 'lem/filer::filer-directory)
+(define-key lem-vi-mode:*normal-keymap* "Space f a" 'lem/filer::filer-at-directory)
 (define-key lem-vi-mode:*normal-keymap* "Space o f" 'lem-core/commands/project:project-find-file)
 (define-key lem-vi-mode:*normal-keymap* "Space o F" 'find-file-next-window)
 (define-key lem-vi-mode:*normal-keymap* "Space r f" 'lem-core/commands/file:find-history-file)
