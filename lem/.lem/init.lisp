@@ -49,6 +49,7 @@
 (lem/auto-save::auto-save-mode t)
 
 ;; -- formatter --
+;; TIP: Use `formatter` instead of `<<` and `>>`.
 (setf lem:*auto-format* t)
 
 (define-key lem-lisp-mode/internal:*lisp-mode-keymap* "M-j" 'delete-indentation)
@@ -58,7 +59,8 @@
 (define-key lem-vi-mode:*normal-keymap* "Space l w" 'lem-core/commands/window::toggle-line-wrap)
 
 ;; -- better escape -- 
-;; use jk or C-g to escape in vim-mode. (use v key to switch from visual-mode to normal-mode)
+;; TIP: `Escape` = `C-x 0` = `C-[`
+;; TIP: Use jk or C-g to escape in vim-mode. (use v key to switch from visual-mode to normal-mode)
 (define-key lem-vi-mode:*insert-keymap* "j k" 'lem-vi-mode/commands:vi-normal)
 (define-key lem-vi-mode:*ex-keymap* "j k" 'lem-vi-mode/commands:vi-normal)
 
@@ -90,8 +92,9 @@
 
 ;; -- better HJKL --
 ;; TIP: use `zz` to center current line.
-(define-key lem-vi-mode:*normal-keymap* "H" 'move-to-beginning-of-line)
-(define-key lem-vi-mode:*visual-keymap* "H" 'move-to-beginning-of-line)
+;; TIP: use `M` to center current window.
+(define-key lem-vi-mode:*normal-keymap* "H" 'lem-vi-mode/binds::move-to-beginning-of-line)
+(define-key lem-vi-mode:*visual-keymap* "H" 'lem-vi-mode/binds::move-to-beginning-of-line)
 
 (define-key lem-vi-mode:*normal-keymap* "J" 'forward-paragraph)
 (define-key lem-vi-mode:*visual-keymap* "J" 'forward-paragraph)
@@ -99,10 +102,12 @@
 (define-key lem-vi-mode:*normal-keymap* "K" 'backward-paragraph)
 (define-key lem-vi-mode:*visual-keymap* "K" 'backward-paragraph)
 
-(define-key lem-vi-mode:*normal-keymap* "L" 'move-to-end-of-line)
-(define-key lem-vi-mode:*visual-keymap* "L" 'move-to-end-of-line)
+(define-key lem-vi-mode:*normal-keymap* "L" 'lem-vi-mode/binds::vi-move-to-end-of-line)
+(define-key lem-vi-mode:*visual-keymap* "L" 'lem-vi-mode/binds::vi-move-to-end-of-line)
 
 ;; -- find and replace --
+;; TIP: The `query-replace` can be used in `grep` window.
+;; TIP: The `grep` window is edit-able. Use `M-o` to go to the other window.
 (setf *find-program-timeout* 3)
 (setf (lem-vi-mode:option-value "ignorecase") t)
 
@@ -118,7 +123,6 @@
 
 (define-key lem-vi-mode:*normal-keymap* "C-i" 'lem-vi-mode/binds::vi-jump-next)
 (define-key lem-vi-mode:*normal-keymap* "C-o" 'lem-vi-mode/binds::vi-jump-back)
-(define-key lem-vi-mode:*normal-keymap* "C-p" 'switch-to-last-focused-window)
 
 ;; -- buffer --
 (define-key lem-vi-mode:*normal-keymap* "Space b b" 'select-buffer)
@@ -133,6 +137,8 @@
 
 (define-key lem-vi-mode:*normal-keymap* "Space w n" 'next-window)
 (define-key lem-vi-mode:*normal-keymap* "Space w p" 'previous-window)
+
+(define-key lem-vi-mode:*normal-keymap* "C-p" 'switch-to-last-focused-window)
 
 (define-key lem-vi-mode:*normal-keymap* "C-h" 'window-move-left)
 (define-key lem-vi-mode:*normal-keymap* "C-j" 'window-move-down)
@@ -246,18 +252,23 @@
 ;; p -> up
 ;; M-n -> details down
 ;; M-p -> details up
+
 ;; c -> continue
 ;; a -> abort
 ;; r -> restart
 ;; 0..9 -> invoke restart by number
 ;; I -> invoke restart by name
+
 ;; v -> frame source
 ;; d -> eval in frame
+;; e -> inspect in frame
+
 ;; s -> step
 ;; x -> next
 ;; o -> out
 ;; b -> break on return
 ;; C -> inspect condition
+;; M-Ret -> copy down to repl
 
 ;; -- comment --
 (define-key lem-vi-mode:*visual-keymap* "Space c" 'lem/language-mode::comment-or-uncomment-region)
@@ -277,7 +288,7 @@
 
 (define-key lem-vi-mode:*normal-keymap* "g c" 'recenter)
 
-;; use `M-,` to pop definition stack, and use `M-.` vice verse.
+;; TIP: use `M-,` to pop definition stack, and use `M-.` vice verse.
 ;; (sb-ext:set-sbcl-source-location "~/.roswell/src/sbcl-2.4.10/")
 (define-key lem-vi-mode:*normal-keymap* "g d" 'lem/language-mode::find-definitions)
 (define-key lem-vi-mode:*normal-keymap* "g r" 'lem/language-mode::find-references)
@@ -311,14 +322,17 @@
 (define-key lem-vi-mode:*normal-keymap* "Space d b" 'describe-bindings)
 (define-key lem-vi-mode:*normal-keymap* "Space d m" 'list-modes)
 (define-key lem-vi-mode:*normal-keymap* "Space d D" 'documentation-describe-bindings)
-;; use M-a to autodoc
+;; TIP: use M-a to autodoc
 
 ;; -- file --
 (define-key lem-vi-mode:*normal-keymap* "Space f t" 'lem/filer::filer)
 (define-key lem-vi-mode:*normal-keymap* "Space f i" 'lem/filer::filer-directory)
 (define-key lem-vi-mode:*normal-keymap* "Space f a" 'lem/filer::filer-at-directory)
+
 (define-key lem-vi-mode:*normal-keymap* "Space o f" 'lem-core/commands/project:project-find-file)
 (define-key lem-vi-mode:*normal-keymap* "Space o F" 'find-file-next-window)
+(define-key lem-vi-mode:*normal-keymap* "Space o d" 'lem/directory-mode::find-file-directory)
+(define-key lem-vi-mode:*normal-keymap* "Space p d" 'lem-core/commands/project::project-root-directory)
 (define-key lem-vi-mode:*normal-keymap* "Space r f" 'lem-core/commands/file:find-history-file)
 
 (define-key lem-vi-mode:*normal-keymap* "Space f s" 'lem-core/commands/file:save-current-buffer)
