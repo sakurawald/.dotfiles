@@ -164,6 +164,7 @@
 (define-key lem-vi-mode:*normal-keymap* "Space 9" 'lem/frame-multiplexer::frame-multiplexer-switch-9)
 
 ;; -- [] --
+;; NOTE: the key-binding conflicting with paredit-mode. see https://github.com/lem-project/lem/issues/1611
 (define-key lem-vi-mode:*normal-keymap* "[ s" 'backward-sexp)
 (define-key lem-vi-mode:*normal-keymap* "] s" 'forward-sexp)
 
