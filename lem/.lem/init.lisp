@@ -132,8 +132,8 @@
 (define-key lem-vi-mode:*normal-keymap* "Space b d" 'kill-buffer)
 
 ;; -- window --
-(define-key lem-vi-mode:*normal-keymap* "Space s H" 'split-active-window-horizontally)
-(define-key lem-vi-mode:*normal-keymap* "Space s V" 'split-active-window-vertically)
+(define-key lem-vi-mode:*normal-keymap* "Space s h" 'split-active-window-horizontally)
+(define-key lem-vi-mode:*normal-keymap* "Space s v" 'split-active-window-vertically)
 
 (define-key lem-vi-mode:*normal-keymap* "Space w n" 'next-window)
 (define-key lem-vi-mode:*normal-keymap* "Space w p" 'previous-window)
