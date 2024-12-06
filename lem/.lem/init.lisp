@@ -1,4 +1,5 @@
 ;; WARNNING: This configuration file may contains some options that requires the latest build of lem editor in github.
+;; Steup copilot
 (in-package :lem-user)
 
 ;; -- quicklisp --
@@ -332,9 +333,14 @@
 
 (define-key lem-vi-mode:*normal-keymap* "Space o f" 'lem-core/commands/project:project-find-file)
 (define-key lem-vi-mode:*normal-keymap* "Space o F" 'find-file-next-window)
+(define-key lem-vi-mode:*normal-keymap* "Space r f" 'lem-core/commands/file:find-history-file)
+
 (define-key lem-vi-mode:*normal-keymap* "Space o d" 'lem/directory-mode::find-file-directory)
 (define-key lem-vi-mode:*normal-keymap* "Space p d" 'lem-core/commands/project::project-root-directory)
-(define-key lem-vi-mode:*normal-keymap* "Space r f" 'lem-core/commands/file:find-history-file)
+(define-key lem/directory-mode::*directory-mode-keymap* "C-h" 'lem/directory-mode::directory-mode-up-directory)
+(define-key lem/directory-mode::*directory-mode-keymap* "C-l" 'lem/directory-mode::directory-mode-find-file)
+(define-key lem/directory-mode::*directory-mode-keymap* "C-j" 'lem/directory-mode::directory-mode-next-line)
+(define-key lem/directory-mode::*directory-mode-keymap* "C-k" 'lem/directory-mode::directory-mode-previous-line)
 
 (define-key lem-vi-mode:*normal-keymap* "Space f s" 'lem-core/commands/file:save-current-buffer)
 (define-key lem-vi-mode:*normal-keymap* "Space f w" 'lem-core/commands/file:write-file)
