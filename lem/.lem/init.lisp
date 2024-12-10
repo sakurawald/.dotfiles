@@ -1,5 +1,4 @@
 ;; WARNNING: This configuration file may contains some options that requires the latest build of lem editor in github.
-;; Steup copilot
 (in-package :lem-user)
 
 ;; -- quicklisp --
@@ -7,6 +6,8 @@
 ;;(push "~/.roswell/lisp/quicklisp/local-projects/" ql:*local-project-directories*)
 
 ;; -- appearence --
+(lem-if:set-font-size (implementation) 25)
+
 (sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.95 'single-float))
 (lem-core/commands/frame::maximize-frame)
 
@@ -46,7 +47,7 @@
 (setf (lem:variable-value 'lem/auto-save::auto-save-checkpoint-frequency :global) 1.5)
 
 ;; note: don't set the threshold to 0, or in some cases, the `undo` command will conflit with the `auto-save` and `foramtter`.
-(setf (lem:variable-value 'lem/auto-save::auto-save-key-count-threshold :global) 8)
+(setf (lem:variable-value 'lem/auto-save::auto-save-key-count-threshold :global) 4)
 (lem/auto-save::auto-save-mode t)
 
 ;; -- formatter --
@@ -60,7 +61,7 @@
 (define-key lem-vi-mode:*normal-keymap* "Space l w" 'lem-core/commands/window::toggle-line-wrap)
 
 ;; -- better escape -- 
-;; TIP: `Escape` = `C-x 0` = `C-[`
+;; TIP: Lem does follow the "key-conversion", like: "C-[" = "Escape", "C-i" = "Tab" and "C-m" = "Return".
 ;; TIP: Use jk or C-g to escape in vim-mode. (use v key to switch from visual-mode to normal-mode)
 (define-key lem-vi-mode:*insert-keymap* "j k" 'lem-vi-mode/commands:vi-normal)
 (define-key lem-vi-mode:*ex-keymap* "j k" 'lem-vi-mode/commands:vi-normal)
@@ -75,9 +76,9 @@
 (define-key lem/completion-mode::*completion-mode-keymap* "j k" 'completion-end)
 
 ;; -- prompt window--
-(setf lem-core::*default-prompt-gravity* :bottom-display)
-(setf lem/prompt-window::*prompt-completion-window-gravity* :horizontally-above-window)
-(setf lem/prompt-window::*fill-width* t)
+;;(setf lem-core::*default-prompt-gravity* :center)
+;;(setf lem/prompt-window::*prompt-completion-window-gravity* :horizontally-above-window)
+;;(setf lem/prompt-window::*fill-width* t)
 
 ;; -- completion --
 ;; Use tab or C-p in insert-mode to trigger completion window
@@ -115,6 +116,9 @@
 (define-command isearch-end () ()
   (lem/isearch::isearch-end))
 (define-key lem-vi-mode:*normal-keymap* "Space n h" 'isearch-end)
+
+(setf lem/grep:*grep-args* "-niHI")
+(setf lem/grep::*last-query* "git grep -niHI ")
   
 ;; -- location --
 ;; TIP: The `C-i` and `C-o` will jump in a jumplist, while the `''` will jump only between 2 entries.
