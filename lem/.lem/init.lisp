@@ -184,14 +184,6 @@
 
 ;; -- [] --
 ;; NOTE: the key-binding conflicting with paredit-mode. see https://github.com/lem-project/lem/issues/1611
-(define-key lem-vi-mode:*normal-keymap* "[ s" 'backward-sexp)
-(define-key lem-vi-mode:*normal-keymap* "] s" 'forward-sexp)
-
-(define-key lem-vi-mode:*normal-keymap* "[ l" 'up-list)
-(define-key lem-vi-mode:*normal-keymap* "] l" 'down-list)
-
-(define-key lem-vi-mode:*normal-keymap* "[ f" 'lem/language-mode::beginning-of-defun)
-(define-key lem-vi-mode:*normal-keymap* "] f" 'lem/language-mode::end-of-defun)
 
 ;; automatically load paredit when opening a lisp file
 (defun pared-hook ()
@@ -199,6 +191,8 @@
 (add-hook lem-lisp-mode:*lisp-mode-hook* #'pared-hook)
 
 ;; -- s-exp --
+;; TIP: Use `)` to move over the list.
+;; TIP: Use `g m` to move to the matching item.
 (define-key lem-vi-mode:*normal-keymap* "Space s m" 'mark-sexp)
 (define-key lem-vi-mode:*normal-keymap* "Space s k" 'lem-paredit-mode:paredit-kill)
 
@@ -313,11 +307,14 @@
 (define-key lem-vi-mode:*normal-keymap* "g d" 'lem/language-mode::find-definitions)
 (define-key lem-vi-mode:*normal-keymap* "g r" 'lem/language-mode::find-references)
 (define-key lem-vi-mode:*normal-keymap* "g s" 'lem-lisp-mode/internal::lisp-search-symbol)
-(define-key lem-vi-mode:*normal-keymap* "g f" 'lem/language-mode::beginning-of-defun)
 
+(define-key lem-vi-mode:*normal-keymap* "g f" 'lem-core/commands/project:project-find-file)
 (define-key lem-vi-mode:*normal-keymap* "g l" 'lem/detective:detective-all)
 
+(define-key lem-vi-mode:*normal-keymap* "g b" 'lem/language-mode::beginning-of-defun)
+
 (define-key lem-vi-mode:*normal-keymap* "g m" 'lem-vi-mode/binds::vi-move-to-matching-item)
+
 ;; TIP: Then use `M-x query-replace` in result window
 (define-key lem-vi-mode:*normal-keymap* "g t" 'lem/grep::project-grep)
 
