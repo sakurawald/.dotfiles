@@ -1,4 +1,6 @@
 ;; WARNNING: This configuration file may contains some options that requires the latest build of lem editor in github.
+;; NOTE: This configuration file is made for `lem sdl2 version`. You need to remove the `sdl2 frontend specific configurations` if you are using other frontend.
+;; NOTE: I steal some good ideas from "https://neovim.io/" and "https://www.gnu.org/software/emacs/". (Interesting to read the manual)
 (in-package :lem-user)
 
 ;; -- quicklisp --
@@ -40,19 +42,21 @@
 (lem:add-hook lem-lisp-mode:*lisp-repl-mode-hook* 'lem-vi-mode/commands:vi-insert)
 (lem:add-hook lem-lisp-mode:*lisp-sldb-mode-hook* 'lem-vi-mode/commands:vi-normal)
 
+(setf (lem-vi-mode:option-value "scrolloff") 5)
+
 ;; -- line numbers --
 (lem/line-numbers:toggle-line-numbers)
 
 ;; -- auto save --
 (setf (lem:variable-value 'lem/auto-save::auto-save-checkpoint-frequency :global) 1.5)
-
-;; note: don't set the threshold to 0, or in some cases, the `undo` command will conflit with the `auto-save` and `foramtter`.
-(setf (lem:variable-value 'lem/auto-save::auto-save-key-count-threshold :global) 4)
+;; NOTE: Don't set the key count threshold, or it will conflict with the auto-save, causing it unable to undo.
+(setf (lem:variable-value 'lem/auto-save::auto-save-key-count-threshold :global) 2)
 (lem/auto-save::auto-save-mode t)
 
 ;; -- formatter --
 ;; TIP: Use `formatter` instead of `<<` and `>>`.
 (setf lem:*auto-format* t)
+
 
 (define-key lem-lisp-mode/internal:*lisp-mode-keymap* "M-j" 'delete-indentation)
 
@@ -62,7 +66,8 @@
 
 ;; -- better escape -- 
 ;; TIP: Lem does follow the "key-conversion", like: "C-[" = "Escape", "C-i" = "Tab" and "C-m" = "Return".
-;; TIP: Use jk or C-g to escape in vim-mode. (use v key to switch from visual-mode to normal-mode)
+;; TIP: Use jk or C-g to vi-keyboard-quit in vi-mode. (use v key to switch from visual-mode to normal-mode)
+;; TIP: The order: C-g > C-[ > Escape
 (define-key lem-vi-mode:*insert-keymap* "j k" 'lem-vi-mode/commands:vi-normal)
 (define-key lem-vi-mode:*ex-keymap* "j k" 'lem-vi-mode/commands:vi-normal)
 
@@ -76,9 +81,18 @@
 (define-key lem/completion-mode::*completion-mode-keymap* "j k" 'completion-end)
 
 ;; -- prompt window--
-;;(setf lem-core::*default-prompt-gravity* :center)
+;;(setf lem-core::*default-prompt-gravity* :bottom-display)
 ;;(setf lem/prompt-window::*prompt-completion-window-gravity* :horizontally-above-window)
 ;;(setf lem/prompt-window::*fill-width* t)
+
+;; TIP: After enable the `show completion instantly`, you need to double press the `enter` key to confirm the selection.
+(add-hook *prompt-after-activate-hook*
+          (lambda ()
+            (call-command 'lem/prompt-window::prompt-completion nil)))
+
+(add-hook *prompt-deactivate-hook*
+          (lambda ()
+            (lem/completion-mode:completion-end)))
 
 ;; -- completion --
 ;; Use tab or C-p in insert-mode to trigger completion window
@@ -86,6 +100,8 @@
 (define-key lem/completion-mode::*completion-mode-keymap* "C-k" 'lem/completion-mode::completion-previous-line)
 
 ;; -- text object --
+;; NOTE: In `vim`, the `iskeyword` table is associated with `file-type`. 
+;; NOTE: The `word-text-object` for `lisp-mode` excludes the following chars: `/`, `.`, `:` and `-`
 (define-key lem-vi-mode/binds::*inner-text-objects-keymap* "p" 'lem-vi-mode/binds::vi-inner-paren)
 (define-key lem-vi-mode/binds::*outer-text-objects-keymap* "p" 'lem-vi-mode/binds::vi-a-paren)
 
@@ -110,6 +126,7 @@
 ;; -- find and replace --
 ;; TIP: The `query-replace` can be used in `grep` window.
 ;; TIP: The `grep` window is edit-able. Use `M-o` to go to the other window.
+;; TIP: Press `*` to search forward symbol at point.
 (setf *find-program-timeout* 3)
 (setf (lem-vi-mode:option-value "ignorecase") t)
 
@@ -294,13 +311,14 @@
 
 (define-key lem-vi-mode:*normal-keymap* "g c" 'recenter)
 
+;; NOTE To set the `sbcl-source` dir, write `(sb-ext:set-sbcl-source-location "~/.roswell/src/sbcl-2.4.10/")` in `~/.roswell/init.lisp` file.
 ;; TIP: use `M-,` to pop definition stack, and use `M-.` vice verse.
-;; (sb-ext:set-sbcl-source-location "~/.roswell/src/sbcl-2.4.10/")
 (define-key lem-vi-mode:*normal-keymap* "g d" 'lem/language-mode::find-definitions)
 (define-key lem-vi-mode:*normal-keymap* "g r" 'lem/language-mode::find-references)
 (define-key lem-vi-mode:*normal-keymap* "g s" 'lem-lisp-mode/internal::lisp-search-symbol)
-
 (define-key lem-vi-mode:*normal-keymap* "g f" 'lem/language-mode::beginning-of-defun)
+
+(define-key lem-vi-mode:*normal-keymap* "g l" 'lem/detective:detective-all)
 
 (define-key lem-vi-mode:*normal-keymap* "g m" 'lem-vi-mode/binds::vi-move-to-matching-item)
 ;; TIP: Then use `M-x query-replace` in result window
@@ -310,7 +328,7 @@
 (define-key lem-vi-mode:*normal-keymap* "g N" 'lem/filer::filer-directory)
 
 ;; -- trace --
-;; The trace should be read in repl message buffer.
+;; TIP: The output of `trace` can be read in lisp repl buffer.
 (define-key lem-vi-mode:*normal-keymap* "Space t t" 'lem-lisp-mode/trace::lisp-toggle-trace)
 (define-key lem-vi-mode:*normal-keymap* "Space t T" 'lem-lisp-mode/trace::lisp-trace-list)
 
@@ -328,7 +346,7 @@
 (define-key lem-vi-mode:*normal-keymap* "Space d b" 'describe-bindings)
 (define-key lem-vi-mode:*normal-keymap* "Space d m" 'list-modes)
 (define-key lem-vi-mode:*normal-keymap* "Space d D" 'documentation-describe-bindings)
-;; TIP: use M-a to autodoc
+;; TIP: Use M-a to autodoc
 
 ;; -- file --
 (define-key lem-vi-mode:*normal-keymap* "Space f t" 'lem/filer::filer)
@@ -339,6 +357,8 @@
 (define-key lem-vi-mode:*normal-keymap* "Space o F" 'find-file-next-window)
 (define-key lem-vi-mode:*normal-keymap* "Space r f" 'lem-core/commands/file:find-history-file)
 
+(define-key lem-vi-mode:*normal-keymap* "Space o s" 'lisp-scratch)
+
 (define-key lem-vi-mode:*normal-keymap* "Space o d" 'lem/directory-mode::find-file-directory)
 (define-key lem-vi-mode:*normal-keymap* "Space p d" 'lem-core/commands/project::project-root-directory)
 (define-key lem/directory-mode::*directory-mode-keymap* "C-h" 'lem/directory-mode::directory-mode-up-directory)
@@ -346,7 +366,7 @@
 (define-key lem/directory-mode::*directory-mode-keymap* "C-j" 'lem/directory-mode::directory-mode-next-line)
 (define-key lem/directory-mode::*directory-mode-keymap* "C-k" 'lem/directory-mode::directory-mode-previous-line)
 
-(define-key lem-vi-mode:*normal-keymap* "Space f s" 'lem-core/commands/file:save-current-buffer)
+;; TIP: Use automatic save, don't save file manually.
 (define-key lem-vi-mode:*normal-keymap* "Space f w" 'lem-core/commands/file:write-file)
 (define-key lem-vi-mode:*normal-keymap* "Space f c" 'lem-core/commands/file:format-current-buffer)
 
