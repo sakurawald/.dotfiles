@@ -50,13 +50,12 @@
 ;; -- auto save --
 (setf (lem:variable-value 'lem/auto-save::auto-save-checkpoint-frequency :global) 1.5)
 ;; NOTE: Don't set the key count threshold, or it will conflict with the auto-save, causing it unable to undo.
-(setf (lem:variable-value 'lem/auto-save::auto-save-key-count-threshold :global) 2)
+(setf (lem:variable-value 'lem/auto-save::auto-save-key-count-threshold :global) 8)
 (lem/auto-save::auto-save-mode t)
 
 ;; -- formatter --
 ;; TIP: Use `formatter` instead of `<<` and `>>`.
 (setf lem:*auto-format* t)
-
 
 (define-key lem-lisp-mode/internal:*lisp-mode-keymap* "M-j" 'delete-indentation)
 
@@ -101,12 +100,10 @@
 
 ;; -- text object --
 ;; NOTE: In `vim`, the `iskeyword` table is associated with `file-type`. 
+;; NOTE: You may ask where is the `sexp text-object`, well, it's defined as a `word`. To select a `sexp` is to select a `word` in lisp-mode. (The `iskeyword` is modified in lisp-mode)
 ;; NOTE: The `word-text-object` for `lisp-mode` excludes the following chars: `/`, `.`, `:` and `-`
 (define-key lem-vi-mode/binds::*inner-text-objects-keymap* "p" 'lem-vi-mode/binds::vi-inner-paren)
 (define-key lem-vi-mode/binds::*outer-text-objects-keymap* "p" 'lem-vi-mode/binds::vi-a-paren)
-
-(define-key lem-vi-mode/binds::*inner-text-objects-keymap* "s" 'mark-sexp)
-(define-key lem-vi-mode/binds::*outer-text-objects-keymap* "s" 'mark-sexp)
 
 ;; -- better HJKL --
 ;; TIP: use `zz` to center current line.
