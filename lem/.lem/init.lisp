@@ -10,7 +10,7 @@
 ;;;; -- appearence --
 (lem-if:set-font-size (implementation) 25)
 
-(sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.95 'single-float))
+;;(sdl2-ffi.functions:sdl-set-window-opacity (lem-sdl2/display::display-window lem-sdl2/display::*display*) (coerce 0.95 'single-float))
 (lem-core/commands/frame::maximize-frame)
 
 ;; TIP: To tweak the color, use `M-x color-preview`.
