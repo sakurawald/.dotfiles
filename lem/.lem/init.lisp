@@ -331,6 +331,7 @@
 (define-key lem-vi-mode:*normal-keymap* "Space d d" 'lem-lisp-mode/internal::lisp-apropos)
 (define-key lem-vi-mode:*normal-keymap* "Space d c" 'apropos-command)
 (define-key lem-vi-mode:*normal-keymap* "Space d a" 'lem-lisp-mode/internal::lisp-apropos-all)
+
 (define-key lem-vi-mode:*normal-keymap* "Space d p" 'lem-lisp-mode/internal::lisp-apropos-package)
 (define-key lem-vi-mode:*normal-keymap* "Space d s" 'lem-lisp-mode/internal::lisp-describe-symbol)
 (define-key lem-vi-mode:*normal-keymap* "Space d S" 'lem-lisp-mode/internal::lisp-search-symbol)

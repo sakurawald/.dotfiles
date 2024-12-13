@@ -2,6 +2,8 @@
 
 ;; TODO: recovery session
 
+;; TIP: Use `xmctrl` and `x global shortcut` to swtich to `emacs`.
+
 ;;;; extension: package
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -12,25 +14,40 @@
 ;;(package-refresh-contents)
 
 ;;;; extension: evil
+;; TIP: Use `C-z` to toggle between `vi-mode` and `emacs-mode`.
 (use-package evil
   :ensure t
   :init
+  ;; integrate with: evil-collection
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
+
+  ;; option
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-u-delete t)
+  (setq evil-undo-system 'undo-redo)
+
+
   :config
   (evil-mode 1))
 
- (setq evil-want-C-u-scroll t)
+(evil-set-initial-state 'magit-status-mode 'emacs)
 
+;;;; extension: evil-collection
 (use-package evil-collection
   :after evil
   :ensure t
+  :custom 
+  (evil-collection-want-unimpaired-p nil) 
+  
+  ;; NOTE: evil-collection will setup a mode naemd `t` for `sldb` and `slime-inspector`.
+  (evil-collection-setup-debugger-keys t)
+  (evil-collection-want-find-usages-bindings t)
+  (evil-collection-term-sync-state-and-mode-p t)
+
   :config
   (evil-collection-init))
 
-(evil-mode 1)
-
-(evil-set-initial-state 'magit-status-mode 'emacs)
 
 ;;;; extension: evil-escape
 (use-package evil-escape
@@ -43,12 +60,6 @@
 ;;;; extension: magit
 (use-package magit
   :ensure t)
-
-;;;; evil-collection 
-(use-package evil-collection
-  :ensure t)
-(evil-collection-init)
-
 
 ;;;; extension: elcord
 (use-package elcord
@@ -104,6 +115,43 @@
   '(add-to-list 'ac-modes 'slime-repl-mode))
 
 
+;;;; extension: markdown-mode
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "multimarkdown")
+  :bind (:map markdown-mode-map
+         ("C-c C-e" . markdown-do)))
+
+;;;; extension: base16 theme
+(use-package base16-theme
+  :ensure t
+  :config
+  (load-theme 'base16-windows-highcontrast t))
+
+;;(defvar base16-sakurawald-theme-colors
+;;  '(:base00 "#1a1b26"
+;;    :base01 "#16161e"
+;;    :base02 "#2f3549"
+;;    :base03 "#444b6a"
+;;    :base04 "#787c99"
+;;    :base05 "#a9b1d6"
+;;    :base06 "#cbccd1"
+;;    :base07 "#d5d6db"
+;;    :base08 "#c0caf5"
+;;    :base09 "#a9b1d6"
+;;    :base0A "#0db9d7"
+;;    :base0B "#9ece6a"
+;;    :base0C "#b4f9f8"
+;;    :base0D "#2ac3de"
+;;    :base0E "#bb9af7"
+;;    :base0F "#f7768e")
+;;  "All colors for Base16 SakuraWald are defined here.")
+;;(deftheme base16-sakurawald)
+;;(base16-theme-define 'base16-sakurawald base16-sakurawald-theme-colors)
+;;(provide-theme 'base16-sakurawald)
+;;(provide 'base16-sakurawald-theme)
+
 ;;;; -- appearance --
 (setq inhibit-startup-screen t)
 (setq initial-major-mode 'lisp-mode)
@@ -116,24 +164,26 @@
 (toggle-scroll-bar nil)
 (toggle-frame-maximized)
 
-;;(load-theme 'manoj-dark)
+(global-hl-line-mode t)
+;;(set-face-background 'hl-line "#000066")
+
 
 ;; line wrap
 
 ;;;; -- auto save --
-
+(setq auto-save-interval 5)
+(setq auto-save-no-message t)
 
 ;;;; -- formatter --
 ;; TIP: Use `formatter` instead of `<<` and `>>`.
 
-(evil-define-key '(normal) 'global (kbd "M-j") 'delete-indentation)
+;;(evil-define-key '(normal) 'global (kbd "M-j") 'delete-indentation)
 
-;;;; -- better HJKL --
+;;;; -- better HL --
 ;; TIP: use `zz` to center current line.
 ;; TIP: use `M` to center current window.
+;; TIP: The `J` is for `join lines`, and `K` for manual.
 (evil-define-key '(normal) 'global "H" 'evil-beginning-of-line)
-(evil-define-key '(normal) 'global "J" 'evil-forward-paragraph)
-(evil-define-key '(normal) 'global "K" 'evil-backward-paragraph)
 (evil-define-key '(normal) 'global "L" 'evil-end-of-line)
 
 ;;;; -- better escape --
@@ -159,6 +209,11 @@
 ;; Gu / GU -> downcase / upcase
 (evil-define-key '(normal) 'global (kbd "SPC g a") 'execute-extended-command)
 (evil-define-key '(normal) 'global (kbd "SPC a") 'execute-extended-command)
+
+;; TIP: Use `g d` to find definition, use `g r` to find references.
+(evil-define-key '(normal) 'global (kbd "g s") 'slime-edit-definition)
+
+(evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
 
 ;;;; -- buffer --
 ;; NOTE: buffer < window < tab < frame
@@ -194,6 +249,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC w n") 'minimize-window)
 
 ;;;; -- tab --
+;; TIP: Use `C-Tab` and `C-S-Tab` to cycle tabs.
 (evil-define-key '(normal) 'global (kbd "SPC t t") 'tab-select)
 (evil-define-key '(normal) 'global (kbd "SPC t l") 'tab-list)
 (evil-define-key '(normal) 'global (kbd "SPC t r") 'tab-bar-switch-to-recent-bar)
@@ -212,15 +268,39 @@
 (evil-define-key '(normal) 'global (kbd "SPC z z") 'toggle-frame-fullscreen)
 (evil-define-key '(normal) 'global (kbd "SPC z r") 'restart-emacs)
 
-
 ;;;; -- file --
 (evil-define-key '(normal) 'global (kbd "SPC f t") 'dired)
 (evil-define-key '(normal) 'global (kbd "SPC f r") 'recentf)
+
+;;;; -- project --
+(evil-define-key '(normal) 'global (kbd "SPC p s") 'project-switch-project)
+
+(evil-define-key '(normal) 'global (kbd "SPC p h") 'project-dired)
+(evil-define-key '(normal) 'global (kbd "SPC p f") 'project-find-file)
+(evil-define-key '(normal) 'global (kbd "SPC p d") 'project-find-dir)
+
+;; FIXME: not work
+(defun project-find-file-other-window ()
+  (interactive)
+  (project-other-window-command)
+  (project-find-file))
+(evil-define-key '(normal) 'global (kbd "SPC p F") 'project-find-file-other-window)
+
+(evil-define-key '(normal) 'global (kbd "SPC p g") 'project-find-regexp)
+
+(evil-define-key '(normal) 'global (kbd "SPC p n") 'project-remember-projects-under)
+(evil-define-key '(normal) 'global (kbd "SPC p N") 'project-forget-project)
+
+;;;; -- version --
+(evil-define-key '(normal) 'global (kbd "SPC v") 'magit)
+
 
 ;;;; -- repl --
 ;; M-p -> previous input
 ;; C-<up>/<down>
 ;; M-Ret -> close return
+;; TIP: Use `C-u` (back to indentation) and `C-w` (word) to delete backward in insert/ex/search vi-state.
+
 (evil-define-key '(normal) 'global (kbd "SPC r R") 'slime)
 (evil-define-key '(normal) 'global (kbd "SPC r r") 'slime-restart-connection-at-point)
 (evil-define-key '(normal) 'global (kbd "SPC r l") 'slime-list-connections)
@@ -228,17 +308,27 @@
 
 (evil-define-key '(normal) 'global (kbd "SPC r c") 'slime-repl-clear-buffer)
 
-(evil-define-key '(normal) 'global (kbd "M-c") 'slime-repl-clear-buffer)
+(evil-define-key '(normal) 'global (kbd "M-c") 'slime-repl-delete-current-input)
+(evil-define-key '(normal) 'global (kbd "M-C") 'slime-repl-clear-buffer)
 
 ;;;; -- evaluate --
-(evil-define-key '(normal) 'global (kbd "SPC e e") 'slime-list-connections)
+;; TIP: Use `M-n` and `M-p` to see compiler notes.
+;; TODO: disable the `C-c M-i` comletion
+(evil-define-key '(normal) 'global (kbd "SPC e l") 'slime-list-connections)
 (evil-define-key '(normal) 'global (kbd "SPC e w") 'slime-repl)
 
+(evil-define-key '(normal) 'global (kbd "SPC e s") 'slime-interactive-eval)
 (evil-define-key '(normal) 'global (kbd "SPC e d") 'slime-eval-defun)
 (evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-eval-region)
 (evil-define-key '(normal) 'global (kbd "SPC e b") 'slime-eval-buffer)
+
+(evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-eval-last-expression-in-repl)
 (evil-define-key '(normal) 'global (kbd "SPC e I") 'slime-interrupt)
 (evil-define-key '(normal) 'global (kbd "SPC e p") 'slime-sync-package-and-default-directory)
+
+(evil-define-key '(normal) 'global (kbd "SPC e t") 'slime-toggle-trace-fdefinition)
+(evil-define-key '(normal) 'global (kbd "SPC e T") 'slime-trace-dialog)
+
 
 ;;;; -- inspect --
 ;; v -> verbose
@@ -306,18 +396,27 @@
 
 ;;;; -- grep --
 
+
 ;;;; -- describe --
 (evil-define-key '(normal) 'global (kbd "SPC d k") 'describe-key)
 (evil-define-key '(normal) 'global (kbd "SPC d c") 'describe-command)
 (evil-define-key '(normal) 'global (kbd "SPC d m") 'describe-mode)
 (evil-define-key '(normal) 'global (kbd "SPC d b") 'describe-bindings)
+(evil-define-key '(normal) 'global (kbd "SPC d P") 'describe-package)
 
-(evil-define-key '(normal) 'global (kbd "SPC d p") 'describe-package)
+(evil-define-key '(normal) 'global (kbd "SPC d d") 'slime-apropos-all)
+;; NOTE: The `slime-apropos` only list `external symbols`.
+(evil-define-key '(normal) 'global (kbd "SPC d a") 'slime-apropos)
+(evil-define-key '(normal) 'global (kbd "SPC d p") 'slime-apropos-package)
+
 (evil-define-key '(normal) 'global (kbd "SPC d s") 'slime-describe-symbol)
 (evil-define-key '(normal) 'global (kbd "SPC d S") 'slime-edit-definition)
 (evil-define-key '(normal) 'global (kbd "SPC d f") 'slime-describe-function)
-(evil-define-key '(normal) 'global (kbd "SPC d h") 'slime-documentation)
-(evil-define-key '(normal) 'global (kbd "SPC d H") 'slime-documentation-lookup)
+
+;; TIP: The command will ask for string if not string at point.
+(evil-define-key '(normal) 'global (kbd "SPC d h") 'slime-documentation-lookup)
+(evil-define-key '(normal) 'global (kbd "SPC d H") 'slime-documentation)
+
 
 ;;;; -- comment --
 (evil-define-key '(normal) 'global (kbd "SPC c") 'comment-line)
@@ -340,6 +439,7 @@
 
 ;;;; -- bookmark --
 
+;;;; -- dashboard --
 
 ;;;; -- post effect --
 (slime)
