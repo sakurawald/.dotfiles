@@ -104,6 +104,7 @@
 (setq ac-auto-start 0)
 (setq ac-auto-show-menu nil)
 
+;; TIP: If you need the same number of key-stroke, why use fuzzy?
 (setq ac-use-fuzzy t)
 
 
@@ -152,6 +153,11 @@
 ;;(base16-theme-define 'base16-sakurawald base16-sakurawald-theme-colors)
 ;;(provide-theme 'base16-sakurawald)
 ;;(provide 'base16-sakurawald-theme)
+
+;;;; -- extension: smart mode line --
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode))
 
 ;;;; -- extension: all-the-cons --
 ;; FIXME: the icon is not show
