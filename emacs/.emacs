@@ -1,6 +1,7 @@
 ;; NOTE: I steal some good ideas from "https://neovim.io/" and "https://www.gnu.org/software/emacs/". (Interesting to read the manual)
 
 ;; TODO: recovery session
+;; TODO: search built in package
 
 ;; TIP: Use `xmctrl` and `x global shortcut` to swtich to `emacs`.
 
@@ -100,7 +101,7 @@
 
 (define-key ac-mode-map (kbd "M-TAB") 'auto-complete)
 
-(setq ac-auto-start 2)
+(setq ac-auto-start 0)
 (setq ac-auto-show-menu nil)
 
 (setq ac-use-fuzzy t)
@@ -152,23 +153,39 @@
 ;;(provide-theme 'base16-sakurawald)
 ;;(provide 'base16-sakurawald-theme)
 
+;;;; -- extension: all-the-cons --
+;; FIXME: the icon is not show
+(use-package all-the-icons
+  :ensure t
+  :if (display-graphic-p))
+
+;;(all-the-icons-wicon "tornado" :face 'all-the-icons-blue)
+  
+
 ;;;; -- appearance --
+;; TIP: Don't use the transparent frame, it's ugly.
 (setq inhibit-startup-screen t)
 (setq initial-major-mode 'lisp-mode)
 
-(global-display-line-numbers-mode)
-
+(menu-bar-mode -1)
 (tool-bar-mode -1)
 (toggle-tab-bar-mode-from-frame)
-
 (toggle-scroll-bar nil)
+
 (toggle-frame-maximized)
 
+(global-display-line-numbers-mode)
 (global-hl-line-mode t)
-;;(set-face-background 'hl-line "#000066")
 
+(blink-cursor-mode 0)
+(set-face-background 'hl-line "#000066")
 
-;; line wrap
+;; TODO: custom font
+;; TODO: reset emacs options -> customize
+
+;; -- mode line --
+(setq column-number-mode t)
+
 
 ;;;; -- auto save --
 (setq auto-save-interval 5)
@@ -217,12 +234,15 @@
 
 ;;;; -- buffer --
 ;; NOTE: buffer < window < tab < frame
+
+;; TODO: buffers in project ?
 (evil-define-key '(normal) 'global (kbd "SPC b l") 'list-buffers)
 (evil-define-key '(normal) 'global (kbd "SPC b b") 'switch-to-buffer)
 (evil-define-key '(normal) 'global (kbd "SPC b B") 'switch-to-buffer-other-tab)
 
 (evil-define-key '(normal) 'global (kbd "SPC b n") 'switch-to-next-buffer)
 (evil-define-key '(normal) 'global (kbd "SPC b p") 'switch-to-prev-buffer)
+;; TIP: After the `buffer delete`, emacs will switch to `previous buffer`.
 (evil-define-key '(normal) 'global (kbd "SPC b d") 'kill-buffer)
 
 (evil-define-key '(normal) 'global (kbd "SPC b s") 'scratch-buffer)
@@ -250,19 +270,23 @@
 
 ;;;; -- tab --
 ;; TIP: Use `C-Tab` and `C-S-Tab` to cycle tabs.
-(evil-define-key '(normal) 'global (kbd "SPC t t") 'tab-select)
+
+;; TODO: 0-9 for quick tab switch
+;; TIP: The `tab-switch` will switch to the named tab or create it.
+(evil-define-key '(normal) 'global (kbd "SPC t s") 'tab-switch)
+(evil-define-key '(normal) 'global (kbd "SPC t c") 'tab-bar-new-tab)
+(evil-define-key '(normal) 'global (kbd "SPC t t") 'tab-switcher)
 (evil-define-key '(normal) 'global (kbd "SPC t l") 'tab-list)
 (evil-define-key '(normal) 'global (kbd "SPC t r") 'tab-bar-switch-to-recent-bar)
-(evil-define-key '(normal) 'global (kbd "SPC t s") 'tab-switch)
-
-(evil-define-key '(normal) 'global (kbd "SPC t d") 'tab-delete)
-(evil-define-key '(normal) 'global (kbd "SPC t o") 'tab-close-other)
-(evil-define-key '(normal) 'global (kbd "SPC t u") 'tab-bar-undo-close-tab)
 
 (evil-define-key '(normal) 'global (kbd "SPC t n") 'tab-next)
 (evil-define-key '(normal) 'global (kbd "SPC t p") 'tab-previous)
 
 (evil-define-key '(normal) 'global (kbd "SPC t N") 'tab-rename)
+
+(evil-define-key '(normal) 'global (kbd "SPC t d") 'tab-delete)
+(evil-define-key '(normal) 'global (kbd "SPC t o") 'tab-close-other)
+(evil-define-key '(normal) 'global (kbd "SPC t u") 'tab-bar-undo-close-tab)
 
 ;;;; -- frame --
 (evil-define-key '(normal) 'global (kbd "SPC z z") 'toggle-frame-fullscreen)
@@ -273,6 +297,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC f r") 'recentf)
 
 ;;;; -- project --
+;; TODO: integrate projectile
 (evil-define-key '(normal) 'global (kbd "SPC p s") 'project-switch-project)
 
 (evil-define-key '(normal) 'global (kbd "SPC p h") 'project-dired)
@@ -298,31 +323,45 @@
 ;;;; -- repl --
 ;; M-p -> previous input
 ;; C-<up>/<down>
-;; M-Ret -> close return
+;; TIP: Use `M-Ret` to `close parens and return`.
 ;; TIP: Use `C-u` (back to indentation) and `C-w` (word) to delete backward in insert/ex/search vi-state.
+;; TIP: In `repl window`, you can mosue-click a `representation` to open `context-menu`.
+
+;; TODO: forward and backward repl input
 
 (evil-define-key '(normal) 'global (kbd "SPC r R") 'slime)
-(evil-define-key '(normal) 'global (kbd "SPC r r") 'slime-restart-connection-at-point)
+(evil-define-key '(normal) 'global (kbd "SPC r r") 'slime-restart-inferior-lisp)
 (evil-define-key '(normal) 'global (kbd "SPC r l") 'slime-list-connections)
 (evil-define-key '(normal) 'global (kbd "SPC r t") 'slime-list-threads)
 
 (evil-define-key '(normal) 'global (kbd "SPC r c") 'slime-repl-clear-buffer)
 
-(evil-define-key '(normal) 'global (kbd "M-c") 'slime-repl-delete-current-input)
-(evil-define-key '(normal) 'global (kbd "M-C") 'slime-repl-clear-buffer)
+(evil-define-key '(normal) 'global (kbd "M-c") 'slime-repl-clear-buffer)
 
 ;;;; -- evaluate --
 ;; TIP: Use `M-n` and `M-p` to see compiler notes.
-;; TODO: disable the `C-c M-i` comletion
-(evil-define-key '(normal) 'global (kbd "SPC e l") 'slime-list-connections)
+
+;; TODO: disable the `C-c M-i` comletion (C-c tab)
+;; TODO: disassemble
+;; TODO: profile
+
+;; TODO: the compile function. the compiler-notes for compile, not for evaluate
+;;(evil-define-key '(normal) 'global (kbd "SPC e l") 'slime-list-compiler-notes)
+;;(evil-define-key '(normal) 'global (kbd "SPC e e") 'slime-list-connections)
+;; TODO: resend last form
+
 (evil-define-key '(normal) 'global (kbd "SPC e w") 'slime-repl)
+(evil-define-key '(normal) 'global (kbd "SPC e c") 'slime-handle-repl-shortcut)
 
 (evil-define-key '(normal) 'global (kbd "SPC e s") 'slime-interactive-eval)
+;; TIP: Don't use `slime-repl-region`, use `eval-defun` to treat the `defun-like-form` as minimal unit.
 (evil-define-key '(normal) 'global (kbd "SPC e d") 'slime-eval-defun)
-(evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-eval-region)
+(evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-eval-last-expression-in-repl)
 (evil-define-key '(normal) 'global (kbd "SPC e b") 'slime-eval-buffer)
 
-(evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-eval-last-expression-in-repl)
+
+;; TODO: eval and pprint
+
 (evil-define-key '(normal) 'global (kbd "SPC e I") 'slime-interrupt)
 (evil-define-key '(normal) 'global (kbd "SPC e p") 'slime-sync-package-and-default-directory)
 
@@ -398,12 +437,7 @@
 
 
 ;;;; -- describe --
-(evil-define-key '(normal) 'global (kbd "SPC d k") 'describe-key)
-(evil-define-key '(normal) 'global (kbd "SPC d c") 'describe-command)
-(evil-define-key '(normal) 'global (kbd "SPC d m") 'describe-mode)
-(evil-define-key '(normal) 'global (kbd "SPC d b") 'describe-bindings)
-(evil-define-key '(normal) 'global (kbd "SPC d P") 'describe-package)
-
+;; NOTE: the commands start with `describe-` is for `emacs lisp inferor`, and start with `slime-` is for `common lisp`.
 (evil-define-key '(normal) 'global (kbd "SPC d d") 'slime-apropos-all)
 ;; NOTE: The `slime-apropos` only list `external symbols`.
 (evil-define-key '(normal) 'global (kbd "SPC d a") 'slime-apropos)
@@ -416,6 +450,32 @@
 ;; TIP: The command will ask for string if not string at point.
 (evil-define-key '(normal) 'global (kbd "SPC d h") 'slime-documentation-lookup)
 (evil-define-key '(normal) 'global (kbd "SPC d H") 'slime-documentation)
+
+;;;; -- help --
+;; TODO: look up subject in {user/elisp} manual / emacs glossary /
+(evil-define-key '(normal) 'global (kbd "SPC h h") 'info)
+(evil-define-key '(normal) 'global (kbd "SPC h H") 'info-display-manual)
+
+(evil-define-key '(normal) 'global (kbd "SPC h b") 'describe-bindings)
+(evil-define-key '(normal) 'global (kbd "SPC h k") 'describe-key)
+(evil-define-key '(normal) 'global (kbd "SPC h c") 'describe-command)
+(evil-define-key '(normal) 'global (kbd "SPC h f") 'describe-function)
+(evil-define-key '(normal) 'global (kbd "SPC h m") 'describe-mode)
+
+
+(evil-define-key '(normal) 'global (kbd "SPC h p") 'describe-package)
+(evil-define-key '(normal) 'global (kbd "SPC h P") 'finder-by-keyword)
+
+(evil-define-key '(normal) 'global (kbd "SPC h s") 'apropos)
+
+(evil-define-key '(normal) 'global (kbd "SPC h M") 'man)
+
+(evil-define-key '(normal) 'global (kbd "SPC h d") 'apropos-documentation)
+(evil-define-key '(normal) 'global (kbd "SPC h D") 'shortdoc)
+
+(evil-define-key '(normal) 'global (kbd "SPC h o") 'apropos-user-option)
+
+(evil-define-key '(normal) 'global (kbd "SPC h l") 'apropos-library)
 
 
 ;;;; -- comment --
@@ -440,6 +500,8 @@
 ;;;; -- bookmark --
 
 ;;;; -- dashboard --
+;; An idiot admires complexity, a genius admires simplicity.
+;;                                                            ― Terry Davis
 
 ;;;; -- post effect --
 (slime)
