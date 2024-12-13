@@ -4,6 +4,7 @@
 ;; TODO: search built in package
 
 ;; TIP: Use `xmctrl` and `x global shortcut` to swtich to `emacs`.
+;; TIP: Use `Super+{num}` to switch to a window in KDE.
 
 ;;;; extension: package
 (require 'package)
@@ -44,6 +45,8 @@
   ;; NOTE: evil-collection will setup a mode naemd `t` for `sldb` and `slime-inspector`.
   (evil-collection-setup-debugger-keys t)
   (evil-collection-want-find-usages-bindings t)
+  (evil-collection-setup-minibuffer t)
+
   (evil-collection-term-sync-state-and-mode-p t)
 
   :config
@@ -80,7 +83,15 @@
 (use-package slime
   :ensure t)
 
+;; Setup load-path and autoloads
+;;(add-to-list 'load-path "~/dir/to/cloned/slime")
+;;(require 'slime-autoloads)
+
 (setq inferior-lisp-program "ros dynamic-space-size=4GiB run")
+(setq slime-contribs '(slime-asdf
+                       slime-fancy
+                       slime-banner
+                       slime-xref-browser))
 
 ;;;;
 
@@ -101,7 +112,7 @@
 
 (define-key ac-mode-map (kbd "M-TAB") 'auto-complete)
 
-(setq ac-auto-start 0)
+(setq ac-auto-start 2)
 (setq ac-auto-show-menu nil)
 
 ;; TIP: If you need the same number of key-stroke, why use fuzzy?
@@ -116,6 +127,22 @@
 (eval-after-load "auto-complete"
   '(add-to-list 'ac-modes 'slime-repl-mode))
 
+;;;; extension: auto-read-only
+;;(use-package auto-read-only
+;;  :ensure t
+;;  :custom
+;;  (add-to-list 'auto-read-only-file-regexps ".*")
+;;  :config
+;;  (auto-read-only-mode 1)
+;;  (add-to-list 'auto-read-only-file-regexps ".*")
+;;  )
+
+(use-package hardhat
+  :ensure t
+  :config
+  (global-hardhat-mode 1)
+  (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps)
+  )
 
 ;;;; extension: markdown-mode
 (use-package markdown-mode
@@ -166,7 +193,46 @@
   :if (display-graphic-p))
 
 ;;(all-the-icons-wicon "tornado" :face 'all-the-icons-blue)
-  
+
+;;;; -- extension: avy --
+(use-package avy
+  :ensure t
+  :config 
+  (evil-define-key '(normal) 'global (kbd "SPC j") 'avy-goto-char))
+
+;;;; -- extension: dimmer --
+(use-package dimmer
+  :ensure t
+  :config 
+  (dimmer-mode t))
+
+;;;; -- extension: vertico -- 
+(use-package vertico
+  :ensure t
+  :custom
+  (vertico-scroll-margin 0) ;; Different scroll margin
+  (vertico-count 50) ;; Show more candidates
+  (vertico-resize nil) ;; Grow and shrink the Vertico minibuffer
+  (vertico-cycle nil) ;; Enable cycling for `vertico-next/previous'
+  :init 
+  (vertico-mode))
+
+;;;; -- extension: aggressive-indent --
+(use-package aggressive-indent
+  :ensure t
+  :config
+  (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
+  )
+
+;;;; -- extension: keycast --
+(use-package keycast
+  :ensure t
+  :config
+  ;;(keycast-mode-line-mode)
+  (keycast-header-line-mode)
+  ;;(keycast-tab-bar-mode)
+  )
+
 
 ;;;; -- appearance --
 ;; TIP: Don't use the transparent frame, it's ugly.
@@ -217,6 +283,7 @@
 ;;;; -- location --
 ;; TIP: The `C-i` and `C-o` will jump in a jumplist, while the `''` will jump only between 2 entries.
 ;; NOTE: The `C-i` is equal to `Tab` key, if you bind the `Tab` key to a command, then `C-i` binding will not work.
+;; TIP: Use `'.` to jump to `last change location`.
 
 
 ;;;; -- text object --
@@ -233,8 +300,11 @@
 (evil-define-key '(normal) 'global (kbd "SPC g a") 'execute-extended-command)
 (evil-define-key '(normal) 'global (kbd "SPC a") 'execute-extended-command)
 
+
 ;; TIP: Use `g d` to find definition, use `g r` to find references.
 (evil-define-key '(normal) 'global (kbd "g s") 'slime-edit-definition)
+
+(evil-define-key '(normal) 'global (kbd "g t") 'project-find-regexp)
 
 (evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
 
@@ -298,6 +368,9 @@
 (evil-define-key '(normal) 'global (kbd "SPC z z") 'toggle-frame-fullscreen)
 (evil-define-key '(normal) 'global (kbd "SPC z r") 'restart-emacs)
 
+;;;; -- session --
+(desktop-save-mode 1)
+
 ;;;; -- file --
 (evil-define-key '(normal) 'global (kbd "SPC f t") 'dired)
 (evil-define-key '(normal) 'global (kbd "SPC f r") 'recentf)
@@ -334,9 +407,13 @@
 ;; TIP: In `repl window`, you can mosue-click a `representation` to open `context-menu`.
 
 ;; TODO: forward and backward repl input
+(defun slime-restart-inferior-lisp* ()
+  (interactive)
+  (slime-repl)
+  (slime-restart-inferior-lisp))
 
 (evil-define-key '(normal) 'global (kbd "SPC r R") 'slime)
-(evil-define-key '(normal) 'global (kbd "SPC r r") 'slime-restart-inferior-lisp)
+(evil-define-key '(normal) 'global (kbd "SPC r r") 'slime-restart-inferior-lisp*)
 (evil-define-key '(normal) 'global (kbd "SPC r l") 'slime-list-connections)
 (evil-define-key '(normal) 'global (kbd "SPC r t") 'slime-list-threads)
 
@@ -360,6 +437,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC e c") 'slime-handle-repl-shortcut)
 
 (evil-define-key '(normal) 'global (kbd "SPC e s") 'slime-interactive-eval)
+(evil-define-key '(normal) 'global (kbd "SPC e S") 'slime-load-system)
 ;; TIP: Don't use `slime-repl-region`, use `eval-defun` to treat the `defun-like-form` as minimal unit.
 (evil-define-key '(normal) 'global (kbd "SPC e d") 'slime-eval-defun)
 (evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-eval-last-expression-in-repl)
@@ -437,6 +515,9 @@
 ;; b -> break on return
 ;; C -> inspect condition
 ;; M-Ret -> copy down to repl
+
+;; TIP: Use `M-n` and `M-p` to nagivate the `backtracd` with `source form`.
+
 (evil-set-initial-state 'sldb-mode 'emacs)
 
 ;;;; -- grep --
@@ -485,14 +566,14 @@
 
 
 ;;;; -- comment --
-(evil-define-key '(normal) 'global (kbd "SPC c") 'comment-line)
-(evil-define-key '(normal) 'global (kbd "SPC C") 'comment-box)
+(evil-define-key '(normal visual) 'global (kbd "SPC c") 'comment-line)
+(evil-define-key '(normal visual) 'global (kbd "SPC C") 'comment-box)
 
 ;;;; -- paredit --
 ;; TIP: Use `)` to move over the list.
 ;; TIP: Use `g m` to move to the matching item.
-(evil-define-key '(normal) 'global (kbd "SPC s w") 'sp-wrap-round)
-(evil-define-key '(normal) 'global (kbd "SPC s W") 'sp-splice-sexp)
+(evil-define-key '(normal visual) 'global (kbd "SPC s w") 'sp-wrap-round)
+(evil-define-key '(normal visual) 'global (kbd "SPC s W") 'sp-splice-sexp)
 
 (evil-define-key '(normal) 'global (kbd "SPC s m") 'sp-mark-sexp)
 (evil-define-key '(normal) 'global (kbd "SPC s k") 'sp-kill-sexp)
@@ -505,9 +586,13 @@
 
 ;;;; -- bookmark --
 
+
 ;;;; -- dashboard --
 ;; An idiot admires complexity, a genius admires simplicity.
 ;;                                                            ― Terry Davis
 
-;;;; -- post effect --
-(slime)
+;;;; -- after init --
+(add-hook 'after-init-hook 'my-after-init-hook)
+(defun my-after-init-hook ()
+  (slime))
+
