@@ -198,7 +198,19 @@
 (use-package avy
   :ensure t
   :config 
-  (evil-define-key '(normal) 'global (kbd "SPC j") 'avy-goto-char))
+  (evil-define-key '(normal) 'global (kbd "SPC j") 'avy-goto-word-0)
+  (set-face-attribute 'avy-lead-face nil
+		    :foreground "white"
+		    :background "#e52b50")
+  (set-face-attribute 'avy-lead-face-0 nil
+		    :foreground "white"
+		    :background "#4f5769")
+  (set-face-attribute 'avy-lead-face-1 nil
+		    :foreground "white"
+		    :background "#4f5769")
+  (set-face-attribute 'avy-lead-face-2 nil
+		    :foreground "white"
+		    :background "gray"))
 
 ;;;; -- extension: dimmer --
 (use-package dimmer
