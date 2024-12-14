@@ -1,15 +1,28 @@
+;; While any text editor can save your files, only Emacs can save your soul. 
+
 ;; NOTE: I steal some good ideas from "https://neovim.io/" and "https://www.gnu.org/software/emacs/". (Interesting to read the manual)
 
+
+;; TODO: add the make compile command 
+;; TODO: org mode
 ;; TODO: recovery session
 ;; TODO: search built in package
+;; TODO: a better auto save extension
+;; TODO: integratarchive-priorities`e ranger like filer explorer inside emacs.
+;; TODO: vim surround plugin
+;; TODO: a telescope like function -> fold zen
+;; TODO: a LLM ai completion
+;; TODO: highlight todo and fixme
+;; TODO: emacs macro or viim macro?
 
-;; TIP: Use `xmctrl` and `x global shortcut` to swtich to `emacs`.
-;; TIP: Use `Super+{num}` to switch to a window in KDE.
+;; TIP: Use `xmctrl` and `x global shortcut` to swtich to `emacs`: `wmctrl -a "gnu emacs" || emacs`
+;; TIP: Use `Super+{num}' to switch to a window in KDE.
+;; TIP: Use `Ctrl+{num}` to switch to a tab in browser.
 
 ;;;; extension: package
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package- 
 ;; and `package-pinned-packages`. Most users will not need or want to do this.
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
@@ -195,6 +208,7 @@
 ;;(all-the-icons-wicon "tornado" :face 'all-the-icons-blue)
 
 ;;;; -- extension: avy --
+;; TIP: You don't need to use `smooth scroll', just use `avy' or `grep'.
 (use-package avy
   :ensure t
   :config 
@@ -210,7 +224,7 @@
 		    :background "#4f5769")
   (set-face-attribute 'avy-lead-face-2 nil
 		    :foreground "white"
-		    :background "gray"))
+		    :background "#4f5769"))
 
 ;;;; -- extension: dimmer --
 (use-package dimmer
@@ -219,6 +233,8 @@
   (dimmer-mode t))
 
 ;;;; -- extension: vertico -- 
+;; TIP: The `which-key' extension is useless, just use `vertico` to search a command.
+
 (use-package vertico
   :ensure t
   :custom
@@ -246,7 +262,45 @@
   )
 
 
+;;;; -- extension: hl-todo --
+(use-package hl-todo
+  :ensure t
+  :config
+  (setq hl-todo-keyword-faces
+      '(("TODO"   . "#FF0000")
+        ("FIXME"  . "#FF0000")
+        ("NOTE"  . "#FF0000")
+        ("TIP"  . "#FF0000")))
+  (global-highlight-todo-mode))
+
+;;;; -- extension: magit-todos --
+(use-package magit-todos
+  :ensure t
+  :after magit
+  :config (magit-todos-mode 1))
+
+;;;; -- extension: latex --
+(use-package auctex
+  :ensure t
+  :config
+  )
+
+;;;; -- extension: snippet
+(use-package yasnippet
+  :ensure t
+  :config
+  ;; TIP: Use `M-e` in `vi-insert-mode' to expand the key into snippet.
+  (define-key yas-minor-mode-map (kbd "M-e") yas-maybe-expand)
+  (yas-global-mode 1)
+  )
+
+
+(use-package yasnippet-snippets
+  :ensure t)
+
+
 ;;;; -- appearance --
+;; TIP: Use `base16 theme', it's simple and beautiful.
 ;; TIP: Don't use the transparent frame, it's ugly.
 (setq inhibit-startup-screen t)
 (setq initial-major-mode 'lisp-mode)
@@ -284,8 +338,8 @@
 ;; TIP: use `zz` to center current line.
 ;; TIP: use `M` to center current window.
 ;; TIP: The `J` is for `join lines`, and `K` for manual.
-(evil-define-key '(normal) 'global "H" 'evil-beginning-of-line)
-(evil-define-key '(normal) 'global "L" 'evil-end-of-line)
+(evil-define-key '(normal visual) 'global "H" 'evil-beginning-of-line)
+(evil-define-key '(normal visual) 'global "L" 'evil-end-of-line)
 
 ;;;; -- better escape --
 ;; TIP: Use "key-conversion", like: "C-[" = "Escape", "C-i" = "Tab" and "C-m" = "Return".
@@ -395,6 +449,11 @@
 (evil-define-key '(normal) 'global (kbd "SPC p f") 'project-find-file)
 (evil-define-key '(normal) 'global (kbd "SPC p d") 'project-find-dir)
 
+;;;; -- compile --
+(evil-define-key '(normal) 'global (kbd "SPC k k") 'compile)
+
+
+
 ;; FIXME: not work
 (defun project-find-file-other-window ()
   (interactive)
@@ -454,7 +513,6 @@
 (evil-define-key '(normal) 'global (kbd "SPC e d") 'slime-eval-defun)
 (evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-eval-last-expression-in-repl)
 (evil-define-key '(normal) 'global (kbd "SPC e b") 'slime-eval-buffer)
-
 
 ;; TODO: eval and pprint
 
@@ -551,8 +609,9 @@
 (evil-define-key '(normal) 'global (kbd "SPC d H") 'slime-documentation)
 
 ;;;; -- help --
-;; TODO: look up subject in {user/elisp} manual / emacs glossary /
+;; TIP: The `info` is the all-in-one manual about emacs and its packages.
 (evil-define-key '(normal) 'global (kbd "SPC h h") 'info)
+;; TIP: Use `info-display-manual` to see `emacs package manual'.
 (evil-define-key '(normal) 'global (kbd "SPC h H") 'info-display-manual)
 
 (evil-define-key '(normal) 'global (kbd "SPC h b") 'describe-bindings)
@@ -608,3 +667,16 @@
 (defun my-after-init-hook ()
   (slime))
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(hl-todo vertico sublimity smartparens restart-emacs orderless markdown-mode magit keycast hardhat evil-escape evil-collection elcord doom-modeline dimmer corfu base16-theme avy auto-read-only all-the-icons aggressive-indent ac-slime)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

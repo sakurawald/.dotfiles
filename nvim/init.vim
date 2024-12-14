@@ -13,7 +13,7 @@ set tabline="%1\ %t%(%m%)%3*"
 set history=10000
 
 " buffer
-set nowrap
+set wrap
 set hidden
 
 " status line
