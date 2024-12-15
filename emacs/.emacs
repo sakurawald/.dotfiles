@@ -395,7 +395,7 @@
 ;; GJ -> join line
 ;; Gu / GU -> downcase / upcase
 ;; gi -> goto 'last-changed-location' and enter 'vi-insert-state' mode.
-;; TIP Use 'gz' to goto 'emacs-lisp repl'.
+;; TIP Use 'gz' to goto 'emacs-lisp' repl provided by 'ielm', if you didn't start a 'slime' instance.
 (evil-define-key '(normal) 'global (kbd "SPC g a") 'execute-extended-command)
 (evil-define-key '(normal) 'global (kbd "SPC a") 'execute-extended-command)
 
@@ -464,10 +464,34 @@
 ;; TIP Use `C-Tab` and `C-S-Tab` to cycle tabs.
 ;; TIP The `tab-switch` will switch to the named tab or create it.
 ;; NOTE Switch to a tab by its name (which reflects its buffer file name), not by its index.
+;; TODO https://www.gnu.org/software/emacs/manual/html_node/emacs/Tab-Bars.html ('modifier')
 (evil-define-key '(normal) 'global (kbd "SPC t s") 'tab-switch)
+(evil-define-key '(normal) 'global (kbd "SPC t t") 'tab-switch)
+
 (evil-define-key '(normal) 'global (kbd "SPC t c") 'tab-bar-new-tab)
 (evil-define-key '(normal) 'global (kbd "SPC t l") 'tab-list)
 (evil-define-key '(normal) 'global (kbd "SPC t r") 'tab-bar-switch-to-recent-bar)
+
+(defun tab-select-1 () (interactive) (tab-select 1))
+(defun tab-select-2 () (interactive) (tab-select 2))
+(defun tab-select-3 () (interactive) (tab-select 3))
+(defun tab-select-4 () (interactive) (tab-select 4))
+(defun tab-select-5 () (interactive) (tab-select 5))
+(defun tab-select-6 () (interactive) (tab-select 6))
+(defun tab-select-7 () (interactive) (tab-select 7))
+(defun tab-select-8 () (interactive) (tab-select 8))
+(defun tab-select-9 () (interactive) (tab-select 9))
+(defun tab-select-0 () (interactive) (tab-select 0))
+(evil-define-key '(normal) 'global (kbd "SPC 1") 'tab-select-1)
+(evil-define-key '(normal) 'global (kbd "SPC 2") 'tab-select-2)
+(evil-define-key '(normal) 'global (kbd "SPC 3") 'tab-select-3)
+(evil-define-key '(normal) 'global (kbd "SPC 4") 'tab-select-4)
+(evil-define-key '(normal) 'global (kbd "SPC 5") 'tab-select-5)
+(evil-define-key '(normal) 'global (kbd "SPC 6") 'tab-select-6)
+(evil-define-key '(normal) 'global (kbd "SPC 7") 'tab-select-7)
+(evil-define-key '(normal) 'global (kbd "SPC 8") 'tab-select-8)
+(evil-define-key '(normal) 'global (kbd "SPC 9") 'tab-select-9)
+(evil-define-key '(normal) 'global (kbd "SPC 0") 'tab-select-0)
 
 (evil-define-key '(normal) 'global (kbd "SPC t n") 'tab-next)
 (evil-define-key '(normal) 'global (kbd "SPC t p") 'tab-previous)
