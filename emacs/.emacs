@@ -554,6 +554,7 @@
 ;; TIP Use 'M-p' and 'M-n' to navigate the `repl input history'.
 ;; TIP Use 'M-Ret' to 'close parens and return'.
 ;; TIP In `repl window`, you can mosue-click a `representation` to open `context-menu`.
+;; TIP Use 'Tab' in repl to list all packages. (via 'slime-fuzzy-complete-symbol')
 
 (defun slime-restart-inferior-lisp* ()
   (interactive)
@@ -572,11 +573,8 @@
 ;;;; -- evaluate --
 ;; TIP Use `M-n` and `M-p` to see compiler notes.
 
-;; TODO disable the `C-c M-i` comletion (C-c tab)
-;; TODO disassemble
-;; TODO profile
-;; TODO the compile function. the compiler-notes for compile, not for evaluate
-;;(evil-define-key '(normal) 'global (kbd "SPC e l") 'slime-list-compiler-notes)
+;; NOTE Only the 'slime-compile-...' commands will add compiler notes. (The 'slime-eval-...' will not.)
+(evil-define-key '(normal) 'global (kbd "SPC e l") 'slime-list-compiler-notes)
 ;;(evil-define-key '(normal) 'global (kbd "SPC e e") 'slime-list-connections)
 
 (evil-define-key '(normal) 'global (kbd "SPC e w") 'slime-repl)
@@ -586,17 +584,22 @@
 (evil-define-key '(normal) 'global (kbd "SPC e S") 'slime-load-system)
 ;; TIP Don't use `slime-repl-region`, use `eval-defun` to treat the `defun-like-form` as minimal unit.
 (evil-define-key '(normal) 'global (kbd "SPC e d") 'slime-eval-defun)
+(evil-define-key '(normal) 'global (kbd "SPC e D") 'slime-disassemble-symbol)
+
+
 ;; TIP Use repl to 'resend' the last form to repl. (Seems only work in repl window.)
 (evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-repl-resend)
 (evil-define-key '(normal) 'global (kbd "SPC e b") 'slime-eval-buffer)
-
-;; TODO eval and pprint
 
 (evil-define-key '(normal) 'global (kbd "SPC e I") 'slime-interrupt)
 (evil-define-key '(normal) 'global (kbd "SPC e p") 'slime-sync-package-and-default-directory)
 
 (evil-define-key '(normal) 'global (kbd "SPC e t") 'slime-toggle-trace-fdefinition)
 (evil-define-key '(normal) 'global (kbd "SPC e T") 'slime-trace-dialog)
+
+;; NOTE The 'profile' should be done by automatical scripts.
+(evil-define-key '(normal) 'global (kbd "SPC e P") 'slime-profile-report)
+
 
 
 ;;;; -- inspect --
