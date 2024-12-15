@@ -312,8 +312,11 @@
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-(toggle-tab-bar-mode-from-frame)
 (toggle-scroll-bar nil)
+
+(toggle-tab-bar-mode-from-frame)
+(setq tab-bar-close-button-show nil)
+(setq tab-bar-new-button-show nil)
 
 (toggle-frame-maximized)
 
@@ -464,7 +467,6 @@
 ;; TIP Use `C-Tab` and `C-S-Tab` to cycle tabs.
 ;; TIP The `tab-switch` will switch to the named tab or create it.
 ;; NOTE Switch to a tab by its name (which reflects its buffer file name), not by its index.
-;; TODO https://www.gnu.org/software/emacs/manual/html_node/emacs/Tab-Bars.html ('modifier')
 (evil-define-key '(normal) 'global (kbd "SPC t s") 'tab-switch)
 (evil-define-key '(normal) 'global (kbd "SPC t t") 'tab-switch)
 
@@ -576,7 +578,6 @@
 ;; TODO the compile function. the compiler-notes for compile, not for evaluate
 ;;(evil-define-key '(normal) 'global (kbd "SPC e l") 'slime-list-compiler-notes)
 ;;(evil-define-key '(normal) 'global (kbd "SPC e e") 'slime-list-connections)
-;; TODO resend last form
 
 (evil-define-key '(normal) 'global (kbd "SPC e w") 'slime-repl)
 (evil-define-key '(normal) 'global (kbd "SPC e c") 'slime-handle-repl-shortcut)
@@ -585,7 +586,8 @@
 (evil-define-key '(normal) 'global (kbd "SPC e S") 'slime-load-system)
 ;; TIP Don't use `slime-repl-region`, use `eval-defun` to treat the `defun-like-form` as minimal unit.
 (evil-define-key '(normal) 'global (kbd "SPC e d") 'slime-eval-defun)
-(evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-eval-last-expression-in-repl)
+;; TIP Use repl to 'resend' the last form to repl. (Seems only work in repl window.)
+(evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-repl-resend)
 (evil-define-key '(normal) 'global (kbd "SPC e b") 'slime-eval-buffer)
 
 ;; TODO eval and pprint
