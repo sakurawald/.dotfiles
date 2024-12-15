@@ -180,8 +180,30 @@
 (use-package base16-theme
   :ensure t
   :config
-  ;; FIXME the customize may save loaded theme
-  (load-theme 'base16-windows-highcontrast t))
+  ;; NOTE See spec in https://github.com/chriskempson/base16/blob/main/styling.md
+  ;; NOTE Instead of defining a new theme, we modify the existing one for convinence.
+  (setq base16-sakura-theme-colors
+	'(
+	  :base00 "#000000" ;; default background: window
+	  :base01 "#1C1C1C" ;; status bar, line numbers and folding marks. 
+	  :base02 "#383838" ;; selection
+	  :base03 "#545454" ;; comment
+	  :base04 "#A2A2A2" ;; dark foreground
+	  :base05 "#FFFFFF" ;; default foreground: text
+	  :base06 "#DEDEDE" ;; light foreground (not often used)
+	  :base07 "#FCFCFC" ;; light background (not often used)
+	  :base08 "#FC5454" ;; cursor, symbol flags, sldb-condition
+	  :base09 "#FFA500" ;; self-evaluating object, tab name.
+	  :base0A "#FFFF00" ;; type, class
+	  :base0B "#00FF00" ;; string
+	  :base0C "#00FFFF" ;; keyword symbol
+	  :base0D "#5454fc" ;; function name
+	  :base0E "#FF00FF" ;; operator name
+	  :base0F "#008000" ;; deprecated (opening/closing embedded language tags, e.g. '<?php ?>')
+	  ))
+
+  (load-theme 'base16-sakura t))
+
 
 
 ;;;; -- mode line --
