@@ -20,8 +20,6 @@
 
 ;; TODO org mode
 
-;; TODO integrate a ranger like filer explorer inside emacs.
-;; TODO highlight the ';;;' and ';;;;'
 ;; TODO a LLM ai completion
 
 
@@ -61,7 +59,6 @@
   :config
   (evil-mode 1))
 
-;; (evil-set-initial-state 'magit-status-mode 'emacs)
 
 (use-package evil-collection
   :after evil
@@ -134,20 +131,13 @@
 ;;(add-to-list 'load-path "~/dir/to/cloned/slime")
 ;;(require 'slime-autoloads)
 
-;;;; extension: orderless
-;;(use-package orderless
-;;  :ensure t
-;;  :custom
-;;  (completion-styles '(orderless basic))
-;;  (completion-category-overrides '((file (styles basic partial-completion)))))
-
-;;;; extension: corfu
 
 ;;;; -- complete --
-;; NOTE The 'company' extension has better integration than 'auto-complete'
+;; NOTE The 'company' extension has better integration than 'auto-complete'.
 ;; TIP Use tab or C-p in insert-mode to trigger completion window
 ;; TIP Use 'C-n' and 'C-p' to select 'complete entry' in 'vi-insert-mode'.
 ;; TIP If you need the same number of key-stroke, why use fuzzy?
+;; TIP Use 'key-conversion' to translate 'C-m' to 'RET'.
 
 ;; TODO polish the config of company
 (use-package company
@@ -266,10 +256,9 @@
   (global-hl-todo-mode)
   )
 
-
 (use-package magit-todos
   :ensure t
-  :after magit
+  :after (hl-todo magit)
   :config (magit-todos-mode 1))
 
 ;;;; -- language: latex --
@@ -477,6 +466,7 @@
 ;;(desktop-save-mode 1)
 
 ;;;; -- file --
+;; TODO explore the dired. 
 ;; TIP Should not decice the content of file based on 'file extension name' and 'file icon (provided by file explorer)'
 (evil-define-key '(normal) 'global (kbd "SPC f t") 'dired)
 (evil-define-key '(normal) 'global (kbd "SPC f r") 'recentf)
@@ -627,7 +617,6 @@
 
 ;; TIP Use `M-n` and `M-p` to nagivate the `backtracd` with `source form`.
 
-(evil-set-initial-state 'sldb-mode 'emacs)
 
 ;;;; -- grep --
 
