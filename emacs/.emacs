@@ -3,9 +3,9 @@
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
 ;; https://neovim.io/
 ;; https://www.gnu.org/software/emacs/
-;; https://www.gnu.org/fun/
 
 ;;;; -- humor --
+;; See more in: https://www.gnu.org/fun/
 ;; While any text editor can save your files, only Emacs can save your soul.
 ;; While Vim is an extensible editor, the Emacs is an extended editor.
 ;; While Vim is a text editor, the Emacs has a text editor.
@@ -17,9 +17,6 @@
 ;; TODO mini buffer extensions: smex, ido, helm -> (video introseems not work
 
 ;; TODO integrate projectile
-
-;; TODO extended vi text object
-;; TODO vim surround plugin
 
 ;; TODO org mode
 
@@ -89,6 +86,13 @@
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-delay 0.1))
 
+(use-package evil-surround
+  :ensure t
+  :config
+  ;; TIP To 'add' a 'surrounding', use 'S' in 'vi-visual-state' or use 'ys<textobject><surrounding>' in 'vi-normal-state' (The 'ys' is a new vi-operator.).
+  ;; TIP to 'change' a 'surrounding', use 'cs<old-textobject><new-textobject>'.
+  ;; TIP to 'delete' a 'surrounding', use 'ds<text-object>'.
+  (global-evil-surround-mode 1))
 
 ;;;; -- version control --
 (use-package magit
@@ -353,6 +357,26 @@
 
 
 ;;;; -- text object --
+;; TIP Index the 'text object' via 'tree-sitter'.
+
+;; FIXME not work
+(use-package treesit-auto
+  :ensure t
+  :config
+  (global-treesit-auto-mode))
+
+(use-package evil-textobj-tree-sitter
+  :ensure t
+  :config
+  ;; bind `function.outer`(entire function block) to `f` for use in things like `vaf`, `yaf`
+  (define-key evil-outer-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.outer"))
+  ;; bind `function.inner`(function block without name and args) to `f` for use in things like `vif`, `yif`
+  (define-key evil-inner-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
+
+  ;; You can also bind multiple items and we will match the first one we can find
+  (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer")))
+
+  )
 
 
 
