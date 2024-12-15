@@ -206,8 +206,7 @@
 ;;;; -- mode line --
 (use-package doom-modeline
   :ensure t
-  :hook (after-init . doom-modeline-mode)
-  )
+  :hook (after-init . doom-modeline-mode))
 
 
 ;;;; -- jump anywhere --
@@ -351,7 +350,7 @@
 ;;;; -- better HL --
 ;; TIP use `zz` to center current line.
 ;; TIP use `M` to center current window.
-;; TIP The `J` is for `join lines`, and `K` for manual.
+;; TIP The `J` is for `join following lines to current-line`, and `K` for manual.
 (evil-define-key '(normal visual) 'global "H" 'evil-beginning-of-line)
 (evil-define-key '(normal visual) 'global "L" 'evil-end-of-line)
 
@@ -406,8 +405,10 @@
 
 (evil-define-key '(normal) 'global (kbd "g l") 'imenu)
 
+;; TIP Use 'r' in the result window to start the 'query-replace' process.
 (evil-define-key '(normal) 'global (kbd "g t") 'project-find-regexp)
 (evil-define-key '(normal) 'global (kbd "g T") 'hl-todo-occur)
+
 
 (evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
 
@@ -428,25 +429,22 @@
 (evil-define-key '(normal) 'global (kbd "SPC s h") 'split-window-horizontally)
 (evil-define-key '(normal) 'global (kbd "SPC s v") 'split-window-vertically)
 
-;; FIXME allow to cycle window layout
-(defun windmove-swap-states-auto ()
-  (interactive)
-  (ignore-errors (windmove-swap-states-right))
-  (ignore-errors (windmove-swap-states-left))
-  )
-(evil-define-key '(normal) 'global (kbd "SPC w t") 'windmove-swap-states-auto)
+;; NOTE The 'window-swap-states' can 'transpose' current window and next window.
+(evil-define-key '(normal) 'global (kbd "SPC w t") 'window-swap-states)
+(evil-define-key '(normal) 'global (kbd "SPC w h") 'windmove-swap-states-left)
+(evil-define-key '(normal) 'global (kbd "SPC w j") 'windmove-swap-states-down)
+(evil-define-key '(normal) 'global (kbd "SPC w k") 'windmove-swap-states-up)
+(evil-define-key '(normal) 'global (kbd "SPC w l") 'windmove-swap-states-right)
+
 
 (evil-define-key '(normal) 'global (kbd "SPC w o") 'other-window)
 (evil-define-key '(normal) 'global (kbd "SPC w n") 'next-window)
 (evil-define-key '(normal) 'global (kbd "SPC w p") 'previous-window)
 
-;; TIP Undo the window that deleted accidently.
-(winner-mode)
-(evil-define-key '(normal) 'global (kbd "SPC w u") 'winner-undo)
-(evil-define-key '(normal) 'global (kbd "SPC w U") 'winner-redo)
+(evil-define-key '(normal) 'global (kbd "SPC w m") 'maximize-window)
+(evil-define-key '(normal) 'global (kbd "SPC w M") 'minimize-window)
+(evil-define-key '(normal) 'global (kbd "SPC w b") 'balance-windows)
 
-
-(evil-define-key '(normal) 'global (kbd "C-p") 'other-window)
 
 (evil-define-key '(normal) 'global (kbd "C-h") 'evil-window-left)
 (evil-define-key '(normal) 'global (kbd "C-j") 'evil-window-down)
@@ -456,8 +454,10 @@
 (evil-define-key '(normal) 'global (kbd "SPC w d") 'delete-window)
 (evil-define-key '(normal) 'global (kbd "SPC w D") 'delete-other-windows)
 
-(evil-define-key '(normal) 'global (kbd "SPC w m") 'maximize-window)
-(evil-define-key '(normal) 'global (kbd "SPC w n") 'minimize-window)
+;; TIP Undo the window that deleted accidently.
+(winner-mode)
+(evil-define-key '(normal) 'global (kbd "SPC w u") 'winner-undo)
+(evil-define-key '(normal) 'global (kbd "SPC w U") 'winner-redo)
 
 ;;;; -- tab --
 ;; NOTE Besides the `tab-bar', there is a `tab-line' for each `tab'.
@@ -639,9 +639,6 @@
 ;; TIP Use `M-n` and `M-p` to nagivate the `backtracd` with `source form`.
 
 
-;;;; -- grep --
-
-
 ;;;; -- describe --
 ;; NOTE the commands start with `describe-` is for `emacs lisp inferor`, and start with `slime-` is for `common lisp`.
 (evil-define-key '(normal) 'global (kbd "SPC d d") 'slime-apropos-all)
@@ -649,8 +646,8 @@
 (evil-define-key '(normal) 'global (kbd "SPC d a") 'slime-apropos)
 (evil-define-key '(normal) 'global (kbd "SPC d p") 'slime-apropos-package)
 
+;; TIP Use `gs' to goto the definition of a symbol. 
 (evil-define-key '(normal) 'global (kbd "SPC d s") 'slime-describe-symbol)
-(evil-define-key '(normal) 'global (kbd "SPC d S") 'slime-edit-definition)
 (evil-define-key '(normal) 'global (kbd "SPC d f") 'slime-describe-function)
 ;; NOTE Use `slime-browse-classes' to show the 'children' of the 'target class'.
 (evil-define-key '(normal) 'global (kbd "SPC d c") 'slime-browse-classes)
@@ -718,5 +715,6 @@
 ;;;; -- after init --
 (add-hook 'after-init-hook 'my-after-init-hook)
 (defun my-after-init-hook ()
+  "Eval after Emacs init."
   (slime))
 
