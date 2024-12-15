@@ -15,13 +15,9 @@
 ;; NOTE reference https://github.com/rexim/dotfiles
 
 ;; TODO mini buffer extensions: smex, ido, helm -> (video introseems not work
-
 ;; TODO integrate projectile
-
 ;; TODO org mode
-
-;; TODO a LLM ai completion
-
+;; TODO integrate a LLM ai.
 
 ;; NOTE It's also okay to steal some ideas from others' dotfiles.
 ;; TIP Use 'Super+{alpha}' to switch to useful programs (wmctrl -a "gnu emacs" || emacs): terminal, emacs, browser.
@@ -29,6 +25,7 @@
 ;; TIP Use 'Ctrl+{num}' to switch to a tab in web browser.
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
 ;; TIP To browse the firefox, use 'vimium' extension.
+
 
 ;;;; extension: package
 (require 'package)
@@ -188,10 +185,10 @@
 	  :base01 "#1C1C1C" ;; status bar, line numbers and folding marks. 
 	  :base02 "#383838" ;; selection
 	  :base03 "#545454" ;; comment
-	  :base04 "#A2A2A2" ;; dark foreground
+	  :base04 "#A2A2A2" ;; dark-theme foreground: doc-string
 	  :base05 "#FFFFFF" ;; default foreground: text
-	  :base06 "#DEDEDE" ;; light foreground (not often used)
-	  :base07 "#FCFCFC" ;; light background (not often used)
+	  :base06 "#DEDEDE" ;; light-theme foreground (not often used)
+	  :base07 "#FCFCFC" ;; light-theme background (not often used)
 	  :base08 "#FC5454" ;; cursor, symbol flags, sldb-condition
 	  :base09 "#FFA500" ;; self-evaluating object, tab name.
 	  :base0A "#FFFF00" ;; type, class
@@ -209,7 +206,8 @@
 ;;;; -- mode line --
 (use-package doom-modeline
   :ensure t
-  :hook (after-init . doom-modeline-mode))
+  :hook (after-init . doom-modeline-mode)
+  )
 
 
 ;;;; -- jump anywhere --
@@ -217,8 +215,8 @@
 (use-package avy
   :ensure t
   :config 
-  ;; TIP Use "SPC J" to jump to a word.
-  (evil-define-key '(normal) 'global (kbd "SPC j") 'avy-goto-word-0)
+  ;; TIP Use "M-j" to jump to a word, even in 'vi-visual-state' and 'vi-insert-state'.
+  (global-set-key (kbd "M-j") 'avy-goto-word-0)
   (set-face-attribute 'avy-lead-face nil
 		      :foreground "white"
 		      :background "#e52b50")
@@ -369,6 +367,7 @@
 
 ;;;; -- text object --
 ;; TIP Index the 'text object' via 'tree-sitter'.
+;; TIP It's okay to use the 'paragraph text-object'.
 
 ;; FIXME not work
 (use-package treesit-auto
