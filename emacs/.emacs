@@ -14,9 +14,9 @@
 ;; NOTE The name conversion use CRUD: create, read, update, delete.
 ;; NOTE reference https://github.com/rexim/dotfiles
 
-;; TODO mini buffer extensions: smex, ido, helm -> (video introseems not work
-;; TODO integrate projectile
-;; TODO org mode
+;; TIP For translation service, use 'en' and 'dict' to trigger 'search engine' via 'vimium' in in browser.
+
+;; TODO mini buffer extensions: smex, ido, helm
 ;; TODO integrate a LLM ai.
 
 ;; NOTE It's also okay to steal some ideas from others' dotfiles.
@@ -27,7 +27,7 @@
 ;; TIP To browse the firefox, use 'vimium' extension.
 
 
-;;;; extension: package
+;;;; -- package manager --
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; NOTE To use the `stable repo', un-comment next line.
@@ -119,9 +119,11 @@
   ;; NOTE Use 'slime-setup' instead of `(setq slime-contribs '(slime-fancy))`.
   (slime-setup '(
 		 slime-asdf
+		 slime-quicklisp
 		 slime-fancy
 		 slime-banner
 		 slime-xref-browser
+		 ;; slime-highlight-edits (this only works for compile)
 		 slime-company)))
 
 ;; Setup load-path and autoloads
@@ -140,7 +142,7 @@
 (use-package company
   :ensure t
   :config
-  ;; FIXME seems not work
+  ;; FIXME not work
   (setq company-dabbrev-minimum-length 2)
   )
 
@@ -172,6 +174,20 @@
   :bind (:map markdown-mode-map
               ("C-c C-e" . markdown-do)))
 
+;;;; -- org --
+;; TIP Use 'S-{arrow}' to control the 'status' and 'priority'.
+
+(use-package org-bullets
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+  )
+
+;; (use-package org-modern
+;;   :ensure t
+;;   :config
+;;   (with-eval-after-load 'org (global-org-modern-mode))
+;;   )
 
 ;;;; -- base16 theme -- 
 (use-package base16-theme
@@ -284,6 +300,7 @@
 ;; NOTE For latex language, use the built-in 'reftex' package.
 
 ;;;; -- snippet --
+;; TIP Good to have a 'template' system to avoid stupid codes in some stupid languages. (I am not saying about Java).
 (use-package yasnippet
   :ensure t
   :config
@@ -330,6 +347,7 @@
 ;; -- mode line --
 (setq column-number-mode t)
 
+
 ;;;; -- auto save --
 ;; FIXME auto save seems not work
 (setq auto-save-interval 20)
@@ -371,7 +389,7 @@
 ;; TIP Index the 'text object' via 'tree-sitter'.
 ;; TIP It's okay to use the 'paragraph text-object'.
 
-;; FIXME not work
+;; TODO not work. (integrate it with [[ and ]])
 (use-package treesit-auto
   :ensure t
   :config
@@ -387,7 +405,6 @@
 
   ;; You can also bind multiple items and we will match the first one we can find
   (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer")))
-
   )
 
 
@@ -404,6 +421,7 @@
 
 
 ;; TIP Use `g d` to find definition, use `g r` to find references.
+;; TIP Use 'C-j' and 'C-k' to show the source in 'definition result' window.
 (evil-define-key '(normal) 'global (kbd "g s") 'slime-edit-definition)
 
 (evil-define-key '(normal) 'global (kbd "g l") 'imenu)
@@ -484,16 +502,16 @@
 (defun tab-select-8 () (interactive) (tab-select 8))
 (defun tab-select-9 () (interactive) (tab-select 9))
 (defun tab-select-0 () (interactive) (tab-select 0))
-(evil-define-key '(normal) 'global (kbd "SPC 1") 'tab-select-1)
-(evil-define-key '(normal) 'global (kbd "SPC 2") 'tab-select-2)
-(evil-define-key '(normal) 'global (kbd "SPC 3") 'tab-select-3)
-(evil-define-key '(normal) 'global (kbd "SPC 4") 'tab-select-4)
-(evil-define-key '(normal) 'global (kbd "SPC 5") 'tab-select-5)
-(evil-define-key '(normal) 'global (kbd "SPC 6") 'tab-select-6)
-(evil-define-key '(normal) 'global (kbd "SPC 7") 'tab-select-7)
-(evil-define-key '(normal) 'global (kbd "SPC 8") 'tab-select-8)
-(evil-define-key '(normal) 'global (kbd "SPC 9") 'tab-select-9)
-(evil-define-key '(normal) 'global (kbd "SPC 0") 'tab-select-0)
+(evil-global-set-key 'normal (kbd "SPC 1") 'tab-select-1)
+(evil-global-set-key 'normal (kbd "SPC 2") 'tab-select-2)
+(evil-global-set-key 'normal (kbd "SPC 3") 'tab-select-3)
+(evil-global-set-key 'normal (kbd "SPC 4") 'tab-select-4)
+(evil-global-set-key 'normal (kbd "SPC 5") 'tab-select-5)
+(evil-global-set-key 'normal (kbd "SPC 6") 'tab-select-6)
+(evil-global-set-key 'normal (kbd "SPC 7") 'tab-select-7)
+(evil-global-set-key 'normal (kbd "SPC 8") 'tab-select-8)
+(evil-global-set-key 'normal (kbd "SPC 9") 'tab-select-9)
+(evil-global-set-key 'normal (kbd "SPC 0") 'tab-select-0)
 
 (evil-define-key '(normal) 'global (kbd "SPC t n") 'tab-next)
 (evil-define-key '(normal) 'global (kbd "SPC t p") 'tab-previous)
@@ -513,14 +531,51 @@
 ;;(desktop-save-mode 1)
 
 ;;;; -- file --
-;; TODO explore the dired. 
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-mode +1)
+  )
+
+(use-package treemacs
+  :ensure t
+  :defer t
+  :config
+  )
+
+(use-package treemacs-evil
+  :after (treemacs evil)
+  :ensure t)
+
+;;(use-package treemacs-projectile
+;;  :after (treemacs projectile)
+;;  :ensure t)
+;;
+
+(use-package treemacs-magit
+  :after (treemacs magit)
+  :ensure t)
+
+;;(use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
+;;  :after (treemacs)
+;;  :ensure t
+;;  :config (treemacs-set-scope-type 'Tabs))
+
+(treemacs-start-on-boot)
+
 ;; TIP Should not decice the content of file based on 'file extension name' and 'file icon (provided by file explorer)'
-(evil-define-key '(normal) 'global (kbd "SPC f t") 'dired)
+
+(evil-define-key '(normal) 'global (kbd "SPC f t") 'treemacs)
 (evil-define-key '(normal) 'global (kbd "SPC f r") 'recentf)
 
 (evil-define-key '(normal) 'global (kbd "SPC f s") 'save-buffer)
 
+(evil-define-key '(normal) 'global (kbd "SPC f c") 'dired-create-empty-file)
+(evil-define-key '(normal) 'global (kbd "SPC f C") 'dired-create-directory)
+
 ;;;; -- project --
+
+
 (evil-define-key '(normal) 'global (kbd "SPC p s") 'project-switch-project)
 
 (evil-define-key '(normal) 'global (kbd "SPC p h") 'project-dired)
@@ -575,13 +630,14 @@
 
 ;; NOTE Only the 'slime-compile-...' commands will add compiler notes. (The 'slime-eval-...' will not.)
 (evil-define-key '(normal) 'global (kbd "SPC e l") 'slime-list-compiler-notes)
-;;(evil-define-key '(normal) 'global (kbd "SPC e e") 'slime-list-connections)
 
 (evil-define-key '(normal) 'global (kbd "SPC e w") 'slime-repl)
 (evil-define-key '(normal) 'global (kbd "SPC e c") 'slime-handle-repl-shortcut)
 
 (evil-define-key '(normal) 'global (kbd "SPC e s") 'slime-interactive-eval)
 (evil-define-key '(normal) 'global (kbd "SPC e S") 'slime-load-system)
+(evil-define-key '(normal) 'global (kbd "SPC e q") 'slime-repl-quicklisp-quickload)
+
 ;; TIP Don't use `slime-repl-region`, use `eval-defun` to treat the `defun-like-form` as minimal unit.
 (evil-define-key '(normal) 'global (kbd "SPC e d") 'slime-eval-defun)
 (evil-define-key '(normal) 'global (kbd "SPC e D") 'slime-disassemble-symbol)
@@ -736,6 +792,12 @@
 
 ;;;; -- bookmark --
 
+;;;; -- browser --
+(setq browse-url-browser-function 'eww-browse-url)
+
+;;;; -- dict --
+(evil-define-key '(normal) 'global (kbd "SPC u d") 'dictionary-search)
+
 
 ;;;; -- dashboard --
 ;; An idiot admires complexity, a genius admires simplicity.
@@ -746,4 +808,5 @@
 (defun my-after-init-hook ()
   "Eval after Emacs init."
   (slime))
+
 
