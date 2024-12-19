@@ -11,6 +11,7 @@
 ;; While Vim is a text editor, the Emacs has a text editor.
 ;; A nice Vim macro a day, keeps the VS Code away.
 
+
 ;; NOTE The name conversion use CRUD: create, read, update, delete.
 ;; NOTE reference https://github.com/rexim/dotfiles
 
@@ -130,6 +131,8 @@
 ;;(add-to-list 'load-path "~/dir/to/cloned/slime")
 ;;(require 'slime-autoloads)
 
+(setq slime-startup-animation nil)
+
 
 ;;;; -- complete --
 ;; NOTE The 'company' extension has better integration than 'auto-complete'.
@@ -175,13 +178,22 @@
               ("C-c C-e" . markdown-do)))
 
 ;;;; -- org --
-;; TIP Use 'S-{arrow}' to control the 'status' and 'priority'.
+;; TIP Use 'S-{arrow}' to control the 'priority' and 'status'.
+;; TIP Use 'M-{arrow}' to control 'order' and 'level'.
+;; TIP Use 'C-Ret' to insert a 'contextual-heading'.
 
+;; TODO Use org agenda
+
+;; TODO Auto sort todo entries.
 (use-package org-bullets
   :ensure t
   :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-  )
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+(evil-define-key '(normal) 'global (kbd "SPC o t") 'org-show-todo-tree)
+
+(evil-define-key '(normal) 'global (kbd "SPC u a") 'org-agenda)
+
 
 ;; (use-package org-modern
 ;;   :ensure t
@@ -427,7 +439,7 @@
 (evil-define-key '(normal) 'global (kbd "g l") 'imenu)
 
 ;; TIP Use 'r' in the result window to start the 'query-replace' process.
-(evil-define-key '(normal) 'global (kbd "g t") 'project-find-regexp)
+(evil-define-key '(normal) 'global (kbd "g t") 'projectile-find-regexp)
 (evil-define-key '(normal) 'global (kbd "g T") 'hl-todo-occur)
 
 
@@ -531,26 +543,30 @@
 ;;(desktop-save-mode 1)
 
 ;;;; -- file --
+;; NOTE Use 'projectile' as a project interface layer.
 (use-package projectile
   :ensure t
   :config
   (projectile-mode +1)
+
   )
 
+;; NOTE For better integration, use 'treemacs' as the file explorer.
 (use-package treemacs
   :ensure t
   :defer t
   :config
+  ;;(treemacs-start-on-boot)
   )
 
 (use-package treemacs-evil
   :after (treemacs evil)
   :ensure t)
 
-;;(use-package treemacs-projectile
-;;  :after (treemacs projectile)
-;;  :ensure t)
-;;
+(use-package treemacs-projectile
+  :after (treemacs projectile)
+  :ensure t)
+
 
 (use-package treemacs-magit
   :after (treemacs magit)
@@ -561,7 +577,6 @@
 ;;  :ensure t
 ;;  :config (treemacs-set-scope-type 'Tabs))
 
-(treemacs-start-on-boot)
 
 ;; TIP Should not decice the content of file based on 'file extension name' and 'file icon (provided by file explorer)'
 
@@ -576,27 +591,32 @@
 ;;;; -- project --
 
 
-(evil-define-key '(normal) 'global (kbd "SPC p s") 'project-switch-project)
+(evil-define-key '(normal) 'global (kbd "SPC p s") 'projectile-switch-project)
 
-(evil-define-key '(normal) 'global (kbd "SPC p h") 'project-dired)
-(evil-define-key '(normal) 'global (kbd "SPC p f") 'project-find-file)
-(evil-define-key '(normal) 'global (kbd "SPC p d") 'project-find-dir)
+(evil-define-key '(normal) 'global (kbd "SPC p h") 'projectile-dired)
+(evil-define-key '(normal) 'global (kbd "SPC p f") 'projectile-find-file)
+(evil-define-key '(normal) 'global (kbd "SPC p d") 'projectile-find-dir)
 
 ;;;; -- compile --
 (evil-define-key '(normal) 'global (kbd "SPC k k") 'compile)
 
 ;; FIXME not work
-(defun project-find-file-other-window ()
+(defun projectile-find-file-other-window ()
   "This not work."
   (interactive)
-  (project-other-window-command)
-  (project-find-file))
-(evil-define-key '(normal) 'global (kbd "SPC p F") 'project-find-file-other-window)
+  (projectile-other-window-command)
+  (projectile-find-file))
+(evil-define-key '(normal) 'global (kbd "SPC p F") 'projectile-find-file-other-window)
 
-(evil-define-key '(normal) 'global (kbd "SPC p g") 'project-find-regexp)
+(evil-define-key '(normal) 'global (kbd "SPC p g") 'projectile-grep)
 
-(evil-define-key '(normal) 'global (kbd "SPC p n") 'project-remember-projects-under)
-(evil-define-key '(normal) 'global (kbd "SPC p N") 'project-forget-project)
+(evil-define-key '(normal) 'global (kbd "SPC p C") 'projectile-add-known-project)
+(evil-define-key '(normal) 'global (kbd "SPC p n") 'projectile-remember-projects-under)
+(evil-define-key '(normal) 'global (kbd "SPC p N") 'projectile-forget-project)
+
+(evil-define-key '(normal) 'global (kbd "SPC p r") 'projectile-run-project)
+
+(evil-define-key '(normal) 'global (kbd "SPC p v") 'projectile-vc)
 
 ;;;; -- version --
 (evil-define-key '(normal) 'global (kbd "SPC v") 'magit)
@@ -773,7 +793,7 @@
 (evil-define-key '(normal visual) 'global (kbd "SPC c") 'comment-line)
 (evil-define-key '(normal visual) 'global (kbd "SPC C") 'comment-box)
 
-;;;; -- paredit --
+;;;; -- paredit (sexp) --
 ;; TIP Use `)` to move over the list.
 ;; TIP Use `g m` to move to the matching item.
 (evil-define-key '(normal visual) 'global (kbd "SPC s w") 'sp-wrap-round)
@@ -802,6 +822,7 @@
 ;;;; -- dashboard --
 ;; An idiot admires complexity, a genius admires simplicity.
 ;;                                                            ― Terry Davis
+;;(setq initial-scratch-message (choice))
 
 ;;;; -- after init --
 (add-hook 'after-init-hook 'my-after-init-hook)
@@ -810,3 +831,15 @@
   (slime))
 
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-agenda-files '("~/Workspace/github/note/TODO.org")))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
