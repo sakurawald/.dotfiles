@@ -14,11 +14,9 @@
 
 ;; NOTE The name conversion use CRUD: create, read, update, delete.
 ;; NOTE reference https://github.com/rexim/dotfiles
+;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap works like macros to run scripts.
 
 ;; TIP For translation service, use 'en' and 'dict' to trigger 'search engine' via 'vimium' in in browser.
-
-;; TODO mini buffer extensions: smex, ido, helm
-;; TODO integrate a LLM ai.
 
 ;; NOTE It's also okay to steal some ideas from others' dotfiles.
 ;; TIP Use 'Super+{alpha}' to switch to useful programs (wmctrl -a "gnu emacs" || emacs): terminal, emacs, browser.
@@ -27,6 +25,8 @@
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
 ;; TIP To browse the firefox, use 'vimium' extension.
 
+;; TODO customize the tab bar
+;; TODO customize the mode line
 
 ;;;; -- package manager --
 (require 'package)
@@ -184,15 +184,27 @@
 
 ;; TODO Use org agenda
 
-;; TODO Auto sort todo entries.
 (use-package org-bullets
   :ensure t
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
-(evil-define-key '(normal) 'global (kbd "SPC o t") 'org-show-todo-tree)
+(setq org-agenda-files '("~/Workspace/github/note/TODO.org"))
 
+(evil-define-key '(normal) 'global (kbd "SPC o t") 'org-show-todo-tree)
 (evil-define-key '(normal) 'global (kbd "SPC u a") 'org-agenda)
+
+;;;; -- chat --
+;; NOTE It's recommemded to host an open-source chat-model locally.
+;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
+(use-package ellama
+  :ensure t
+
+  :config 
+  (evil-define-key '(normal visual) 'global (kbd "SPC c") 'ellama-transient-main-menu)
+
+  (add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
+  )
 
 
 ;; (use-package org-modern
@@ -202,6 +214,7 @@
 ;;   )
 
 ;;;; -- base16 theme -- 
+;; TIP Use 'list-colors-display' to see all known-colors.
 (use-package base16-theme
   :ensure t
   :config
@@ -264,16 +277,15 @@
   (dimmer-mode t))
 
 ;;;; -- mini-buffer --
-;; TIP The `which-key' extension is useless, just use `vertico` to search a command.
-(use-package vertico
-  :ensure t
-  :custom
-  (vertico-scroll-margin 0) ;; Different scroll margin
-  (vertico-count 50) ;; Show more candidates
-  (vertico-resize nil) ;; Grow and shrink the Vertico minibuffer
-  (vertico-cycle nil) ;; Enable cycling for `vertico-next/previous'
+;; TIP The 'which-key' extension is useless, just use 'mini-buffer' to search a command.
+;; NOTE Choose 'helm' over other packages for its muture and active.
+(use-package helm
   :init 
-  (vertico-mode))
+  (global-set-key (kbd "M-x") #'helm-M-x)
+  (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+  (global-set-key (kbd "C-x C-f") #'helm-find-files)
+  (helm-mode 1)
+  )
 
 ;;;; -- auto indent --
 (use-package aggressive-indent
@@ -428,22 +440,21 @@
 ;; Gu / GU -> downcase / upcase
 ;; gi -> goto 'last-changed-location' and enter 'vi-insert-state' mode.
 ;; TIP Use 'gz' to goto 'emacs-lisp' repl provided by 'ielm', if you didn't start a 'slime' instance.
-(evil-define-key '(normal) 'global (kbd "SPC g a") 'execute-extended-command)
-(evil-define-key '(normal) 'global (kbd "SPC a") 'execute-extended-command)
+(evil-define-key '(normal) 'global (kbd "SPC g a") 'helm-M-x)
+(evil-define-key '(normal) 'global (kbd "SPC a") 'helm-M-x)
 
 
 ;; TIP Use `g d` to find definition, use `g r` to find references.
-;; TIP Use 'C-j' and 'C-k' to show the source in 'definition result' window.
+;; TIP Use 'C-j' and 'C-k' to show the details in 'definition result' window.
 (evil-define-key '(normal) 'global (kbd "g s") 'slime-edit-definition)
 
 (evil-define-key '(normal) 'global (kbd "g l") 'imenu)
+(evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
 
-;; TIP Use 'r' in the result window to start the 'query-replace' process.
-(evil-define-key '(normal) 'global (kbd "g t") 'projectile-find-regexp)
+;; TIP Use 'C-j' and 'C-k' to show the details in 'grep result' window.
+(evil-define-key '(normal) 'global (kbd "g t") 'projectile-grep)
 (evil-define-key '(normal) 'global (kbd "g T") 'hl-todo-occur)
 
-
-(evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
 
 ;;;; -- buffer --
 ;; NOTE buffer < window < tab < frame
@@ -543,12 +554,13 @@
 ;;(desktop-save-mode 1)
 
 ;;;; -- file --
-;; NOTE Use 'projectile' as a project interface layer.
+;; NOTE Use 'projectile' as a project interface layer, to 'discovery' and 'indexing' projects.
 (use-package projectile
   :ensure t
   :config
+  ;; Require a explicit project marker to use projectile commands.
+  (setq projectile-require-project-root t)
   (projectile-mode +1)
-
   )
 
 ;; NOTE For better integration, use 'treemacs' as the file explorer.
@@ -589,34 +601,35 @@
 (evil-define-key '(normal) 'global (kbd "SPC f C") 'dired-create-directory)
 
 ;;;; -- project --
-
-
 (evil-define-key '(normal) 'global (kbd "SPC p s") 'projectile-switch-project)
+(evil-define-key '(normal) 'global (kbd "SPC p b") 'projectile-switch-to-buffer)
 
 (evil-define-key '(normal) 'global (kbd "SPC p h") 'projectile-dired)
 (evil-define-key '(normal) 'global (kbd "SPC p f") 'projectile-find-file)
-(evil-define-key '(normal) 'global (kbd "SPC p d") 'projectile-find-dir)
-
-;;;; -- compile --
-(evil-define-key '(normal) 'global (kbd "SPC k k") 'compile)
-
-;; FIXME not work
-(defun projectile-find-file-other-window ()
-  "This not work."
-  (interactive)
-  (projectile-other-window-command)
-  (projectile-find-file))
 (evil-define-key '(normal) 'global (kbd "SPC p F") 'projectile-find-file-other-window)
+(evil-define-key '(normal) 'global (kbd "SPC p d") 'projectile-find-dir)
+(evil-define-key '(normal) 'global (kbd "SPC p r") 'projectile-recentf)
 
 (evil-define-key '(normal) 'global (kbd "SPC p g") 'projectile-grep)
+(evil-define-key '(normal) 'global (kbd "SPC p G") 'projectile-replace)
+
+(evil-define-key '(normal) 'global (kbd "SPC p !") 'projectile-run-shell-command-in-root)
+(evil-define-key '(normal) 'global (kbd "SPC p &") 'projectile-run-async-shell-command-in-root)
+
+(evil-define-key '(normal) 'global (kbd "SPC p k") 'projectile-compile-project)
+(evil-define-key '(normal) 'global (kbd "SPC p R") 'projectile-run-project)
+(evil-define-key '(normal) 'global (kbd "SPC p P") 'projectile-package-project)
+(evil-define-key '(normal) 'global (kbd "SPC p I") 'projectile-install-project)
+(evil-define-key '(normal) 'global (kbd "SPC p T") 'projectile-test-project)
 
 (evil-define-key '(normal) 'global (kbd "SPC p C") 'projectile-add-known-project)
 (evil-define-key '(normal) 'global (kbd "SPC p n") 'projectile-remember-projects-under)
 (evil-define-key '(normal) 'global (kbd "SPC p N") 'projectile-forget-project)
 
-(evil-define-key '(normal) 'global (kbd "SPC p r") 'projectile-run-project)
-
 (evil-define-key '(normal) 'global (kbd "SPC p v") 'projectile-vc)
+
+;;;; -- compile --
+(evil-define-key '(normal) 'global (kbd "SPC k k") 'compile)
 
 ;;;; -- version --
 (evil-define-key '(normal) 'global (kbd "SPC v") 'magit)
@@ -772,14 +785,12 @@
 (evil-define-key '(normal) 'global (kbd "SPC h c") 'describe-command)
 (evil-define-key '(normal) 'global (kbd "SPC h f") 'describe-function)
 (evil-define-key '(normal) 'global (kbd "SPC h m") 'describe-mode)
-
+(evil-define-key '(normal) 'global (kbd "SPC h M") 'man)
 
 (evil-define-key '(normal) 'global (kbd "SPC h p") 'describe-package)
 (evil-define-key '(normal) 'global (kbd "SPC h P") 'finder-by-keyword)
 
 (evil-define-key '(normal) 'global (kbd "SPC h s") 'apropos)
-
-(evil-define-key '(normal) 'global (kbd "SPC h M") 'man)
 
 (evil-define-key '(normal) 'global (kbd "SPC h d") 'apropos-documentation)
 (evil-define-key '(normal) 'global (kbd "SPC h D") 'shortdoc)
@@ -790,8 +801,8 @@
 
 
 ;;;; -- comment --
-(evil-define-key '(normal visual) 'global (kbd "SPC c") 'comment-line)
-(evil-define-key '(normal visual) 'global (kbd "SPC C") 'comment-box)
+(evil-define-key '(normal visual) 'global (kbd "g c") 'comment-line)
+(evil-define-key '(normal visual) 'global (kbd "g C") 'comment-box)
 
 ;;;; -- paredit (sexp) --
 ;; TIP Use `)` to move over the list.
@@ -836,7 +847,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files '("~/Workspace/github/note/TODO.org")))
+ '(helm-minibuffer-history-key "M-p")
+ '(package-selected-packages
+   '(yasnippet-snippets vertico treesit-auto treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil sublimity smartparens slime-company restart-emacs org-modern org-bullets orderless markdown-mode magit-todos keycast helm hardhat flycheck evil-textobj-tree-sitter evil-surround evil-escape evil-collection ellama elcord doom-modeline dirvish dimmer corfu company-quickhelp base16-theme auto-read-only auctex all-the-icons aggressive-indent ac-slime)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
