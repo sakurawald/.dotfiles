@@ -27,8 +27,6 @@
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
 ;; TIP To browse the firefox, use 'vimium' extension.
 
-;; TODO customize the mode line
-
 ;;;; -- package manager --
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -204,7 +202,7 @@
   :ensure t
 
   :config 
-  (evil-define-key '(normal visual) 'global (kbd "SPC c") 'ellama-transient-main-menu)
+  (evil-define-key '(normal visual) 'global (kbd "M-a") 'ellama-transient-main-menu)
 
   (add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
   )
@@ -248,9 +246,26 @@
 
 
 ;;;; -- mode line --
+;; NOTE Currently, the 'doom-modeline' is the only one that actively developed.
 (use-package doom-modeline
   :ensure t
-  :hook (after-init . doom-modeline-mode))
+  :hook (after-init . doom-modeline-mode)
+  :config
+  ;; Display the `evil-state' as 'text'.
+  (setq doom-modeline-modal-icon nil)
+  ;; Display the column num.
+  (setq column-number-mode t)
+  ;; Display the macro-register.
+  (setq doom-modeline-always-show-macro-register t)
+  ;; Display match counts in visual-replace.
+  (setq visual-replace-display-total t)
+  )
+
+;; NOTE Enable result-counter for evil-isearch in mode-line.
+(use-package evil-anzu
+  :ensure t
+  :config
+  (global-anzu-mode +1))
 
 
 ;;;; -- jump anywhere --
@@ -367,9 +382,6 @@
 
 (global-hl-line-mode t)
 (set-face-background 'hl-line "#000066")
-
-;; -- mode line --
-(setq column-number-mode t)
 
 
 ;;;; -- auto save --
@@ -884,8 +896,8 @@
 
 
 ;;;; -- comment --
-(evil-define-key '(normal visual) 'global (kbd "g c") 'comment-line)
-(evil-define-key '(normal visual) 'global (kbd "g C") 'comment-box)
+(evil-define-key '(normal visual) 'global (kbd "SPC c") 'comment-line)
+(evil-define-key '(normal visual) 'global (kbd "SPC C") 'comment-box)
 
 ;;;; -- paredit (sexp) --
 ;; TIP Use `)` to move over the list.
@@ -923,9 +935,5 @@
 (defun my-after-init-hook ()
   "Eval after Emacs init."
   (slime))
-
-
-
-
 
 
