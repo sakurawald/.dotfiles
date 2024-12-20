@@ -27,7 +27,6 @@
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
 ;; TIP To browse the firefox, use 'vimium' extension.
 
-;; TODO customize the tab bar
 ;; TODO customize the mode line
 
 ;;;; -- package manager --
@@ -140,7 +139,7 @@
 
 ;;;; -- complete --
 ;; NOTE The 'company' extension has better integration than 'auto-complete'.
-;; TIP Use tab or C-p in insert-mode to trigger completion window
+;; TIP Use 'Tab' or 'C-p' in insert-mode to trigger completion window
 ;; TIP Use 'C-n' and 'C-p' to select 'complete entry' in 'vi-insert-mode'.
 ;; TIP If you need the same number of key-stroke, why use fuzzy?
 ;; TIP Use 'key-conversion' to translate 'C-m' to 'RET'.
@@ -359,9 +358,6 @@
 (tool-bar-mode -1)
 (toggle-scroll-bar nil)
 
-(toggle-tab-bar-mode-from-frame)
-(setq tab-bar-close-button-show nil)
-(setq tab-bar-new-button-show nil)
 
 (toggle-frame-maximized)
 
@@ -508,32 +504,15 @@
 (evil-define-key '(normal) 'global (kbd "SPC w U") 'winner-redo)
 
 ;;;; -- tab --
-(use-package centaur-tabs
-  :ensure t
-  :demand
-  :config
-  (setq centaur-tabs-set-bar 'left)
-  (setq centaur-tabs-style "bar")
-
-  (setq centaur-tabs-set-icons t)
-  (setq centaur-tabs-plain-icons t)
-
-  (setq centaur-tabs-set-close-button nil)
-  (setq centaur-tabs-show-new-tab-button nil)
-
-  (setq centaur-tabs-set-modified-marker t)
-  (setq centaur-tabs-modified-marker "*")
-
-
-  (setq centaur-tabs-show-count t)
-
-  (centaur-tabs-mode t)
-  )
-
 ;; NOTE Besides the `tab-bar', there is a `tab-line' for each `tab'.
 ;; TIP Use `C-Tab` and `C-S-Tab` to cycle tabs.
 ;; TIP The `tab-switch` will switch to the named tab or create it.
 ;; NOTE Switch to a tab by its name (which reflects its buffer file name), not by its index.
+(toggle-tab-bar-mode-from-frame)
+(setq tab-bar-close-button-show nil)
+(setq tab-bar-new-button-show nil)
+(setq tab-bar-tab-hints t)
+
 (evil-define-key '(normal) 'global (kbd "SPC t s") 'tab-switch)
 (evil-define-key '(normal) 'global (kbd "SPC t t") 'tab-switch)
 
@@ -948,17 +927,5 @@
 
 
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(helm-minibuffer-history-key "M-p")
- '(package-selected-packages
-   '(centaur-tabs yasnippet-snippets vertico treesit-auto treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil sublimity smartparens slime-company restart-emacs org-modern org-bullets orderless markdown-mode magit-todos keycast helm hardhat flycheck evil-textobj-tree-sitter evil-surround evil-escape evil-collection ellama elcord doom-modeline dirvish dimmer corfu company-quickhelp base16-theme auto-read-only auctex all-the-icons aggressive-indent ac-slime)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+
