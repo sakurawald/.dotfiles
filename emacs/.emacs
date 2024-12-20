@@ -67,7 +67,7 @@
   (evil-collection-want-find-usages-bindings t)
   (evil-collection-setup-minibuffer t)
 
-  (evil-collection-term-sync-state-and-mode-p t)
+  ;;(evil-collection-term-sync-state-and-mode-p t)
 
   (evil-collection-calendar-want-org-bindings t)
   (evil-collection-outline-bind-tab-p t)
@@ -110,6 +110,11 @@
   (require 'smartparens-config))
 
 ;;;; -- language: lisp --
+;; NOTE The 'slime' env is composed by 'emacs' as the 'client-side', and 'swank' as the 'server-side'.
+;; TIP The 'slime-who-references', 'slime-who-binds' and 'slime-who-sets' only works for 'global-variable'.
+;; TIP The 'slime-who-calls', 'slime-calls-who', 'slime-list-callers' and 'slime-list-callees' only works for 'function'.
+;; TIP Read more about xref in: https://slime.common-lisp.dev/doc/html/Xref-buffer-commands.html#Xref-buffer-commands
+;; NOTE The 'semantic-identation' feature: https://slime.common-lisp.dev/doc/html/Semantic-indentation.html#Semantic-indentation
 (use-package slime
   :ensure t
   :config
@@ -122,11 +127,20 @@
   (slime-setup '(
 		 slime-asdf
 		 slime-quicklisp
+		 ;; TIP The 'slime-fancy' contrib includes the following packages: slime-repl slime-autodoc slime-c-p-c slime-editing-commands slime-fancy-inspector slime-fancy-trace slime-fuzzy slime-mdot-fu slime-macrostep slime-presentations slime-scratch slime-references slime-package-fu slime-fontifying-fu slime-trace-dialog slime-indentation.
 		 slime-fancy
 		 slime-banner
 		 slime-xref-browser
 		 ;; slime-highlight-edits (this only works for compile)
-		 slime-company)))
+		 slime-company))
+
+  ;; NOTE Auto start slime
+  (add-hook 'slime-mode-hook
+            (lambda ()
+              (unless (slime-connected-p)
+		(save-excursion (slime)))))
+
+  )
 
 ;; Setup load-path and autoloads
 ;;(add-to-list 'load-path "~/dir/to/cloned/slime")
@@ -200,7 +214,6 @@
 ;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
 (use-package ellama
   :ensure t
-
   :config 
   (evil-define-key '(normal visual) 'global (kbd "M-a") 'ellama-transient-main-menu)
 
@@ -609,7 +622,6 @@
           treemacs-hide-dot-git-directory          nil
           treemacs-indentation                     2
           treemacs-indentation-string              " "
-	  ;; FIXME not work
 	  treemacs-indent-guide-style              'line
           treemacs-is-never-other-window           nil
           treemacs-max-git-entries                 5000
@@ -663,8 +675,11 @@
       (`(t . _)
        (treemacs-git-mode 'simple)))
 
-    (treemacs-hide-gitignored-files-mode nil))
-  )
+    (treemacs-hide-gitignored-files-mode nil)
+
+    ;; Enable the indent in treemacs.
+    (treemacs-indent-guide-mode)
+    ))
 
 (use-package treemacs-evil
   :after (treemacs evil)
@@ -679,10 +694,12 @@
   :after (treemacs magit)
   :ensure t)
 
-;;(use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
-;;  :after (treemacs)
-;;  :ensure t
-;;  :config (treemacs-set-scope-type 'Tabs))
+(use-package treemacs-tab-bar
+  :after (treemacs)
+  :ensure t
+  :config
+  ;; NOTE Make the 'treemacs' scoped by 'tab', not by 'frame'.
+  (treemacs-set-scope-type 'Tabs))
 
 
 ;; TIP Should not decice the content of file based on 'file extension name' and 'file icon (provided by file explorer)'
@@ -744,6 +761,7 @@
   (slime-repl)
   (slime-restart-inferior-lisp))
 
+;; NOTE If you start 'slime' via 'slime' command, then all the IO will be re-directed to the REPL by default. (https://slime.common-lisp.dev/doc/html/Global-IO-Redirection.html)
 (evil-define-key '(normal) 'global (kbd "SPC r R") 'slime)
 (evil-define-key '(normal) 'global (kbd "SPC r r") 'slime-restart-inferior-lisp*)
 (evil-define-key '(normal) 'global (kbd "SPC r l") 'slime-list-connections)
@@ -755,6 +773,8 @@
 
 ;;;; -- evaluate --
 ;; TIP Use `M-n` and `M-p` to see compiler notes.
+
+;; TIP See slime logs in 'slime event buffer'.
 
 ;; NOTE Only the 'slime-compile-...' commands will add compiler notes. (The 'slime-eval-...' will not.)
 (evil-define-key '(normal) 'global (kbd "SPC e l") 'slime-list-compiler-notes)
@@ -782,7 +802,11 @@
 (evil-define-key '(normal) 'global (kbd "SPC e T") 'slime-trace-dialog)
 
 ;; NOTE The 'profile' should be done by automatical scripts.
+;; TIP Use 'slime-toggle-profile-fdefinition' to profile a function, and 'slime-profile-package' to profile functions in a package.
 (evil-define-key '(normal) 'global (kbd "SPC e P") 'slime-profile-report)
+
+(evil-define-key '(normal) 'global (kbd "SPC e e") 'slime-macroexpand-1)
+(evil-define-key '(normal) 'global (kbd "SPC e E") 'slime-macroexpand-all)
 
 
 
@@ -850,6 +874,7 @@
 ;; M-Ret -> copy down to repl
 
 ;; TIP Use `M-n` and `M-p` to nagivate the `backtracd` with `source form`.
+;; TIP The 'slime' use a 'custom-top-level': https://slime.common-lisp.dev/doc/html/Loading-Contribs.html#Loading-and-unloading-_0060_0060on-the-fly_0027_0027
 
 
 ;;;; -- describe --
@@ -877,6 +902,7 @@
 
 (evil-define-key '(normal) 'global (kbd "SPC h b") 'describe-bindings)
 (evil-define-key '(normal) 'global (kbd "SPC h k") 'describe-key)
+(evil-define-key '(normal) 'global (kbd "SPC h K") 'view-lossage)
 (evil-define-key '(normal) 'global (kbd "SPC h c") 'describe-command)
 (evil-define-key '(normal) 'global (kbd "SPC h f") 'describe-function)
 (evil-define-key '(normal) 'global (kbd "SPC h m") 'describe-mode)
