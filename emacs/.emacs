@@ -16,6 +16,8 @@
 ;; NOTE reference https://github.com/rexim/dotfiles
 ;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap works like macros to run scripts.
 
+;; TIP The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
+
 ;; TIP For translation service, use 'en' and 'dict' to trigger 'search engine' via 'vimium' in in browser.
 
 ;; NOTE It's also okay to steal some ideas from others' dotfiles.
@@ -52,7 +54,6 @@
   (setq evil-want-C-u-scroll t)
   (setq evil-want-C-u-delete t)
   (setq evil-undo-system 'undo-redo)
-
 
   :config
   (evil-mode 1))
@@ -259,7 +260,7 @@
   :ensure t
   :config 
   ;; TIP Use "M-j" to jump to a word, even in 'vi-visual-state' and 'vi-insert-state'.
-  (global-set-key (kbd "M-j") 'avy-goto-word-0)
+  (global-set-key (kbd "M-z") 'avy-goto-word-0)
   (set-face-attribute 'avy-lead-face nil
 		      :foreground "white"
 		      :background "#e52b50")
@@ -507,6 +508,28 @@
 (evil-define-key '(normal) 'global (kbd "SPC w U") 'winner-redo)
 
 ;;;; -- tab --
+(use-package centaur-tabs
+  :ensure t
+  :demand
+  :config
+  (setq centaur-tabs-set-bar 'left)
+  (setq centaur-tabs-style "bar")
+
+  (setq centaur-tabs-set-icons t)
+  (setq centaur-tabs-plain-icons t)
+
+  (setq centaur-tabs-set-close-button nil)
+  (setq centaur-tabs-show-new-tab-button nil)
+
+  (setq centaur-tabs-set-modified-marker t)
+  (setq centaur-tabs-modified-marker "*")
+
+
+  (setq centaur-tabs-show-count t)
+
+  (centaur-tabs-mode t)
+  )
+
 ;; NOTE Besides the `tab-bar', there is a `tab-line' for each `tab'.
 ;; TIP Use `C-Tab` and `C-S-Tab` to cycle tabs.
 ;; TIP The `tab-switch` will switch to the named tab or create it.
@@ -567,8 +590,9 @@
   )
 
 ;; NOTE For better integration, use 'treemacs' as the file explorer.
-;; TIP Press '?' in the 'treemacs window' for help.
+;; TIP Press '?' in the 'treemacs window' for 'normal-help' and 'C-?' for 'advanced-help'.
 ;; TIP To navigate and operate, use 'hjkl' and 'C-{j/k}'.
+;; TIP Use 'M-m' to mark multiple files.
 ;; NOTE The 'treemacs' treat 'projects' as a 'workspace'.
 (use-package treemacs
   :ensure t
@@ -924,3 +948,17 @@
 
 
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(helm-minibuffer-history-key "M-p")
+ '(package-selected-packages
+   '(centaur-tabs yasnippet-snippets vertico treesit-auto treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil sublimity smartparens slime-company restart-emacs org-modern org-bullets orderless markdown-mode magit-todos keycast helm hardhat flycheck evil-textobj-tree-sitter evil-surround evil-escape evil-collection ellama elcord doom-modeline dirvish dimmer corfu company-quickhelp base16-theme auto-read-only auctex all-the-icons aggressive-indent ac-slime)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
