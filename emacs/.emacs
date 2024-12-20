@@ -11,6 +11,7 @@
 ;; While Vim is a text editor, the Emacs has a text editor.
 ;; A nice Vim macro a day, keeps the VS Code away.
 
+;; TODO customize 'helm'
 
 ;; NOTE The name conversion use CRUD: create, read, update, delete.
 ;; NOTE reference https://github.com/rexim/dotfiles
@@ -153,15 +154,34 @@
 ;; NOTE The 'company' extension has better integration than 'auto-complete'.
 ;; TIP Use 'Tab' or 'C-p' in insert-mode to trigger completion window
 ;; TIP Use 'C-n' and 'C-p' to select 'complete entry' in 'vi-insert-mode'.
+;; TIP Use 'C-h' to open the 'quick-doc', use 'C-w' to show the 'source'.
 ;; TIP If you need the same number of key-stroke, why use fuzzy?
 ;; TIP Use 'key-conversion' to translate 'C-m' to 'RET'.
+;; TIP Use 'M-{digit}' to quick select the completion entry in popup window.
 
-;; TODO polish the config of company
 (use-package company
   :ensure t
   :config
+  (setq company-minimum-prefix-length 2)
+  (setq company-idle-delay
+	(lambda () (if (company-in-string-or-comment) nil 0)))
+
+  ;; Enable global mode.
+  (add-hook 'after-init-hook 'global-company-mode)
+  ;; (setq company-global-modes '(not erc-mode message-mode eshell-mode))
+
+  ;; Bind key
   ;; FIXME not work
-  (setq company-dabbrev-minimum-length 2)
+  ;; (with-eval-after-load 'company
+  ;;   (define-key company-active-map
+  ;; 		(kbd "TAB")
+  ;; 		#'company-complete-common-or-cycle)
+  ;;   (define-key company-active-map
+  ;; 		(kbd "<backtab>")
+  ;; 		(lambda ()
+  ;;                 (interactive)
+  ;;                 (company-complete-common-or-cycle -1))))
+
   )
 
 (use-package company-quickhelp
@@ -965,5 +985,5 @@
 (add-hook 'after-init-hook 'my-after-init-hook)
 (defun my-after-init-hook ()
   "Eval after Emacs init."
-  (slime))
+  )
 
