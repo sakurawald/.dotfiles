@@ -930,10 +930,14 @@
 ;;                                                            ― Terry Davis
 ;;(setq initial-scratch-message (choice))
 
+;;;; -- customize --
+(setq custom-file (concat user-emacs-directory "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 ;;;; -- after init --
 (add-hook 'after-init-hook 'my-after-init-hook)
 (defun my-after-init-hook ()
   "Eval after Emacs init."
   (slime))
-
 
