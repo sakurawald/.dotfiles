@@ -11,7 +11,6 @@
 ;; - A nice Vim macro a day, keeps the VS Code away.
 ;; An idiot admires complexity, a genius admires simplicity.  ― Terry Davis
 
-
 ;; TODO integrate with the 'eshell'
 
 ;; NOTE The name conversion use CRUD: create, read, update, delete.
@@ -619,7 +618,6 @@
 
 
 (defun --->complete ())
-;; NOTE A good 'complete' package only requires you to press 'return', and never let you press 'tab' key.
 ;; NOTE The 'company' extension has better integration than 'auto-complete'.
 ;; TIP Use 'Tab' or 'C-p' in insert-mode to trigger completion window
 ;; TIP Use 'C-n' and 'C-p' to select 'complete entry' in 'vi-insert-mode'.
@@ -628,6 +626,7 @@
 ;; TIP Use 'key-conversion' to translate 'C-m' to 'RET'.
 ;; TIP Use 'M-{digit}' to quick select the completion entry in popup window.
 
+;; NOTE A good 'complete' package only requires you to press 'return' key, and never let you press 'tab' key.
 (use-package company
   :ensure t
   :config
@@ -638,19 +637,6 @@
   ;; Enable global mode.
   (add-hook 'after-init-hook 'global-company-mode)
   ;; (setq company-global-modes '(not erc-mode message-mode eshell-mode))
-
-  ;; Bind key
-  ;; FIXME not work
-  ;; (with-eval-after-load 'company
-  ;;   (define-key company-active-map
-  ;; 		(kbd "TAB")
-  ;; 		#'company-complete-common-or-cycle)
-  ;;   (define-key company-active-map
-  ;; 		(kbd "<backtab>")
-  ;; 		(lambda ()
-  ;;                 (interactive)
-  ;;                 (company-complete-common-or-cycle -1))))
-
   )
 
 (use-package company-quickhelp
@@ -710,7 +696,7 @@
 ;; TIP It's okay to use the 'paragraph text-object'.
 ;; TIP vi text-objects: b/B = block, t = tag
 
-;; TODO not work. (integrate it with [[ and ]])
+;; FIXME not work. (integrate it with [[ and ]])
 (use-package treesit-auto
   :ensure t
   :config
