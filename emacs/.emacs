@@ -159,7 +159,7 @@
 (use-package ellama
   :ensure t
   :config 
-  (evil-define-key '(normal visual) 'global (kbd "M-a") 'ellama-transient-main-menu)
+  (evil-define-key '(normal) 'global (kbd "SPC g") 'ellama-transient-main-menu)
 
   (add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
   )
@@ -553,8 +553,6 @@
 ;; TIP Use 'gz' to goto 'emacs-lisp' repl provided by 'ielm', if you didn't start a 'slime' instance.
 
 ;; TIP Use '{' and '}' to jump a paragraph.
-
-(evil-define-key '(normal) 'global (kbd "SPC g a") 'helm-M-x)
 (evil-define-key '(normal) 'global (kbd "SPC a") 'helm-M-x)
 
 ;; TIP Use 'g d' to find definition, use 'g r' to find references.
