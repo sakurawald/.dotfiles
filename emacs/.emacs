@@ -82,11 +82,9 @@
   :config
   ;; TIP Use 'key-conversion': "C-[" = "Escape", "C-i" = "Tab" and "C-m" = "Return".
   ;; TIP The order to escape: jk > C-g > C-[ > Escape
-
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-delay 0.1)
-  (evil-escape-mode)
-  )
+  (evil-escape-mode))
 
 (use-package evil-surround
   :ensure t
@@ -545,7 +543,7 @@
 ;; gj / gk ---> logical line
 ;; ge / GE ---> backward word end / backward broad word end
 ;; GJ ---> join line
-;; Gu / GU ---> downcase / upcase
+;; Gu / GU ---> downcase / upcase (e.g. 'guiw')
 ;; gi ---> goto 'last-changed-location' and enter 'vi-insert-state' mode.
 ;; TIP Use 'gz' to goto 'emacs-lisp' repl provided by 'ielm', if you didn't start a 'slime' instance.
 
@@ -881,25 +879,29 @@
 (evil-define-key '(normal) 'global (kbd "SPC i i") 'slime-inspect)
 (evil-define-key '(normal) 'global (kbd "SPC i I") 'slime-inspect-presentation-at-point)
 
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC v") 'slime-inspector-toggle-verbose)
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC h") 'slime-inspector-history)
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC RET") 'slime-inspector-fetch)
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC >") 'slime-inspector-fetch-all)
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC l") 'slime-inspector-pop)
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC n") 'slime-inspector-next)
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC q") 'slime-inspector-quit)
+;; Define keys for 'slime-inspector-mode' major-mode.
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC v") 'slime-inspector-toggle-verbose)
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC h") 'slime-inspector-history)
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC RET") 'slime-inspector-fetch)
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC >") 'slime-inspector-fetch-all)
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC l") 'slime-inspector-pop)
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC n") 'slime-inspector-next)
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC q") 'slime-inspector-quit)
 
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC d") 'slime-inspector-describe)
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC g") 'slime-inspector-reinspect)
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC d") 'slime-inspector-describe)
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC g") 'slime-inspector-reinspect)
 
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC e") 'slime-inspector-eval)
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC p") 'slime-inspector-pprint)
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC e") 'slime-inspector-eval)
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC p") 'slime-inspector-pprint)
 
-(evil-define-key '(normal) 'slime-inspector-mode-map (kbd "SPC .") 'slime-inspector-show-source)
+(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC .") 'slime-inspector-show-source)
 
 (defun --->sldb ())
+;; TIP The 'slime' use a 'custom-top-level': https://slime.common-lisp.dev/doc/html/Loading-Contribs.html#Loading-and-unloading-_0060_0060on-the-fly_0027_0027
+
 ;; n ---> down
 ;; p ---> up
+;; TIP Use `M-n` and `M-p` to nagivate the `backtracd` with `source form`.
 ;; M-n ---> details down
 ;; M-p ---> details up
 
@@ -919,9 +921,6 @@
 ;; b ---> break on return
 ;; C ---> inspect condition
 ;; M-Ret ---> copy down to repl
-
-;; TIP Use `M-n` and `M-p` to nagivate the `backtracd` with `source form`.
-;; TIP The 'slime' use a 'custom-top-level': https://slime.common-lisp.dev/doc/html/Loading-Contribs.html#Loading-and-unloading-_0060_0060on-the-fly_0027_0027
 
 
 (defun --->describe ())
