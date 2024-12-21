@@ -2,6 +2,7 @@
 (defun <links> ())
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
 ;; https://neovim.io/
+;; https://vim.rtorr.com/
 ;; https://www.gnu.org/software/emacs/
 ;; https://www.gnu.org/fun/
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -42,6 +43,7 @@
 ;; TIP Use `C-z` to toggle between `vi-mode` and `emacs-mode`.
 ;; TIP Use 'vim macro' and 'vim repeat command' to do batch structure editing.
 ;; TIP Use `vi-visual-block-mode' for `multiple-cursors'.
+;; TIP Useful registers: 0 (last yank), " (unnamed register), * (x11 clipboard).
 (use-package evil
   :ensure t
   :init
@@ -301,6 +303,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC b s") 'scratch-buffer)
 
 (defun --->window ())
+;; TIP It's okay to use vim window related bindings: 'C-w-{s/v}', 'C-w-{hjklw}', 'C-w{qx}'
 (evil-define-key '(normal) 'global (kbd "SPC s h") 'split-window-horizontally)
 (evil-define-key '(normal) 'global (kbd "SPC s v") 'split-window-vertically)
 
@@ -542,10 +545,15 @@
 (defun --->goto ())
 ;; gj / gk ---> logical line
 ;; ge / GE ---> backward word end / backward broad word end
-;; GJ ---> join line
-;; Gu / GU ---> downcase / upcase (e.g. 'guiw')
-;; gi ---> goto 'last-changed-location' and enter 'vi-insert-state' mode.
+;; GJ ---> join line (without one space) ('J' = join line with one space)
+;; Gu / GU ---> downcase / upcase operator (e.g. 'guiw'). (Or you can just press 'u/U' in vi-visual-state)
+
+;; g; / g, ---> goto 'prev-changed-location' and 'next-changed-location'.
+;; gi ---> goto 'prev-changed-location' and enter 'vi-insert-state' mode.
+
 ;; TIP Use 'gz' to goto 'emacs-lisp' repl provided by 'ielm', if you didn't start a 'slime' instance.
+
+;; TIP Use '{' and '}' to jump a paragraph.
 
 (evil-define-key '(normal) 'global (kbd "SPC g a") 'helm-M-x)
 (evil-define-key '(normal) 'global (kbd "SPC a") 'helm-M-x)
@@ -700,6 +708,7 @@
 (defun --->text-object ())
 ;; TIP Index the 'text object' via 'tree-sitter'.
 ;; TIP It's okay to use the 'paragraph text-object'.
+;; TIP vi text-objects: b/B = block, t = tag
 
 ;; TODO not work. (integrate it with [[ and ]])
 (use-package treesit-auto
@@ -939,6 +948,7 @@
 ;; TIP The command will ask for string if not string at point.
 (evil-define-key '(normal) 'global (kbd "SPC d h") 'slime-documentation-lookup)
 (evil-define-key '(normal) 'global (kbd "SPC d H") 'slime-documentation)
+
 
 
 (defun --->language:markdown ())
