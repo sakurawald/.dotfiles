@@ -1,5 +1,5 @@
 
-(defun <links> ())
+(defun <links> () "The interesting links.")
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
 ;; https://neovim.io/
 ;; https://vim.rtorr.com/
@@ -28,8 +28,8 @@
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
 ;; TIP To browse the firefox, use 'vimium' extension.
 
-(defun <package> ())
-(defun --->package-manager ())
+(defun <package> () "Emacs package manage.")
+(defun --->package-manager () "Install the package manager.")
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; NOTE To use the `stable repo', un-comment next line.
@@ -37,7 +37,7 @@
 (package-initialize)
 (package-refresh-contents t)
 
-(defun --->vim-emulator ())
+(defun --->vim-emulator () "Vim emulator.")
 ;; NOTE The vim golf makes the text-editing interesting. https://www.vimgolf.com/
 ;; TIP Use `C-z` to toggle between `vi-mode` and `emacs-mode`.
 ;; TIP Use 'vim macro' and 'vim repeat command' to do batch structure editing.
@@ -95,8 +95,8 @@
   ;; TIP to 'delete' a 'surrounding', use 'ds<text-object>'.
   (global-evil-surround-mode 1))
 
-(defun <help> ())
-(defun --->help ())
+(defun <help> () "The help for Emacs.")
+(defun --->help () "The help commands.")
 ;; TIP The `info` is the 'TOP-LEVEL' of manual about emacs and its packages.
 ;; NOTE The 'helm' package will define lots of 'helm-info-{package-name}' command for all packages.
 (evil-define-key '(normal) 'global (kbd "SPC h h") 'info)
@@ -126,15 +126,15 @@
 
 (evil-define-key '(normal) 'global (kbd "SPC h l") 'apropos-library)
 
-(defun --->key-cast ())
+(defun --->key-cast () "Display the inputed key and executed command.")
 (use-package keycast
   :ensure t
   :config
   ;; NOTE Display the key-cast in 'window-header'.
   (keycast-mode-line-mode))
 
-(defun <assist> ())
-(defun --->org ())
+(defun <assist> () "The assist for life.")
+(defun --->org () "Org-mode related.")
 ;; TIP Use 'S-{arrow}' to control the 'priority' and 'status'. (Or 'SPC o {hjkl}')
 ;; TIP Use 'M-{arrow}' to control 'order' and 'level'.
 ;; TIP Use 'C-Ret' to insert a 'contextual-heading'.
@@ -153,7 +153,7 @@
 (setq org-agenda-files '("~/Workspace/github/note/TODO.org"))
 (evil-define-key '(normal) 'global (kbd "SPC o a") 'org-agenda)
 
-(defun --->chat ())
+(defun --->chat () "Chat with AI.")
 ;; NOTE It's recommemded to host an open-source chat-model locally.
 ;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
 (use-package ellama
@@ -170,7 +170,7 @@
 ;;   (with-eval-after-load 'org (global-org-modern-mode))
 ;;   )
 
-(defun --->todo ())
+(defun --->todo () "Keyword highlight.")
 (use-package hl-todo
   :ensure t
   :config
@@ -187,8 +187,8 @@
   :after (hl-todo magit)
   :config (magit-todos-mode 1))
 
-(defun <display> ())
-(defun --->appearence ())
+(defun <display> () "The display for Emacs.")
+(defun --->appearence () "The appeareance of Emacs.")
 ;; NOTE Use a mono-spaced-font like 'source code pro' or 'hack'. (Font is set by KDE)
 ;; TIP Use 'base16 theme', it's simple and beautiful.
 ;; TIP Don't use the transparent frame, it's ugly.
@@ -208,14 +208,14 @@
 (global-hl-line-mode t)
 (set-face-background 'hl-line "#000066")
 
-(defun --->dimmer ())
+(defun --->dimmer () "Dim other windows.")
 (use-package dimmer
   :ensure t
   :config 
   (dimmer-mode t))
 
 
-(defun --->theme ())
+(defun --->theme () "The theme for Emacs.")
 
 ;; TIP Use 'list-colors-display' to see all known-colors.
 (use-package base16-theme
@@ -244,7 +244,7 @@
 	  ))
   (load-theme 'base16-sakura t))
 
-(defun --->mini-buffer ())
+(defun --->mini-buffer () "Customize mini-buffer.")
 ;; TIP The 'which-key' extension is useless, just use 'mini-buffer' to search a command.
 ;; TIP Use 'C-h m' to display the 'helm' manual.
 ;; TIP To pass a 'universal-arg' to 'helm', just hold-on the 'C-u-9' or 'M-9' after execute 'helm-M-x' command.
@@ -261,7 +261,7 @@
   ;; Enable globally.
   (helm-mode 1))
 
-(defun --->mode-line ())
+(defun --->mode-line () "Customize mode-line.")
 ;; NOTE Currently, the 'doom-modeline' is the only one that actively developed.
 (use-package doom-modeline
   :ensure t
@@ -283,7 +283,7 @@
   :config
   (global-anzu-mode +1))
 
-(defun --->buffer ())
+(defun --->buffer () "Buffer related.")
 ;; NOTE buffer < window < tab < frame
 ;; TIP You should not use 'bookmark' if there is 'recentf'.
 ;; TIP To filter the result with '.lisp', using the pattern '*lisp'.
@@ -301,7 +301,7 @@
 
 (evil-define-key '(normal) 'global (kbd "SPC b s") 'scratch-buffer)
 
-(defun --->window ())
+(defun --->window () "Window related.")
 ;; TIP It's okay to use vim window related bindings: 'C-w-{s/v}', 'C-w-{hjklw}', 'C-w{qx}'
 (evil-define-key '(normal) 'global (kbd "SPC s h") 'split-window-horizontally)
 (evil-define-key '(normal) 'global (kbd "SPC s v") 'split-window-vertically)
@@ -336,7 +336,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC w u") 'winner-undo)
 (evil-define-key '(normal) 'global (kbd "SPC w U") 'winner-redo)
 
-(defun --->tab ())
+(defun --->tab () "Tab related.")
 ;; NOTE Besides the `tab-bar', there is a `tab-line' for each `tab'.
 ;; TIP Use `C-Tab` and `C-S-Tab` to cycle tabs.
 ;; TIP The `tab-switch` will switch to the named tab or create it.
@@ -373,16 +373,16 @@
 (evil-define-key '(normal) 'global (kbd "SPC t o") 'tab-close-other)
 (evil-define-key '(normal) 'global (kbd "SPC t u") 'tab-bar-undo-close-tab)
 
-(defun --->frame ())
+(defun --->frame () "Frame related.")
 (evil-define-key '(normal) 'global (kbd "SPC z z") 'toggle-frame-fullscreen)
 
 (evil-define-key '(normal) 'global (kbd "Z R") 'restart-emacs)
 
-(defun --->session ())
+(defun --->session () "Session related.")
 ;;(desktop-save-mode 1)
 
-(defun <file> ())
-(defun --->file ())
+(defun <file> () "Files for Emacs.")
+(defun --->file () "File related.")
 ;; NOTE For better integration, use 'treemacs' as the file explorer.
 ;; TIP Press '?' in the 'treemacs window' for 'normal-help' and 'C-?' for 'advanced-help'.
 ;; TIP To navigate and operate, use 'hjkl' and 'C-{j/k}'.
@@ -499,7 +499,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC f c") 'treemacs-create-file)
 (evil-define-key '(normal) 'global (kbd "SPC f C") 'treemacs-create-dir)
 
-(defun --->project ())
+(defun --->project () "Project related.")
 ;; NOTE Use 'projectile' as a project interface layer, to 'discovery' and 'indexing' projects.
 (use-package projectile
   :ensure t
@@ -540,8 +540,8 @@
 (evil-define-key '(normal) 'global (kbd "SPC p v") 'projectile-vc)
 
 
-(defun <navigation> ())
-(defun --->goto ())
+(defun <navigation> () "The navigation in Emacs.")
+(defun --->goto () "Goto commands for vi.")
 ;; gj / gk ---> logical line
 ;; ge / GE ---> backward word end / backward broad word end
 ;; GJ ---> join line (without one space) ('J' = join line with one space)
@@ -565,7 +565,7 @@
 (evil-define-key '(normal) 'global (kbd "g t") 'helm-semantic-or-imenu)
 (evil-define-key '(normal) 'global (kbd "g T") 'hl-todo-occur)
 
-(defun --->jump-anywhere ())
+(defun --->jump-anywhere () "Jump tp anywhere.")
 ;; TIP You don't need to use 'smooth-scroll', just use `avy' or `grep'.
 (use-package avy
   :ensure t
@@ -586,12 +586,12 @@
 		      :foreground "white"
 		      :background "#4f5769"))
 
-(defun --->jump-list ())
+(defun --->jump-list () "The jump-list in vi.")
 ;; TIP Use 'C-i' and 'C-o' to navigate the jumplist, use double ' to jump-previous.
 ;; TIP Use `'.` to jump to `last changed location`.
 ;; TIP Use 'gi' to jump to `last changed location' and enter 'vi-insert-state' mode.
 
-(defun --->better-HL ())
+(defun --->better-HL () "Easy way to press & and $.")
 ;; TIP use `zz` to center current line.
 ;; TIP use `M` to center current window.
 ;; TIP The `J` is for `join following lines to current-line`, and `K` for manual.
@@ -599,15 +599,15 @@
 (evil-define-key '(normal visual) 'global "L" 'evil-end-of-line)
 
 
-(defun <edit> ())
+(defun <edit> () "The edit in Emacs.")
 
-(defun --->saver ())
+(defun --->saver () "Auto save files.")
 ;; FIXME auto save seems not work
 (setq auto-save-interval 20)
 (setq auto-save-timeout 5)
 (setq auto-save-no-message nil)
 
-(defun --->read-only ())
+(defun --->read-only () "Read-only files.")
 (use-package hardhat
   :ensure t
   :config
@@ -615,7 +615,7 @@
   (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps))
 
 
-(defun --->complete ())
+(defun --->complete () "Complete text.")
 ;; NOTE The 'company' extension has better integration than 'auto-complete'.
 ;; TIP Use 'Tab' or 'C-p' in insert-mode to trigger completion window
 ;; TIP Use 'C-n' and 'C-p' to select 'complete entry' in 'vi-insert-mode'.
@@ -650,7 +650,7 @@
                 slime-company-after-completion 'slime-company-just-one-space))
 
 
-(defun --->fold ())
+(defun --->fold () "Fold text.")
 ;; TIP You don't need a 'index-menu' pop-up if you have 'code fold' function.
 (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
 (add-hook 'lisp-mode-hook 'hs-minor-mode)
@@ -660,7 +660,7 @@
 ;; TIP Use 'zi' or 'za' (fold-invert).
 (evil-define-key '(normal) 'global (kbd "z i") 'evil-toggle-fold)
 
-(defun --->snippet ())
+(defun --->snippet () "Snippet text.")
 ;; TIP Good to have a 'template' system to avoid stupid codes in some stupid languages. (I am not saying about Java).
 (use-package yasnippet
   :ensure t
@@ -673,14 +673,14 @@
 (use-package yasnippet-snippets
   :ensure t)
 
-(defun --->checker ())
+(defun --->checker () "Check text.")
 ;; NOTE The correctness of 'flycheck' extension is much better than 'flymake'.
 (use-package flycheck
   :ensure t
   :config
   (global-flycheck-mode))
 
-(defun --->formatter ())
+(defun --->formatter () "Format text.")
 ;; TIP Use 'formatter' to format buffer automatically, instead of `<<` and `>>`.
 (use-package aggressive-indent
   :ensure t
@@ -689,34 +689,45 @@
   (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode))
 
-(defun --->text-object ())
+(defun --->text-object () "Analyse text.")
 ;; TIP Index the 'text object' via 'tree-sitter'.
 ;; TIP It's okay to use the 'paragraph text-object'.
 ;; TIP vi text-objects: b/B = block, t = tag
 
 ;; FIXME not work. (integrate it with [[ and ]])
+(use-package tree-sitter
+  :ensure t
+  )
+
+(use-package tree-sitter-langs
+  :ensure t
+  )
+
 (use-package treesit-auto
   :ensure t
+  :custom
+  (treesit-auto-install 'prompt)
   :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
 (use-package evil-textobj-tree-sitter
   :ensure t
   :config
   ;; bind `function.outer`(entire function block) to `f` for use in things like `vaf`, `yaf`
-  (define-key evil-outer-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.outer"))
+  (define-key evil-outer-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "defun"))
   ;; bind `function.inner`(function block without name and args) to `f` for use in things like `vif`, `yif`
-  (define-key evil-inner-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
+  (define-key evil-inner-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "defun"))
 
   ;; You can also bind multiple items and we will match the first one we can find
   (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer")))
   )
 
-(defun --->comment ())
+(defun --->comment () "Comment text.")
 (evil-define-key '(normal visual) 'global (kbd "SPC c") 'comment-line)
 (evil-define-key '(normal visual) 'global (kbd "SPC C") 'comment-box)
 
-(defun --->parenthesis ())
+(defun --->parenthesis () "Parenthesis related.")
 (use-package smartparens
   :ensure t
   ;; NOTE Only enable 'smartparens-mode' in these mode.
@@ -741,12 +752,12 @@
 (evil-define-key '(normal) 'global (kbd "SPC s t") 'sp-transpose-sexp)
 (evil-define-key '(normal) 'global (kbd "SPC s r") 'sp-raise-sexp)
 
-(defun <utility> ())
+(defun <utility> () "Utility tools in Emacs.")
 (evil-define-key '(normal) 'global (kbd "SPC u d") 'dictionary-search)
 
 (setq browse-url-browser-function 'eww-browse-url)
 
-(defun --->social ())
+(defun --->social () "Social related tools.")
 (use-package elcord
   :ensure t
   :config
@@ -754,13 +765,13 @@
   (elcord-mode))
 
 
-(defun --->customize ())
+(defun --->customize () "The customize in Emacs.")
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file))
 
-(defun <language> ())
-(defun --->language:lisp ())
+(defun <language> () "Language related.")
+(defun --->language:lisp () "Lisp Language.")
 ;; NOTE The 'slime' env is composed by 'emacs' as the 'client-side', and 'swank' as the 'server-side'.
 ;; TIP The 'slime-who-references', 'slime-who-binds' and 'slime-who-sets' only works for 'global-variable'.
 ;; TIP The 'slime-who-calls', 'slime-calls-who', 'slime-list-callers' and 'slime-list-callees' only works for 'function'.
@@ -791,7 +802,7 @@
   (setq slime-startup-animation nil)
   )
 
-(defun --->repl ())
+(defun --->repl () "Lisp repl.")
 ;; M-p ---> previous input
 ;; C-<up>/<down>
 ;; TIP Use 'C-u' (back to indentation) and 'C-w' (word) to delete backward in insert/ex/search vi-state.
@@ -813,7 +824,7 @@
 
 (evil-define-key '(normal) 'global (kbd "M-c") 'slime-repl-clear-buffer)
 
-(defun --->evaluate ())
+(defun --->evaluate () "Lisp evaluate.")
 ;; TIP Use `M-n` and `M-p` to see compiler notes.
 ;; TIP See slime logs in 'slime event buffer'.
 
@@ -850,7 +861,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC e e") 'slime-macroexpand-1)
 (evil-define-key '(normal) 'global (kbd "SPC e E") 'slime-macroexpand-all)
 
-(defun --->inspect ())
+(defun --->inspect () "Lisp inspector.")
 ;; v ---> verbose
 
 ;; h ---> history entries
@@ -889,7 +900,7 @@
 
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC .") 'slime-inspector-show-source)
 
-(defun --->sldb ())
+(defun --->sldb () "Lisp debugger.")
 ;; TIP The 'slime' use a 'custom-top-level': https://slime.common-lisp.dev/doc/html/Loading-Contribs.html#Loading-and-unloading-_0060_0060on-the-fly_0027_0027
 
 ;; n ---> down
@@ -916,7 +927,7 @@
 ;; M-Ret ---> copy down to repl
 
 
-(defun --->describe ())
+(defun --->describe () "Lisp describe.")
 ;; NOTE the commands start with `describe-` is for `emacs lisp inferor`, and start with `slime-` is for `common lisp`.
 (evil-define-key '(normal) 'global (kbd "SPC d d") 'slime-apropos-all)
 ;; NOTE The `slime-apropos` only list `external symbols`.
@@ -935,7 +946,7 @@
 
 
 
-(defun --->language:markdown ())
+(defun --->language:markdown () "Markdown language.")
 (use-package markdown-mode
   :ensure t
   :mode ("README\\.md\\'" . gfm-mode)
@@ -944,11 +955,15 @@
               ("C-c C-e" . markdown-do)))
 
 
-(defun --->language:latex ())
+(defun --->language:latex () "LaTeX language.")
 ;; NOTE For latex language, use the built-in 'reftex' package.
 
-(defun <hook> ())
+(defun <hook> () "Hooks in Emacs.")
 (defun my-after-init-hook ()
   "Eval after Emacs init."
   )
 (add-hook 'after-init-hook 'my-after-init-hook)
+
+(provide '.emacs)
+;;; .emacs ends here
+
