@@ -11,7 +11,7 @@
 ;; While Vim is a text editor, the Emacs has a text editor.
 ;; A nice Vim macro a day, keeps the VS Code away.
 
-;; TODO customize 'helm'
+;; TODO integrate with the 'eshell'
 
 ;; NOTE The name conversion use CRUD: create, read, update, delete.
 ;; NOTE reference https://github.com/rexim/dotfiles
@@ -151,6 +151,7 @@
 
 
 ;;;; -- complete --
+;; NOTE A good 'complete' package only requires you to press 'return', and never let you press 'tab' key.
 ;; NOTE The 'company' extension has better integration than 'auto-complete'.
 ;; TIP Use 'Tab' or 'C-p' in insert-mode to trigger completion window
 ;; TIP Use 'C-n' and 'C-p' to select 'complete entry' in 'vi-insert-mode'.
@@ -329,14 +330,20 @@
 
 ;;;; -- mini-buffer --
 ;; TIP The 'which-key' extension is useless, just use 'mini-buffer' to search a command.
+;; TIP Use 'C-h m' to display the 'helm' manual.
+;; TIP To pass a 'universal-arg' to 'helm', just hold-on the 'C-u-9' or 'M-9' after execute 'helm-M-x' command.
+;; TIP The 'helm' package provides lots of 'decorated-commands': https://github.com/emacs-helm/helm/wiki/Fuzzy-matching 
 ;; NOTE Choose 'helm' over other packages for its muture and active.
+;; TIP In the default 'mini-buffer' provided by 'emacs', it allows you to select one entry from one list. In the 'mini-window' provided by 'helm', you can select one entry from 'multiple-list'.
 (use-package helm
   :init 
+  ;; Override the default emacs implementation.
   (global-set-key (kbd "M-x") #'helm-M-x)
   (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
   (global-set-key (kbd "C-x C-f") #'helm-find-files)
-  (helm-mode 1)
-  )
+
+  ;; Enable globally.
+  (helm-mode 1))
 
 ;;;; -- auto indent --
 (use-package aggressive-indent
@@ -453,6 +460,8 @@
 ;; TIP Use `'.` to jump to `last changed location`.
 ;; TIP Use 'gi' to jump to `last changed location' and enter 'vi-insert-state' mode.
 
+;;;; -- tags --
+;; NOTE Use 'etags' to create 'tag table' file.
 
 ;;;; -- text object --
 ;; TIP Index the 'text object' via 'tree-sitter'.
@@ -493,7 +502,7 @@
 ;; TIP Use 'C-j' and 'C-k' to show the details in 'definition result' window.
 (evil-define-key '(normal) 'global (kbd "g s") 'slime-edit-definition)
 
-(evil-define-key '(normal) 'global (kbd "g l") 'imenu)
+(evil-define-key '(normal) 'global (kbd "g l") 'helm-semantic-or-imenu)
 (evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
 
 ;; TIP Use 'C-j' and 'C-k' to show the details in 'grep result' window.
@@ -503,8 +512,9 @@
 
 ;;;; -- buffer --
 ;; NOTE buffer < window < tab < frame
+;; TIP To filter the result with '.lisp', using the pattern '*lisp'.
 (evil-define-key '(normal) 'global (kbd "SPC b l") 'list-buffers)
-(evil-define-key '(normal) 'global (kbd "SPC b b") 'switch-to-buffer)
+(evil-define-key '(normal) 'global (kbd "SPC b b") 'helm-mini)
 (evil-define-key '(normal) 'global (kbd "SPC b B") 'switch-to-buffer-other-tab)
 
 (evil-define-key '(normal) 'global (kbd "SPC b n") 'switch-to-next-buffer)
@@ -829,7 +839,6 @@
 (evil-define-key '(normal) 'global (kbd "SPC e E") 'slime-macroexpand-all)
 
 
-
 ;;;; -- inspect --
 ;; v -> verbose
 
@@ -916,6 +925,7 @@
 
 ;;;; -- help --
 ;; TIP The `info` is the 'TOP-LEVEL' of manual about emacs and its packages.
+;; NOTE The 'helm' package will define lots of 'helm-info-{package-name}' command for all packages.
 (evil-define-key '(normal) 'global (kbd "SPC h h") 'info)
 ;; TIP Use `info-display-manual` to see `emacs package manual'.
 (evil-define-key '(normal) 'global (kbd "SPC h H") 'info-display-manual)
@@ -923,7 +933,9 @@
 (evil-define-key '(normal) 'global (kbd "SPC h b") 'describe-bindings)
 (evil-define-key '(normal) 'global (kbd "SPC h k") 'describe-key)
 (evil-define-key '(normal) 'global (kbd "SPC h K") 'view-lossage)
+;; TIP To list all 'commands'against a pattern in emacs, use 'describe-command' command.
 (evil-define-key '(normal) 'global (kbd "SPC h c") 'describe-command)
+(evil-define-key '(normal) 'global (kbd "SPC h C") 'apropos)
 (evil-define-key '(normal) 'global (kbd "SPC h f") 'describe-function)
 (evil-define-key '(normal) 'global (kbd "SPC h m") 'describe-mode)
 (evil-define-key '(normal) 'global (kbd "SPC h M") 'man)
