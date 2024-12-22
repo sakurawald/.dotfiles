@@ -9,7 +9,6 @@
 ;; - A nice Vim macro a day, keeps the VS Code away.
 ;; - An idiot admires complexity, a genius admires simplicity.  ― Terry Davis
 
-;; TODO Put init form into the 'use-package', avoid mess.
 ;; TODO integrate with the 'eshell'
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -24,7 +23,6 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 (package-refresh-contents t)
-(setq use-package-always-ensure t)
 
 (defun --->vim-emulator () "Vim emulator.")
 (use-package evil
@@ -38,6 +36,9 @@
   (setq evil-want-C-u-scroll t)
   (setq evil-want-C-u-delete t)
   (setq evil-undo-system 'undo-redo)
+
+  ;; Don't display the state in 'echo-area', it will conflicts with the 'slime-quickdoc'.
+  (setq evil-echo-state nil)
 
   :config
   ;; NOTE The manual of vim: https://neovim.io/
@@ -140,14 +141,14 @@
   ;; TIP Use 'S-{arrow}' to control the 'priority' and 'status'. (Or 'SPC o {hjkl}')
   ;; TIP Use 'M-{arrow}' to control 'order' and 'level'.
   ;; TIP Use 'C-Ret' to insert a 'contextual-heading'.
-  (evil-define-key '(normal) 'global (kbd "SPC o h") 'org-shiftleft)
-  (evil-define-key '(normal) 'global (kbd "SPC o j") 'org-shiftdown)
-  (evil-define-key '(normal) 'global (kbd "SPC o k") 'org-shiftup)
-  (evil-define-key '(normal) 'global (kbd "SPC o l") 'org-shiftright)
+  (evil-define-key '(normal) org-mode (kbd "SPC o h") 'org-shiftleft)
+  (evil-define-key '(normal) org-mode (kbd "SPC o j") 'org-shiftdown)
+  (evil-define-key '(normal) org-mode (kbd "SPC o k") 'org-shiftup)
+  (evil-define-key '(normal) org-mode (kbd "SPC o l") 'org-shiftright)
 
   ;; Set the search path for agenda files.
   (setq org-agenda-files '("~/Workspace/github/note/TODO.org"))
-  (evil-define-key '(normal) 'global (kbd "SPC o a") 'org-agenda)
+  (evil-define-key '(normal) org-mode (kbd "SPC o a") 'org-agenda)
   )
 
 (use-package org-bullets
