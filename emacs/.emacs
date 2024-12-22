@@ -99,32 +99,43 @@
 
 (defun <help> () "The help for Emacs.")
 (defun --->help () "The help commands.")
+;; TIP To list the 'built-in' packages in 'Emacs'.
+(evil-define-key '(normal) 'global (kbd "SPC h e") 'finder-by-keyword)
+
 ;; NOTE The 'helm' package will define lots of 'helm-info-{package-name}' command for all packages.
-;; TIP The 'info' is the 'top-level-manual' of Emacs and its packages.
+;; TIP Use 'info' to read 'the manual of emacs', and 'info-display-manual' to read 'the manual of a package'.
 (evil-define-key '(normal) 'global (kbd "SPC h h") 'info)
-
-;; TIP To display the manual of a 'package'.
 (evil-define-key '(normal) 'global (kbd "SPC h H") 'info-display-manual)
-
-(evil-define-key '(normal) 'global (kbd "SPC h b") 'describe-bindings)
-(evil-define-key '(normal) 'global (kbd "SPC h k") 'describe-key)
-(evil-define-key '(normal) 'global (kbd "SPC h K") 'view-lossage)
-(evil-define-key '(normal) 'global (kbd "SPC h m") 'describe-mode)
-
-(evil-define-key '(normal) 'global (kbd "SPC h s") 'apropos)
-(evil-define-key '(normal) 'global (kbd "SPC h f") 'describe-function)
-(evil-define-key '(normal) 'global (kbd "SPC h c") 'describe-command)
-
-(evil-define-key '(normal) 'global (kbd "SPC h p") 'describe-package)
-(evil-define-key '(normal) 'global (kbd "SPC h P") 'finder-by-keyword)
-(evil-define-key '(normal) 'global (kbd "SPC h l") 'apropos-library)
-
-(evil-define-key '(normal) 'global (kbd "SPC h M") 'man)
 
 (evil-define-key '(normal) 'global (kbd "SPC h d") 'apropos-documentation)
 (evil-define-key '(normal) 'global (kbd "SPC h D") 'shortdoc)
 
+(evil-define-key '(normal) 'global (kbd "SPC h b") 'describe-bindings)
+(evil-define-key '(normal) 'global (kbd "SPC h B") 'view-lossage)
+
+(evil-define-key '(normal) 'global (kbd "SPC h k") 'describe-key)
+(evil-define-key '(normal) 'global (kbd "SPC h K") 'describe-keymap)
+
+(evil-define-key '(normal) 'global (kbd "SPC h m") 'describe-mode)
+(evil-define-key '(normal) 'global (kbd "SPC h M") 'man)
+
+(evil-define-key '(normal) 'global (kbd "SPC h s") 'describe-symbol)
+(evil-define-key '(normal) 'global (kbd "SPC h S") 'apropos)
+
+(evil-define-key '(normal) 'global (kbd "SPC h f") 'describe-function)
+(evil-define-key '(normal) 'global (kbd "SPC h F") 'apropos-function)
+
+(evil-define-key '(normal) 'global (kbd "SPC h v") 'describe-variable)
+(evil-define-key '(normal) 'global (kbd "SPC h V") 'apropos-variable)
+
+(evil-define-key '(normal) 'global (kbd "SPC h c") 'describe-command)
+(evil-define-key '(normal) 'global (kbd "SPC h C") 'apropos-command)
+
+(evil-define-key '(normal) 'global (kbd "SPC h p") 'describe-package)
+(evil-define-key '(normal) 'global (kbd "SPC h P") 'apropos-library)
+
 (evil-define-key '(normal) 'global (kbd "SPC h o") 'apropos-user-option)
+(evil-define-key '(normal) 'global (kbd "SPC h O") 'apropos-value)
 
 (defun --->key-cast () "Display the inputed key and executed command.")
 (use-package keycast
@@ -141,14 +152,14 @@
   ;; TIP Use 'S-{arrow}' to control the 'priority' and 'status'. (Or 'SPC o {hjkl}')
   ;; TIP Use 'M-{arrow}' to control 'order' and 'level'.
   ;; TIP Use 'C-Ret' to insert a 'contextual-heading'.
-  (evil-define-key '(normal) org-mode (kbd "SPC o h") 'org-shiftleft)
-  (evil-define-key '(normal) org-mode (kbd "SPC o j") 'org-shiftdown)
-  (evil-define-key '(normal) org-mode (kbd "SPC o k") 'org-shiftup)
-  (evil-define-key '(normal) org-mode (kbd "SPC o l") 'org-shiftright)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o h") 'org-shiftleft)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o j") 'org-shiftdown)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o k") 'org-shiftup)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o l") 'org-shiftright)
 
   ;; Set the search path for agenda files.
   (setq org-agenda-files '("~/Workspace/github/note/TODO.org"))
-  (evil-define-key '(normal) org-mode (kbd "SPC o a") 'org-agenda)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o a") 'org-agenda)
   )
 
 (use-package org-bullets
