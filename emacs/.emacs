@@ -759,9 +759,11 @@
 (use-package smartparens
   :ensure t
   ;; NOTE Only enable 'smartparens-mode' in these mode.
-  :hook (prog-mode text-mode markdown-mode)
+  :hook (prog-mode text-mode markdown-mode slime-repl-mode)
   :init
-  ;; TIP Use ')' to move over the list.
+
+  ;; TIP Use 'closed-char' to 'move-over' the paird-structure.
+
   (evil-define-key '(normal visual) 'global (kbd "SPC s w") 'sp-wrap-round)
   (evil-define-key '(normal visual) 'global (kbd "SPC s W") 'sp-splice-sexp)
 
@@ -779,12 +781,10 @@
   :config
   ;; Load default config.
   (require 'smartparens-config)
-  ;; (setq show-paren-when-point-inside-paren t
-  ;;       show-paren-when-point-in-periphery t)
   )
 
 
-(defun <utility> () "Utility tools in Emacs.")
+  (defun <utility> () "Utility tools in Emacs.")
 
 (use-package dictionary
   :ensure t
