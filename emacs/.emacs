@@ -145,7 +145,6 @@
 
 (defun <assistant> () "The assist for life.")
 (defun --->org () "Org-mode related.")
-
 (use-package org
   :ensure t
   :config
@@ -168,13 +167,6 @@
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
   )
-
-;; (use-package org-modern
-;;   :ensure t
-;;   :config
-;;   (with-eval-after-load 'org (global-org-modern-mode))
-;;   )
-
 
 (defun --->chat () "Chat with AI.")
 (use-package ellama
@@ -259,7 +251,12 @@
 	  :base0F "#008000" ;; deprecated (opening/closing embedded language tags, e.g. '<?php ?>')
 	  ))
   (load-theme 'base16-sakura t)
+  )
 
+(use-package hl-line
+  :ensure t
+  :after (base16-theme)
+  :config
   ;; Override the 'hl-line' face.
   (global-hl-line-mode t)
   (set-face-background 'hl-line "#000066"))
@@ -367,6 +364,8 @@
   ;; TIP Use `C-Tab` and `C-S-Tab` to cycle tabs.
   ;; TIP The `tab-switch` will switch to the named tab or create it.
   ;; NOTE Switch to a tab by its name (which reflects its buffer file name), not by its index.
+
+  ;; Customize the view of tabs.
   (toggle-tab-bar-mode-from-frame)
   (setq tab-bar-close-button-show nil)
   (setq tab-bar-new-button-show nil)
@@ -391,6 +390,7 @@
 
   (evil-define-key '(normal) 'global (kbd "SPC t d") 'tab-close)
   (evil-define-key '(normal) 'global (kbd "SPC t o") 'tab-close-other)
+
   (evil-define-key '(normal) 'global (kbd "SPC t u") 'tab-bar-undo-close-tab)
   )
 
@@ -402,6 +402,9 @@
 ;; TIP To quit in vi, use 'ZQ'.
 (evil-define-key '(normal) 'global (kbd "Z R") 'restart-emacs)
 
+;; TIP Use 'ZM' to escape from a 'dead-window'.
+(evil-define-key '(normal) 'global (kbd "Z M") 'helm-mini)
+
 (defun --->session () "Session related.")
 ;;(desktop-save-mode 1)
 
@@ -411,11 +414,9 @@
   :ensure t
   :defer t
   :init
-  ;; Define bindings.
+  ;; TIP A good editor will not let you save files 'manually'.
   (evil-define-key '(normal) 'global (kbd "SPC f f") 'helm-find-files)
   (evil-define-key '(normal) 'global (kbd "SPC f t") 'treemacs)
-
-  (evil-define-key '(normal) 'global (kbd "SPC f s") 'save-buffer)
 
   (evil-define-key '(normal) 'global (kbd "SPC f c") 'treemacs-create-file)
   (evil-define-key '(normal) 'global (kbd "SPC f C") 'treemacs-create-dir)
@@ -499,6 +500,7 @@
       (`(t . _)
        (treemacs-git-mode 'simple)))
 
+    ;; Should display the git ignored files.
     (treemacs-hide-gitignored-files-mode nil)
 
     ;; Enable the indent in treemacs.
@@ -631,10 +633,12 @@
 (defun <edit> () "The edit in Emacs.")
 (defun --->saver () "Auto save files.")
 
-;; FIXME auto save seems not work
 (setq auto-save-interval 20)
 (setq auto-save-timeout 5)
 (setq auto-save-no-message nil)
+
+;; TIP Auto write the text-buffer from memory into disk.
+(auto-save-visited-mode)
 
 (defun --->read-only () "Read-only files.")
 (use-package hardhat
