@@ -18,7 +18,7 @@
 ;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script.
 
 (defun <package> () "Emacs package manage.")
-(defun --->package-manager () "Install the package manager.")
+(defun --->package-manager () "Add melpa-repo into the package.el.")
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
@@ -28,14 +28,19 @@
 (use-package evil
   :ensure t
   :init
-  ;; integrate with: evil-collection
+  ;; keymap: integrate with evil-collection
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
 
-  ;; option
+  ;; keymap: vanilla vim
   (setq evil-want-C-u-scroll t)
   (setq evil-want-C-u-delete t)
   (setq evil-undo-system 'undo-redo)
+
+  ;; search
+  (setq evil-flash-delay 5)
+
+
 
   ;; Don't display the state in 'echo-area', it will conflicts with the 'slime-quickdoc'.
   (setq evil-echo-state nil)
@@ -61,6 +66,7 @@
   :ensure t
   :after (evil)
   :custom
+  ;; TIP The 'evil-collection' provides 'possible' and `sensible' bindings for all `evil-mode'.
 
   ;; The default umimpaired bindings is useless.
   (evil-collection-want-unimpaired-p nil)
@@ -146,7 +152,6 @@
 (defun <assistant> () "The assist for life.")
 (defun --->org () "Org-mode related.")
 (use-package org
-  :ensure t
   :config
   ;; TIP Use 'S-{arrow}' to control the 'priority' and 'status'. (Or 'SPC o {hjkl}')
   ;; TIP Use 'M-{arrow}' to control 'order' and 'level'.
@@ -349,7 +354,6 @@
 (evil-define-key '(normal) 'global (kbd "SPC w D") 'delete-other-windows)
 
 (use-package winner
-  :ensure t
   :config
   ;; TIP Undo the window that deleted accidently.
   (winner-mode)
@@ -358,7 +362,6 @@
 
 (defun --->tab () "Tab related.")
 (use-package tab-bar
-  :ensure t
   :config
   ;; NOTE Besides the `tab-bar', there is a `tab-line' for each `tab'.
   ;; TIP Use `C-Tab` and `C-S-Tab` to cycle tabs.
@@ -552,7 +555,8 @@
   (evil-define-key '(normal) 'global (kbd "SPC p !") 'projectile-run-shell-command-in-root)
   (evil-define-key '(normal) 'global (kbd "SPC p &") 'projectile-run-async-shell-command-in-root)
 
-  (evil-define-key '(normal) 'global (kbd "SPC p k") 'projectile-compile-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p k") 'compile)
+  (evil-define-key '(normal) 'global (kbd "SPC p K") 'projectile-compile-project)
   (evil-define-key '(normal) 'global (kbd "SPC p R") 'projectile-run-project)
   (evil-define-key '(normal) 'global (kbd "SPC p P") 'projectile-package-project)
   (evil-define-key '(normal) 'global (kbd "SPC p I") 'projectile-install-project)
@@ -569,6 +573,7 @@
 
 (defun <navigation> () "The navigation in Emacs.")
 (defun --->goto () "Goto commands for vi.")
+;; TIP The 'g' and 'z' are prefix-key left for user.
 ;; gj / gk ---> logical line
 ;; ge / GE ---> backward word end / backward broad word end
 ;; GJ ---> join line (without one space) ('J' = join line with one space)
@@ -645,7 +650,9 @@
   :ensure t
   :config
   (global-hardhat-mode 1)
-  (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps))
+  (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps)
+  ;; TODO enter vi motion state for a read only buffer.
+  )
 
 
 (defun --->complete () "Complete text.")
@@ -679,7 +686,6 @@
 (defun --->fold () "Fold text.")
 
 (use-package hideshow
-  :ensure t
   :init
   ;; TIP You don't need the 'index-menu' if you have 'text-fold' function.
   (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
@@ -724,14 +730,11 @@
   )
 
 (defun --->text-object () "Analyse text.")
-;; TIP Index the 'text object' via 'tree-sitter'.
-;; TIP vi text-objects: b/B = block = '(' or '{', t = tag
-
-;; NOTE Enable 'tree-sitter-mode' provided by 'tree-sitter.el' in Emacs v29.0. (Not use the 'treesit.el')
+;; TIP Useful vi text-objects: 'b' = 'parenthesis', 'B' = 'curly', 't' = 'tag', 's' = 'sentence', 'a' = 'argument', 'f' = 'function', 'c' = 'class', 'o' = 'symbol'.
 
 (use-package tree-sitter
-  :ensure t
   :init
+  ;; NOTE Enable 'tree-sitter-mode' provided by 'tree-sitter.el' in Emacs v29.0. (Not use the 'treesit.el')
   (global-tree-sitter-mode)
   )
 
@@ -749,7 +752,6 @@
 
 (defun --->comment () "Comment text.")
 (use-package newcomment
-  :ensure t
   :init
   (evil-define-key '(normal visual) 'global (kbd "SPC c") 'comment-line)
   (evil-define-key '(normal visual) 'global (kbd "SPC C") 'comment-region)
@@ -768,7 +770,7 @@
   (evil-define-key '(normal visual) 'global (kbd "SPC s W") 'sp-splice-sexp)
 
   (evil-define-key '(normal) 'global (kbd "SPC s m") 'sp-mark-sexp)
-  (evil-define-key '(normal) 'global (kbd "SPC s d") 'sp-kill-sexp)
+  (evil-define-key '(normal) 'global (kbd "SPC s k") 'sp-kill-sexp)
 
   (evil-define-key '(normal) 'global (kbd "SPC s s") 'sp-forward-slurp-sexp)
   (evil-define-key '(normal) 'global (kbd "SPC s S") 'sp-backward-slurp-sexp)
@@ -787,13 +789,11 @@
   (defun <utility> () "Utility tools in Emacs.")
 
 (use-package dictionary
-  :ensure t
   :init
   (evil-define-key '(normal) 'global (kbd "SPC u d") 'dictionary-search)
   )
 
 (use-package eww
-  :ensure t
   :ocnfig
   ;; TIP To browse the firefox, use 'vimium' extension.
   (setq browse-url-browser-function 'eww-browse-url)
@@ -850,6 +850,11 @@
             (lambda ()
               (unless (slime-connected-p)
 		(save-excursion (slime)))))
+
+  ;; Fix bindings.
+  (when evil-collection-want-find-usages-bindings
+    (evil-collection-define-key 'normal 'slime-mode-map
+      "gr" 'slime-edit-uses))
   )
 
 (use-package slime-company
@@ -936,6 +941,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC i i") 'slime-inspect)
 (evil-define-key '(normal) 'global (kbd "SPC i I") 'slime-inspect-presentation-at-point)
 
+;; TODO define these kyes directly into the mode-specific vi-map.
 ;; Define keys for 'slime-inspector-mode' major-mode.
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC v") 'slime-inspector-toggle-verbose)
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC h") 'slime-inspector-history)
@@ -1011,6 +1017,12 @@
 
 (defun --->language:latex () "LaTeX language.")
 ;; NOTE For latex language, use the built-in 'reftex' package.
+
+(use-package company-auctex
+  :ensure t
+  :config
+  (company-auctex-init)
+  )
 
 
 (provide '.emacs)
