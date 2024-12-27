@@ -164,7 +164,17 @@
   ;; Set the search path for agenda files.
   (setq org-agenda-files '("~/Workspace/github/note/TODO.org"))
   (evil-define-key '(normal) org-mode-map (kbd "SPC o a") 'org-agenda)
+
+  ;; babel
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . til)
+     (lisp . t)
+     (python . t)
+     ))
   )
+
+
 
 (use-package org-bullets
   :ensure t
