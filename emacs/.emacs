@@ -163,7 +163,11 @@
 
   ;; Set the search path for agenda files.
   (setq org-agenda-files '("~/Workspace/github/note/TODO.org"))
+  (add-to-list 'evil-normal-state-modes 'org-agenda-mode)
+
   (evil-define-key '(normal) org-mode-map (kbd "SPC o a") 'org-agenda)
+
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o c") 'org-goto-calendar)
 
   ;; babel
   (org-babel-do-load-languages
@@ -174,8 +178,7 @@
      ))
   )
 
-
-
+;; NOTE A fancy render-engine for org is useless.
 (use-package org-bullets
   :ensure t
   :after (org)
