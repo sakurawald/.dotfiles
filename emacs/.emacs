@@ -17,6 +17,8 @@
 
 ;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script.
 
+;; TODO configure up recentf  .
+
 (defun <package> () "Emacs package manage.")
 (defun --->package-manager () "Add melpa-repo into the package.el.")
 (require 'package)
@@ -40,6 +42,8 @@
   ;; search
   (setq evil-flash-delay 5)
 
+  ;; macro
+  ;;(setq evil-kbd-macro-suppress-motion-error t)
 
 
   ;; Don't display the state in 'echo-area', it will conflicts with the 'slime-quickdoc'.
@@ -176,7 +180,42 @@
      (lisp . t)
      (python . t)
      ))
+  (setq org-confirm-babel-evaluate nil)
   )
+
+(use-package org-modern
+  :ensure t
+  :after (org)
+  :config
+  (setq
+   ;; Edit settings
+   org-auto-align-tags nil
+   org-tags-column 0
+   org-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
+
+   ;; Org styling, hide markup etc.
+   org-hide-emphasis-markers t
+   org-pretty-entities t
+
+   ;; Agenda styling
+   org-agenda-tags-column 0
+   org-agenda-block-separator ?─
+   org-agenda-time-grid
+   '((daily today require-timed)
+     (800 1000 1200 1400 1600 1800 2000)
+     " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+   org-agenda-current-time-string
+   "◀── now ─────────────────────────────────────────────────")
+
+  ;; Ellipsis styling
+  (setq org-ellipsis "…")
+  (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
+
+  (global-org-modern-mode)
+  )
+
 
 ;; NOTE A fancy render-engine for org is useless.
 (use-package org-bullets
@@ -192,7 +231,7 @@
   :config
   ;; NOTE It's recommemded to host an open-source chat-model locally.
   ;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
-  (evil-define-key '(normal) 'global (kbd "SPC g") 'ellama-transient-main-menu)
+  (evil-define-key '(normal visual) 'global (kbd "SPC g") 'ellama-transient-main-menu)
 
   (add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
   )
@@ -228,8 +267,9 @@
 ;; frame
 (toggle-frame-maximized)
 
-;; line num
+;; lines
 (global-display-line-numbers-mode)
+(toggle-truncate-lines)
 
 ;; cursor
 (blink-cursor-mode 0)
@@ -740,6 +780,8 @@
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'c-mode-hook #'aggressive-indent-mode)
   (add-hook 'java-mode-hook #'aggressive-indent-mode)
+  (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
+  (add-hook 'tex-mode-hook #'aggressive-indent-mode)
   )
 
 (defun --->text-object () "Analyse text.")
