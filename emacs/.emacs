@@ -17,8 +17,6 @@
 
 ;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script.
 
-;; TODO configure up recentf  .
-
 (defun <package> () "Emacs package manage.")
 (defun --->package-manager () "Add melpa-repo into the package.el.")
 (require 'package)
@@ -370,6 +368,7 @@
 ;; TIP To filter the result with '.lisp', using the pattern '*lisp'.
 ;; TIP The 'helm-mini' combines 'list-buffers' and 'recentf' as multiple sources.
 (evil-define-key '(normal) 'global (kbd "SPC b b") 'helm-mini)
+
 (evil-define-key '(normal) 'global (kbd "SPC b B") 'switch-to-buffer-other-tab)
 
 (evil-define-key '(normal) 'global (kbd "SPC b l") 'list-buffers)
@@ -466,6 +465,12 @@
 
 (defun <file> () "Files for Emacs.")
 (defun --->file () "File related.")
+
+(use-package recentf
+  :config
+  (add-to-list 'recentf-exclude ".*pdf.*")
+  )
+
 (use-package treemacs
   :ensure t
   :defer t
@@ -870,6 +875,7 @@
 
 (defun <language> () "Language related.")
 (defun --->language:lisp () "Lisp Language.")
+;; - Notation is nothing without denotation.
 
 (use-package slime
   :ensure t
@@ -880,8 +886,6 @@
   ;; NOTE Read more about xref in: https://slime.common-lisp.dev/doc/html/Xref-buffer-commands.html#Xref-buffer-commands
   ;; NOTE The 'semantic-identation' feature: https://slime.common-lisp.dev/doc/html/Semantic-indentation.html#Semantic-indentation
   ;; TIP The 'quote-form' is not counted as 'slime-edit-uses', like the 'make-instance'.
-
-  ;; FIXME 'gr' should use 'slime-edit-uses'
 
   ;; Set the inferior-program.
   (setq inferior-lisp-program "ros dynamic-space-size=4GiB run")
