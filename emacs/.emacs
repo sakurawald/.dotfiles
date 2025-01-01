@@ -168,8 +168,9 @@
   (add-to-list 'evil-normal-state-modes 'org-agenda-mode)
 
   (evil-define-key '(normal) org-mode-map (kbd "SPC o a") 'org-agenda)
-
   (evil-define-key '(normal) org-mode-map (kbd "SPC o c") 'org-goto-calendar)
+  (evil-define-key '(visual) org-mode-map (kbd "SPC o s") 'org-sort)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o m") 'org-babel-mark-block)
 
   ;; babel
   (org-babel-do-load-languages
@@ -185,6 +186,7 @@
   :ensure t
   :after (org)
   :config
+
   (setq
    ;; Edit settings
    org-auto-align-tags nil
@@ -211,6 +213,11 @@
   (setq org-ellipsis "…")
   (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
 
+  ;; Customize star style.
+  (setq org-modern-star 'replace)
+  (setq org-modern-hide-stars 'nil)
+
+  ;; Enable mode.
   (global-org-modern-mode)
   )
 
@@ -229,9 +236,20 @@
   :config
   ;; NOTE It's recommemded to host an open-source chat-model locally.
   ;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
+  ;; TIP Use `ollama run llama3.1' to download the model and use `ellama-provider-select' to select a model.
   (evil-define-key '(normal visual) 'global (kbd "SPC g") 'ellama-transient-main-menu)
-
   (add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
+
+  ;; Customize the LLM model.
+  (setq ellama-provider (make-llm-ollama
+			 :chat-model "llama3.1" :embedding-model "llama3.1"))
+  (setq ellama--current-session-id nil)
+
+  ;; Disable the session.
+  (setq ellama-session-auto-save nil)
+
+  ;; Customize chat-buffer.
+  (setq ellama-naming-scheme #'(lambda (_provider _action _prompt) "LLM Chat Buffer"))
   )
 
 (defun --->todo () "Keyword highlight.")
@@ -326,6 +344,7 @@
   ;; NOTE In the default 'mini-buffer' provided by 'emacs', it allows you to select one entry from 'single-source'. In the 'mini-window' provided by 'helm', you can select one entry from 'multiple-source'.
   ;; TIP Use 'C-h m' to display the 'helm' manual.
   ;; TIP To pass a 'universal-arg' to 'helm', just hold-on the 'C-u-9' or 'M-9' after execute 'helm-M-x' command.
+  ;; TIP Use `C-o' to execute `helm-next-source'.
 
   ;; Override the default emacs implementation.
   (evil-define-key '(normal) 'global (kbd "SPC a") 'helm-M-x)
@@ -334,7 +353,10 @@
   (global-set-key (kbd "C-x C-f") #'helm-find-files)
 
   ;; Enable globally.
-  (helm-mode 1))
+  (helm-mode 1)
+  :config
+  ;; NOTE It's impossible to re-map bindinds in 'helm-M-x-mode' using 'evil'.
+  )
 
 (defun --->mode-line () "Customize mode-line.")
 (use-package doom-modeline
@@ -854,7 +876,7 @@
   )
 
 (use-package eww
-  :ocnfig
+  :config
   ;; TIP To browse the firefox, use 'vimium' extension.
   (setq browse-url-browser-function 'eww-browse-url)
   )
@@ -1086,4 +1108,3 @@
 
 (provide '.emacs)
 ;;; .emacs ends here
-
