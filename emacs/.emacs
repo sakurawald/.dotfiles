@@ -242,7 +242,8 @@
 
   ;; Customize the LLM model.
   (setq ellama-provider (make-llm-ollama
-			 :chat-model "llama3.1" :embedding-model "llama3.1"))
+			 :chat-model "llama3.1"
+			 :embedding-model "llama3.1"))
   (setq ellama--current-session-id nil)
 
   ;; Disable the session.
@@ -250,6 +251,7 @@
 
   ;; Customize chat-buffer.
   (setq ellama-naming-scheme #'(lambda (_provider _action _prompt) "LLM Chat Buffer"))
+  (setq ellama-assistant-nick "Model")
   )
 
 (defun --->todo () "Keyword highlight.")
@@ -483,7 +485,7 @@
 (evil-define-key '(normal) 'global (kbd "Z M") 'helm-mini)
 
 (defun --->session () "Session related.")
-;;(desktop-save-mode 1)
+(desktop-save-mode 1)
 
 (defun <file> () "Files for Emacs.")
 (defun --->file () "File related.")
@@ -627,6 +629,8 @@
   (evil-define-key '(normal) 'global (kbd "SPC p F") 'projectile-find-file-other-window)
   (evil-define-key '(normal) 'global (kbd "SPC p d") 'projectile-find-dir)
   (evil-define-key '(normal) 'global (kbd "SPC p r") 'projectile-recentf)
+
+  (evil-define-key '(normal) 'global (kbd "SPC p s") 'projectile-save-project-buffers)
 
   ;; TIP Use 'C-j' and 'C-k' to show the details in 'grep-result-window'.
   (evil-define-key '(normal) 'global (kbd "SPC p g") 'projectile-grep)
@@ -926,11 +930,13 @@
   ;; Options for contribs.
   (setq slime-startup-animation nil)
 
+  ;; Start slime automatically if needed.
+  (setq slime-auto-start 'always)
   ;; NOTE Auto execute 'slime' command.
-  (add-hook 'slime-mode-hook
-            (lambda ()
-              (unless (slime-connected-p)
-		(save-excursion (slime)))))
+  ;;(add-hook 'slime-mode-hook
+  ;;          (lambda ()
+  ;;            (unless (slime-connected-p)
+  ;;		(save-excursion (slime)))))
 
   ;; Fix bindings.
   (when evil-collection-want-find-usages-bindings
