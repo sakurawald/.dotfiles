@@ -634,6 +634,7 @@
 
   (evil-define-key '(normal) 'global (kbd "SPC p h") 'projectile-dired)
   (evil-define-key '(normal) 'global (kbd "SPC p f") 'projectile-find-file)
+  (evil-define-key '(normal) 'global (kbd "SPC SPC") 'projectile-find-file)
   (evil-define-key '(normal) 'global (kbd "SPC p F") 'projectile-find-file-other-window)
   (evil-define-key '(normal) 'global (kbd "SPC p d") 'projectile-find-dir)
   (evil-define-key '(normal) 'global (kbd "SPC p r") 'projectile-recentf)
