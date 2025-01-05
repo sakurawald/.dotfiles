@@ -615,6 +615,11 @@
   (treemacs-set-scope-type 'Tabs))
 
 (defun --->project () "Project related.")
+(use-package rg
+  :ensure t
+  :config
+  (rg-enable-default-bindings))
+
 ;; NOTE Use 'projectile' as a project interface layer, to 'discovery' and 'indexing' projects.
 (use-package projectile
   :ensure t
@@ -636,7 +641,8 @@
   (evil-define-key '(normal) 'global (kbd "SPC p s") 'projectile-save-project-buffers)
 
   ;; TIP Use 'C-j' and 'C-k' to show the details in 'grep-result-window'.
-  (evil-define-key '(normal) 'global (kbd "SPC p g") 'projectile-grep)
+  ;; TIP Use `ripgrep' for: better result highlight, respect .gitignore file.
+  (evil-define-key '(normal) 'global (kbd "SPC p g") 'projectile-ripgrep)
   (evil-define-key '(normal) 'global (kbd "SPC p G") 'projectile-replace-regexp)
 
   (evil-define-key '(normal) 'global (kbd "SPC p !") 'projectile-run-shell-command-in-root)
@@ -724,14 +730,22 @@
 
 (defun <edit> () "The edit in Emacs.")
 (defun --->saver () "Auto save files.")
-
-
-(setq auto-save-interval 4)
-(setq auto-save-timeout 3)
+(setq auto-save-interval 20)
+(setq auto-save-timeout 1)
 (setq auto-save-no-message nil)
 
-;; TIP Auto write the text-buffer from memory into disk.
-(auto-save-visited-mode)
+;; Suppress the `Wrote file...' message.
+(setq save-silently t)
+
+(defun save-buffer* ()
+  (when (and (buffer-file-name) (buffer-modified-p))
+    (save-buffer)))
+
+;; Save buffer when Emacs lose the focus.
+(add-hook 'focus-out-hook 'save-buffer*)
+
+;; Save buffer when Vi enters the normal-state.
+(add-hook 'evil-normal-state-entry-hook 'save-buffer*)
 
 (defun --->read-only () "Read-only files.")
 (use-package hardhat
