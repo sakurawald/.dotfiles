@@ -94,6 +94,9 @@
   ;; TIP The order to escape: 'jk' > 'C-g' > 'C-[' > 'Escape'
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-delay 0.1)
+
+  (setq evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode magit-todos-list-mode))
+
   (evil-escape-mode))
 
 (use-package evil-surround
@@ -634,7 +637,7 @@
 
   ;; TIP Use 'C-j' and 'C-k' to show the details in 'grep-result-window'.
   (evil-define-key '(normal) 'global (kbd "SPC p g") 'projectile-grep)
-  (evil-define-key '(normal) 'global (kbd "SPC p G") 'projectile-replace)
+  (evil-define-key '(normal) 'global (kbd "SPC p G") 'projectile-replace-regexp)
 
   (evil-define-key '(normal) 'global (kbd "SPC p !") 'projectile-run-shell-command-in-root)
   (evil-define-key '(normal) 'global (kbd "SPC p &") 'projectile-run-async-shell-command-in-root)
@@ -722,8 +725,9 @@
 (defun <edit> () "The edit in Emacs.")
 (defun --->saver () "Auto save files.")
 
-(setq auto-save-interval 20)
-(setq auto-save-timeout 5)
+
+(setq auto-save-interval 4)
+(setq auto-save-timeout 3)
 (setq auto-save-no-message nil)
 
 ;; TIP Auto write the text-buffer from memory into disk.
