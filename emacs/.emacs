@@ -445,7 +445,6 @@
   ;; NOTE Besides the `tab-bar', there is a `tab-line' for each `tab'.
   ;; TIP Use `C-Tab` and `C-S-Tab` to cycle tabs.
   ;; TIP The `tab-switch` will switch to the named tab or create it.
-  ;; NOTE Switch to a tab by its name (which reflects its buffer file name), not by its index.
 
   ;; Customize the view of tabs.
   (toggle-tab-bar-mode-from-frame)
@@ -618,7 +617,7 @@
 (use-package rg
   :ensure t
   :config
-  (rg-enable-default-bindings))
+  )
 
 ;; NOTE Use 'projectile' as a project interface layer, to 'discovery' and 'indexing' projects.
 (use-package projectile
@@ -643,7 +642,10 @@
 
   ;; TIP Use 'C-j' and 'C-k' to show the details in 'grep-result-window'.
   ;; TIP Use `ripgrep' for: better result highlight, respect .gitignore file.
-  (evil-define-key '(normal) 'global (kbd "SPC p g") 'projectile-ripgrep)
+  (evil-define-key '(normal) 'global (kbd "SPC p g") (lambda () (interactive)
+						       ;; Push the 4 as prefix-arg to enable the regex pattern.
+						       (let ((current-prefix-arg 4))
+							 (call-interactively #'projectile-ripgrep))))
   (evil-define-key '(normal) 'global (kbd "SPC p G") 'projectile-replace-regexp)
 
   (evil-define-key '(normal) 'global (kbd "SPC p !") 'projectile-run-shell-command-in-root)
@@ -739,7 +741,7 @@
 (setq save-silently t)
 
 (defun save-buffer* ()
-  (when (and (buffer-file-name) (buffer-modified-p))
+  (when (and (buffer-file-name) (buffer-modified-p) (evil-normal-state-p))
     (save-buffer)))
 
 ;; Save buffer when Emacs lose the focus.
@@ -748,6 +750,10 @@
 ;; Save buffer when Vi enters the normal-state.
 (add-hook 'evil-normal-state-entry-hook 'save-buffer*)
 
+(add-hook 'window-state-change-hook 'save-buffer*)
+
+
+
 (defun --->read-only () "Read-only files.")
 (use-package hardhat
   :ensure t
@@ -755,6 +761,7 @@
   (global-hardhat-mode 1)
   (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps)
   ;; TODO enter vi motion state for a read only buffer.
+
   )
 
 
@@ -870,7 +877,6 @@
   :init
 
   ;; TIP Use 'closed-char' to 'move-over' the paird-structure.
-
   (evil-define-key '(normal visual) 'global (kbd "SPC s w") 'sp-wrap-round)
   (evil-define-key '(normal visual) 'global (kbd "SPC s W") 'sp-splice-sexp)
 
