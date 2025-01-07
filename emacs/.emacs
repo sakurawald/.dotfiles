@@ -95,7 +95,8 @@
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-delay 0.1)
 
-  (setq evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode magit-todos-list-mode))
+  (setq evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode magit-todos-list-mode
+							     treemacs-mode))
 
   (evil-escape-mode))
 
@@ -167,7 +168,7 @@
   (evil-define-key '(normal) org-mode-map (kbd "SPC o l") 'org-shiftright)
 
   ;; Set the search path for agenda files.
-  (setq org-agenda-files '("~/Workspace/github/note/TODO.org"))
+  (setq org-agenda-files (file-expand-wildcards "~/Workspace/github/note/*.org"))
   (add-to-list 'evil-normal-state-modes 'org-agenda-mode)
 
   (evil-define-key '(normal) org-mode-map (kbd "SPC o a") 'org-agenda)
@@ -862,6 +863,16 @@
   (define-key evil-inner-text-objects-map "c" (evil-textobj-tree-sitter-get-textobj "class.inner"))
   (define-key evil-outer-text-objects-map "c" (evil-textobj-tree-sitter-get-textobj "class.outer")))
 
+(use-package highlight-thing
+  :ensure t
+  :config
+  ;; TIP Auto highlight the thing at point.
+  (add-hook 'prog-mode-hook 'highlight-thing-mode)
+  (setq highlight-thing-delay-seconds 0)
+  (setq highlight-thing-case-sensitive-p nil)
+  (set-face-attribute 'highlight nil
+		      :underline "#FF0000"))
+
 (defun --->comment () "Comment text.")
 (use-package newcomment
   :init
@@ -962,6 +973,9 @@
   ;;          (lambda ()
   ;;            (unless (slime-connected-p)
   ;;		(save-excursion (slime)))))
+
+  ;; Set instantly slime-autodoc in echo-area.
+  (setq eldoc-idle-delay 0)
 
   ;; Fix bindings.
   (when evil-collection-want-find-usages-bindings
