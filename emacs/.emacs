@@ -10,6 +10,7 @@
 ;; - An idiot admires complexity, a genius admires simplicity.  ― Terry Davis
 
 ;; TODO integrate with the 'eshell'
+;; TODO fix the `cls' template expansion.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -867,11 +868,11 @@
   :ensure t
   :config
   ;; TIP Auto highlight the thing at point.
-  (add-hook 'prog-mode-hook 'highlight-thing-mode)
+  (global-highlight-thing-mode)
   (setq highlight-thing-delay-seconds 0)
   (setq highlight-thing-case-sensitive-p nil)
   (set-face-attribute 'highlight nil
-		      :underline "#FF0000"))
+		      :underline "#00FF00"))
 
 (defun --->comment () "Comment text.")
 (use-package newcomment
@@ -1022,6 +1023,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC e b") 'slime-eval-buffer)
 ;; TIP Use repl to 'resend' the last form to repl. (Seems only work in repl window.)
 (evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-repl-resend)
+(evil-define-key '(visual) 'global (kbd "SPC e r") 'slime-eval-region)
 (evil-define-key '(normal) 'global (kbd "SPC e s") 'slime-interactive-eval)
 
 (evil-define-key '(normal) 'global (kbd "SPC e q") 'slime-repl-quicklisp-quickload)
@@ -1114,6 +1116,7 @@
 
 (defun --->describe () "Lisp describe.")
 ;; NOTE the commands start with `describe-` is for `emacs lisp inferor`, and start with `slime-` is for `common lisp`.
+;; TIP Use `K' key to query the manual under point.
 (evil-define-key '(normal) 'global (kbd "SPC d d") 'slime-apropos-all)
 
 ;; NOTE The `slime-apropos` only list `external symbols`.
@@ -1128,8 +1131,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC d c") 'slime-browse-classes)
 
 ;; TIP The command will ask for string if not string at point.
-(evil-define-key '(normal) 'global (kbd "SPC d h") 'slime-documentation-lookup)
-(evil-define-key '(normal) 'global (kbd "SPC d H") 'slime-documentation)
+(evil-define-key '(normal) 'global (kbd "SPC d m") 'slime-documentation-lookup)
 
 
 (defun --->language:markdown () "Markdown language.")
