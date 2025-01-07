@@ -472,7 +472,7 @@
   (evil-define-key '(normal) 'global (kbd "SPC t p") 'tab-previous)
 
   (evil-define-key '(normal) 'global (kbd "SPC t d") 'tab-close)
-  (evil-define-key '(normal) 'global (kbd "SPC t o") 'tab-close-other)
+  (evil-define-key '(normal) 'global (kbd "SPC t D") 'tab-close-other)
 
   (evil-define-key '(normal) 'global (kbd "SPC t u") 'tab-bar-undo-close-tab)
   )
@@ -481,6 +481,7 @@
 ;; TIP Use 'Super+{alpha}' to switch to a useful program. (wmctrl -a "gnu emacs" || emacs): terminal, emacs, browser.
 ;; TIP Use 'Super+{num}' to switch to a window in KDE.
 (evil-define-key '(normal) 'global (kbd "SPC z z") 'toggle-frame-fullscreen)
+(evil-define-key '(normal) 'global (kbd "SPC z m") 'toggle-frame-maximized)
 
 ;; TIP To quit in vi, use 'ZQ'.
 (evil-define-key '(normal) 'global (kbd "Z R") 'restart-emacs)
@@ -918,7 +919,7 @@
 
 (use-package eww
   :config
-  ;; TIP To browse the firefox, use 'vimium' extension.
+  ;; TIP To browse the firefox, use 'vimium' extension. (It's convenient to read manual online.)
   (setq browse-url-browser-function 'eww-browse-url)
   )
 
