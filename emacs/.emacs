@@ -595,6 +595,10 @@
 
     ;; Enable the indent in treemacs.
     (treemacs-indent-guide-mode)
+
+    ;; Override keymap
+    ;; TODO fix the keymap in treemacs sidebar.
+    ;;(evil-define-key '(normal) 'treemacs-mode (kbd "C-l") 'evil-window-right)
     ))
 
 (use-package treemacs-evil
