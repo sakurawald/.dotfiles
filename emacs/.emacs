@@ -8,9 +8,22 @@
 ;; - While Vim is a text editor, the Emacs has a text editor.
 ;; - A nice Vim macro a day, keeps the VS Code away.
 ;; - An idiot admires complexity, a genius admires simplicity.  ― Terry Davis
+;; Finally, There are only 2 `great' languages: C and Lisp.
+;; The manual from CMU [https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf]
 
 ;; TODO integrate with the 'eshell'
 ;; TODO fix the `cls' template expansion.
+
+;; TODO configx the gtags for `xref'. (or a c mode ?)
+;; TODO call save-buffer* after change text.
+
+;; TODO fix the web engine for github website. (gx)
+;; TODO a better face for todo-highlight package.
+
+;; TODO play with sldb
+;; TODO play with inspector
+
+;; TODO configure the background color for magit diff function.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -270,10 +283,10 @@
           ("TIP"  . "#00FF00")))
   (global-hl-todo-mode))
 
-(use-package magit-todos
-  :ensure t
-  :after (hl-todo magit)
-  :config (magit-todos-mode 1))
+;; (use-package magit-todos
+;;   :ensure t
+;;   :after (hl-todo magit)
+;;   :config (magit-todos-mode 1))
 
 (defun <view> () "The display for Emacs.")
 (defun --->display () "The appeareance of Emacs.")
@@ -624,6 +637,8 @@
 (use-package rg
   :ensure t
   :config
+  (evil-define-key '(normal) rg-mode-map (kbd "M-j") 'rg-next-file)
+  (evil-define-key '(normal) rg-mode-map (kbd "M-k") 'rg-prev-file)
   )
 
 ;; NOTE Use 'projectile' as a project interface layer, to 'discovery' and 'indexing' projects.
@@ -647,6 +662,7 @@
 
   (evil-define-key '(normal) 'global (kbd "SPC p s") 'projectile-save-project-buffers)
 
+  ;; TIP The `tags' does make errors, but the `grep'.
   ;; TIP Use 'C-j' and 'C-k' to show the details in 'grep-result-window'.
   ;; TIP Use `ripgrep' for: better result highlight, respect .gitignore file.
   (evil-define-key '(normal) 'global (kbd "SPC p g") (lambda () (interactive)
@@ -685,8 +701,7 @@
 
 ;; gd / gr ---> find definition / find references.
 ;; TIP Use 'C-j' and 'C-k' to show the details in 'xref-window'.
-
-(evil-define-key '(normal) 'global (kbd "g s") 'projectile-grep)
+(evil-define-key '(normal) 'global (kbd "g s") 'projectile-ripgrep)
 
 ;; gm -> as a shortcut of '%'.
 (evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
