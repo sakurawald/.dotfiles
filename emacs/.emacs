@@ -3,19 +3,24 @@
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
 ;; https://www.gnu.org/software/emacs/
 ;; https://www.gnu.org/fun/
+;;
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
 ;; - While Vim is a text editor, the Emacs has a text editor.
 ;; - A nice Vim macro a day, keeps the VS Code away.
-;; - An idiot admires complexity, a genius admires simplicity.  ― Terry Davis
-;; Finally, There are only 2 `great' languages: C and Lisp.
+;; - An idiot admires complexity, a genius admires simplicity. -- Terry Davis
+;; - Finally, There are only 2 great languages: C and Lisp.
+;; - To learn, is to connect.
+;; - Patterns mean "I have run out of language." -- Rich Hickey
+;; - Design patterns are a compromise to the lack of expressiveness of the language.
+;; - Premature optimization is the root of all evil. -- Donald Knuth (https://wiki.c2.com/?PrematureOptimization)
 ;; The manual from CMU [https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf]
 
+;; TODO run a profile in emacs
 ;; TODO integrate with the 'eshell'
 ;; TODO fix the `cls' template expansion.
 
 ;; TODO configx the gtags for `xref'. (or a c mode ?)
-;; TODO call save-buffer* after change text.
 
 ;; TODO fix the web engine for github website. (gx)
 ;; TODO a better face for todo-highlight package.
@@ -139,6 +144,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC h b") 'describe-bindings)
 (evil-define-key '(normal) 'global (kbd "SPC h B") 'view-lossage)
 
+;; TIP To read the `global-map' first.
 (evil-define-key '(normal) 'global (kbd "SPC h k") 'describe-key)
 (evil-define-key '(normal) 'global (kbd "SPC h K") 'describe-keymap)
 
@@ -762,6 +768,14 @@
 ;; Suppress the `Wrote file...' message.
 (setq save-silently t)
 
+;; The instant method, performance may be poor.
+;; (defun save-buffer-instantly (begin end prev-text)
+;;   (when (and (buffer-file-name)
+;; 	     (file-writable-p (buffer-file-name))
+;; 	     (buffer-modified-p))
+;;     (save-buffer)))
+;; (add-hook 'after-change-functions 'save-buffer-instantly)
+
 (defun save-buffer* ()
   (when (and (buffer-file-name) (buffer-modified-p) (evil-normal-state-p))
     (save-buffer)))
@@ -772,8 +786,15 @@
 ;; Save buffer when Vi enters the normal-state.
 (add-hook 'evil-normal-state-entry-hook 'save-buffer*)
 
-(add-hook 'window-state-change-hook 'save-buffer*)
+;; Save buffer after execution of some commands.
+(add-hook 'post-command-hook (lambda ()
+			       (when (or (eq this-command 'evil-delete)
+					 (eq this-command 'evil-delete-char)
+					 (eq this-command 'evil-join))
+				 (save-buffer*))))
 
+;; Save buffer when window state changed.
+(add-hook 'window-state-change-hook 'save-buffer*)
 
 
 (defun --->read-only () "Read-only files.")
@@ -783,7 +804,6 @@
   (global-hardhat-mode 1)
   (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps)
   ;; TODO enter vi motion state for a read only buffer.
-
   )
 
 
