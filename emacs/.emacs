@@ -19,17 +19,11 @@
 ;; The manual from CMU [https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf]
 
 ;; TODO run a profile in emacs
+
 ;; TODO integrate with the 'eshell'
+
 ;; TODO fix the `cls' template expansion.
-
 ;; TODO taste LSP extensions.
-;; TODO configx the gtags for `xref'. (or a c mode ?)
-
-;; TODO fix the web engine for github website. (gx)
-;; TODO a better face for todo-highlight package.
-
-;; TODO play with sldb
-;; TODO play with inspector
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -617,9 +611,7 @@
     (treemacs-indent-guide-mode)
 
     ;; Override keymap
-    ;; TODO fix the keymap in treemacs sidebar.
-    ;;(evil-define-key '(normal) 'treemacs-mode (kbd "C-l") 'evil-window-right)
-    ))
+    (evil-define-key 'treemacs treemacs-mode-map (kbd "C-l")  'evil-window-right)))
 
 (use-package treemacs-evil
   :after (treemacs evil)
@@ -720,6 +712,9 @@
 ;; NOTE Vim use 'gt' and 'gT' to cycle 'tab', but we use it to goto a 'tag'.
 (evil-define-key '(normal) 'global (kbd "g t") 'helm-semantic-or-imenu)
 (evil-define-key '(normal) 'global (kbd "g T") 'hl-todo-occur)
+
+(evil-define-key '(normal) 'global (kbd "g x") 'browse-url-at-point)
+(evil-define-key '(normal) 'global (kbd "g X") 'browse-url-xdg-open)
 
 (defun --->jump-anywhere () "Jump to anywhere.")
 
@@ -1105,14 +1100,14 @@
 ;; v ---> verbose
 
 ;; h ---> history entries
-;; enter ---> fetch
+;; RET ---> operate on point
 ;; > ---> fetch all
 ;; l ---> prev entry (left)
 ;; n ---> next entry
 ;; q ---> quit
 
-;; M-Ret ---> copy down to repl
-;; r/g ---> re-inspect
+;; M-RET ---> copy down to repl
+;; g ---> re-inspect
 
 ;; p ---> pprint
 ;; d ---> describe
@@ -1123,7 +1118,6 @@
 (evil-define-key '(normal) 'global (kbd "SPC i i") 'slime-inspect)
 (evil-define-key '(normal) 'global (kbd "SPC i I") 'slime-inspect-presentation-at-point)
 
-;; TODO define these kyes directly into the mode-specific vi-map.
 ;; Define keys for 'slime-inspector-mode' major-mode.
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC v") 'slime-inspector-toggle-verbose)
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC h") 'slime-inspector-history)
@@ -1167,7 +1161,6 @@
 ;; C ---> inspect condition
 ;; M-Ret ---> copy down to repl
 
-
 (defun --->describe () "Lisp describe.")
 ;; NOTE the commands start with `describe-` is for `emacs lisp inferor`, and start with `slime-` is for `common lisp`.
 ;; TIP Use `K' key to query the manual under point.
@@ -1203,8 +1196,7 @@
 (use-package company-auctex
   :ensure t
   :config
-  (company-auctex-init)
-  )
+  (company-auctex-init))
 
 
 (provide '.emacs)
