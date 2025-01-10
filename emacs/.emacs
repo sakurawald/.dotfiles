@@ -3,6 +3,7 @@
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
 ;; https://www.gnu.org/software/emacs/
 ;; https://www.gnu.org/fun/
+;; https://emacsconf.org/
 ;;
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
@@ -14,12 +15,14 @@
 ;; - Patterns mean "I have run out of language." -- Rich Hickey
 ;; - Design patterns are a compromise to the lack of expressiveness of the language.
 ;; - Premature optimization is the root of all evil. -- Donald Knuth (https://wiki.c2.com/?PrematureOptimization)
+;; - If it works, don't touch it.
 ;; The manual from CMU [https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf]
 
 ;; TODO run a profile in emacs
 ;; TODO integrate with the 'eshell'
 ;; TODO fix the `cls' template expansion.
 
+;; TODO taste LSP extensions.
 ;; TODO configx the gtags for `xref'. (or a c mode ?)
 
 ;; TODO fix the web engine for github website. (gx)
@@ -27,8 +30,6 @@
 
 ;; TODO play with sldb
 ;; TODO play with inspector
-
-;; TODO configure the background color for magit diff function.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -694,7 +695,11 @@
   )
 
 (use-package magit
-  :ensure t)
+  :ensure t
+  :config
+  (set-face-attribute 'magit-diff-context-highlight nil
+		      :background "#001847")
+  )
 
 (defun <navigation> () "The navigation in Emacs.")
 (defun --->goto () "Goto commands for vi.")
@@ -889,8 +894,7 @@
 (use-package tree-sitter
   :init
   ;; NOTE Enable 'tree-sitter-mode' provided by 'tree-sitter.el' in Emacs v29.0. (Not use the 'treesit.el')
-  (global-tree-sitter-mode)
-  )
+  (global-tree-sitter-mode))
 
 (use-package evil-textobj-tree-sitter
   :ensure t
@@ -977,6 +981,16 @@
   (load custom-file))
 
 (defun <language> () "Language related.")
+
+(defun --->lsp () "Language Server Protocol.")
+;; NOTE A LSP server provides: completion, snippet, index, documentation, cheker, refactor, code-action, formatter.
+(use-package eglot
+  :ensure t
+  :config
+  (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
+  (add-hook 'c-mode-hook 'eglot-ensure)
+  (add-hook 'c++-mode-hook 'eglot-ensure))
+
 (defun --->language:lisp () "Lisp Language.")
 ;; - Notation is nothing without denotation.
 
