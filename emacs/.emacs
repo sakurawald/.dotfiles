@@ -802,9 +802,7 @@
   :ensure t
   :config
   (global-hardhat-mode 1)
-  (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps)
-  ;; TODO enter vi motion state for a read only buffer.
-  )
+  (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps))
 
 
 (defun --->complete () "Complete text.")
