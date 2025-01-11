@@ -16,6 +16,7 @@
 ;; - Design patterns are a compromise to the lack of expressiveness of the language.
 ;; - Premature optimization is the root of all evil. -- Donald Knuth (https://wiki.c2.com/?PrematureOptimization)
 ;; - If it works, don't touch it.
+;; - Object is a lie, use function instead.
 ;; The manual from CMU [https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf]
 
 ;; TODO run a profile in emacs
@@ -683,12 +684,15 @@
   (evil-define-key '(normal) 'global (kbd "SPC p C") 'projectile-add-known-project)
   (evil-define-key '(normal) 'global (kbd "SPC p D") 'projectile-remove-known-project)
 
+  (evil-define-key '(normal) 'global (kbd "SPC p L") 'projectile-toggle-project-read-only)
+
   (evil-define-key '(normal) 'global (kbd "SPC p v") 'projectile-vc)
   )
 
 (use-package magit
   :ensure t
   :config
+  ;; Another color 000066
   (set-face-attribute 'magit-diff-context-highlight nil
 		      :background "#001847")
   )
@@ -802,7 +806,10 @@
   :ensure t
   :config
   (global-hardhat-mode 1)
-  (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps))
+
+  (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps)
+  ;; (push ".*/github/raylib/.*" hardhat-fullpath-protected-regexps)
+  )
 
 
 (defun --->complete () "Complete text.")
@@ -945,8 +952,19 @@
   (require 'smartparens-config)
   )
 
+;; (use-package evil-smartparens
+;;   :ensure t
+;;   :config
+;;   (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
+;;   )
 
-  (defun <utility> () "Utility tools in Emacs.")
+;; (use-package evil-cleverparens
+;;   :ensure t
+;;   :config
+;;   (add-hook 'smartparens-enabled-hook #'evil-cleverparens-mode)
+;;   )
+
+(defun <utility> () "Utility tools in Emacs.")
 
 (use-package dictionary
   :init
