@@ -4,6 +4,7 @@
 ;; https://www.gnu.org/software/emacs/
 ;; https://www.gnu.org/fun/
 ;; https://emacsconf.org/
+;; https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf
 ;;
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
@@ -17,7 +18,7 @@
 ;; - Premature optimization is the root of all evil. -- Donald Knuth (https://wiki.c2.com/?PrematureOptimization)
 ;; - If it works, don't touch it.
 ;; - Object is a lie, use function instead.
-;; The manual from CMU [https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf]
+;; - Function as the abstract machine.
 
 ;; TODO run a profile in emacs
 
