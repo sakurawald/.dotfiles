@@ -1,11 +1,13 @@
 
 (defun <links> () "The interesting links.")
-;; https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
-;; https://www.gnu.org/software/emacs/
-;; https://www.gnu.org/fun/
-;; https://emacsconf.org/
-;; https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf
+;; Useful link:
+;; - https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
+;; - https://www.gnu.org/software/emacs/
+;; - https://www.gnu.org/fun/
+;; - https://emacsconf.org/
+;; - https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf
 ;;
+;; Some interesting sentences collected:
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
 ;; - While Vim is a text editor, the Emacs has a text editor.
@@ -14,15 +16,20 @@
 ;; - Finally, There are only 2 great languages: C and Lisp.
 ;; - To learn, is to connect.
 ;; - Patterns mean "I have run out of language." -- Rich Hickey
-;; - Design patterns are a compromise to the lack of expressiveness of the language.
+;; - Design patterns is a compromise to the lack of expressiveness of the language.
 ;; - Premature optimization is the root of all evil. -- Donald Knuth (https://wiki.c2.com/?PrematureOptimization)
 ;; - If it works, don't touch it.
 ;; - Object is a lie, use function instead.
 ;; - Function as the abstract machine.
+;; - Declarative language is like intention language.
+;; - The only difficulty is the lack of information.
 
 ;; TODO run a profile in emacs
 
+;; TODO integrate with `exwm'.
 ;; TODO integrate with the 'eshell'
+
+;; TODO configure flycheck.
 
 ;; TODO fix the `cls' template expansion.
 ;; TODO taste LSP extensions.
@@ -506,7 +513,8 @@
 (evil-define-key '(normal) 'global (kbd "Z M") 'helm-mini)
 
 (defun --->session () "Session related.")
-(desktop-save-mode 1)
+;; desktop save mode seems buggy.
+;; (desktop-save-mode 1)
 
 (defun <file> () "Files for Emacs.")
 (defun --->file () "File related.")
@@ -999,9 +1007,16 @@
 (use-package eglot
   :ensure t
   :config
+
+  ;; https://clangd.llvm.org/config#files
   (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
+
+  (add-to-list 'eglot-server-programs '((java-mode) "jdtls"))
+
   (add-hook 'c-mode-hook 'eglot-ensure)
-  (add-hook 'c++-mode-hook 'eglot-ensure))
+  (add-hook 'c++-mode-hook 'eglot-ensure)
+  (add-hook 'java-mode-hook 'eglot-ensure)
+  )
 
 (defun --->language:lisp () "Lisp Language.")
 ;; - Notation is nothing without denotation.
