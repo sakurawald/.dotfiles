@@ -1,10 +1,12 @@
 
 (defun <links> () "The interesting links.")
 ;; Useful link:
+;; - https://www.emacswiki.org/emacs/SiteMap
 ;; - https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
 ;; - https://www.gnu.org/software/emacs/
 ;; - https://www.gnu.org/fun/
 ;; - https://emacsconf.org/
+;; - https://funcall.blogspot.com/
 ;; - https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf
 ;;
 ;; Some interesting sentences collected:
@@ -27,9 +29,12 @@
 ;; TODO run a profile in emacs
 
 ;; TODO integrate with `exwm'.
-;; TODO integrate with the 'eshell'
+
+;; TODO the root of project and treemacs.
 
 ;; TODO configure flycheck.
+
+;; TODO customize the tab bar face
 
 ;; TODO fix the `cls' template expansion.
 ;; TODO taste LSP extensions.
@@ -381,11 +386,24 @@
   (global-set-key (kbd "M-x") #'helm-M-x)
   (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
   (global-set-key (kbd "C-x C-f") #'helm-find-files)
+  
+  ;; Doc
+  (setq helm-M-x-show-short-doc t)
+  (set-face-attribute 'helm-M-x-short-doc nil
+		      :box nil)
 
   ;; Enable globally.
   (helm-mode 1)
   :config
   ;; NOTE It's impossible to re-map bindinds in 'helm-M-x-mode' using 'evil'.
+
+  ;; Overrite the navigation keys.
+  (evil-define-key '(normal insert) helm-M-x-map (kbd "C-j") 'helm-next-line)
+  (evil-define-key '(normal insert) helm-M-x-map (kbd "C-k") 'helm-previous-line)
+
+  ;; Used to overwrite the `TIP' message.
+  (define-key helm-map (kbd "C-j") 'helm-next-line)
+
   )
 
 (defun --->mode-line () "Customize mode-line.")
@@ -980,6 +998,10 @@
   (evil-define-key '(normal) 'global (kbd "SPC u d") 'dictionary-search)
   )
 
+(use-package shell
+  :init
+  (evil-define-key '(normal) 'global (kbd "SPC u s") 'shell))
+
 (use-package eww
   :config
   ;; TIP To browse the firefox, use 'vimium' extension. (It's convenient to read manual online.)
@@ -1211,6 +1233,10 @@
 
 ;; TIP The command will ask for string if not string at point.
 (evil-define-key '(normal) 'global (kbd "SPC d m") 'slime-documentation-lookup)
+(evil-define-key '(normal) 'global (kbd "SPC d M") (lambda ()
+						     (interactive)
+						     (let ((browse-url-browser-function 'browse-url-default-browser))
+						       (slime-documentation-lookup))))
 
 
 (defun --->language:markdown () "Markdown language.")
