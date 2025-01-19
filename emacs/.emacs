@@ -27,17 +27,12 @@
 ;; - The only difficulty is the lack of information.
 
 ;; TODO run a profile in emacs
-
 ;; TODO integrate with `exwm'.
 
-;; TODO the root of project and treemacs.
-
 ;; TODO configure flycheck.
-
+;; TODO the root of project and treemacs.
 ;; TODO customize the tab bar face
-
 ;; TODO fix the `cls' template expansion.
-;; TODO taste LSP extensions.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -118,13 +113,17 @@
   :ensure t
   :after (evil)
   :config
-  ;; TIP Use 'key-conversion': 'C-[' = 'Escape', 'C-i' = 'Tab' and 'C-m' = 'Return'.
+  ;; TIP Use 'key-convention': 'C-[' = 'Escape', 'C-i' = 'Tab' and 'C-m' = 'Return'. (Other convention: n/p -> j/k, BackSpace (insert-state) -> C-w/C-u)
   ;; TIP The order to escape: 'jk' > 'C-g' > 'C-[' > 'Escape'
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-delay 0.1)
-
+  
+  ;; Exclude these modes, we use `q' key to quit in them.
   (setq evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode magit-todos-list-mode
 							     treemacs-mode))
+
+  ;; Exclude the visual-state to make the visual selecting smooth.
+  (setq evil-escape-excluded-states '(visual))
 
   (evil-escape-mode))
 
@@ -386,25 +385,22 @@
   (global-set-key (kbd "M-x") #'helm-M-x)
   (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
   (global-set-key (kbd "C-x C-f") #'helm-find-files)
-  
-  ;; Doc
+
+  ;; Short doc
   (setq helm-M-x-show-short-doc t)
-  (set-face-attribute 'helm-M-x-short-doc nil
-		      :box nil)
 
   ;; Enable globally.
   (helm-mode 1)
+
   :config
+
   ;; NOTE It's impossible to re-map bindinds in 'helm-M-x-mode' using 'evil'.
 
   ;; Overrite the navigation keys.
-  (evil-define-key '(normal insert) helm-M-x-map (kbd "C-j") 'helm-next-line)
-  (evil-define-key '(normal insert) helm-M-x-map (kbd "C-k") 'helm-previous-line)
-
+  (evil-define-key '(normal insert) helm-map (kbd "C-j") 'helm-next-line)
+  (evil-define-key '(normal insert) helm-map (kbd "C-k") 'helm-previous-line)
   ;; Used to overwrite the `TIP' message.
-  (define-key helm-map (kbd "C-j") 'helm-next-line)
-
-  )
+  (define-key helm-map (kbd "C-j") 'helm-next-line))
 
 (defun --->mode-line () "Customize mode-line.")
 (use-package doom-modeline
@@ -511,6 +507,8 @@
 
   (evil-define-key '(normal) 'global (kbd "SPC t n") 'tab-next)
   (evil-define-key '(normal) 'global (kbd "SPC t p") 'tab-previous)
+
+  (evil-define-key '(normal) 'global (kbd "SPC t m") 'tab-bar-move-tab-to)
 
   (evil-define-key '(normal) 'global (kbd "SPC t d") 'tab-close)
   (evil-define-key '(normal) 'global (kbd "SPC t D") 'tab-close-other)
@@ -1026,19 +1024,77 @@
 
 (defun --->lsp () "Language Server Protocol.")
 ;; NOTE A LSP server provides: completion, snippet, index, documentation, cheker, refactor, code-action, formatter.
-(use-package eglot
+
+(use-package lsp-mode
   :ensure t
+  :after (evil)
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (
+	 ;; https://clangd.llvm.org/config#files
+	 (c-mode . lsp)
+         (c++-mode . lsp)
+         (java-mode . lsp))
+  :commands lsp
   :config
 
-  ;; https://clangd.llvm.org/config#files
-  (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
+  ;; Performance tweak.
+  (setq gc-cons-threshold 100000000) ;; 100mb
+  (setq read-process-output-max (* 8 1024 1024)) ;; 8mb
 
-  (add-to-list 'eglot-server-programs '((java-mode) "jdtls"))
 
-  (add-hook 'c-mode-hook 'eglot-ensure)
-  (add-hook 'c++-mode-hook 'eglot-ensure)
-  (add-hook 'java-mode-hook 'eglot-ensure)
+  ;; Bind find-references function.
+  (evil-collection-define-key 'normal 'lsp-mode-map
+    "gr" 'lsp-find-references)
+
+  ;; TODO peek mode ?
+
+  (evil-collection-define-key 'normal 'lsp-mode-map
+    "ga" 'xref-apropos)
+
+  ;; Bind document function.
+  (evil-collection-define-key 'normal 'lsp-mode-map
+    "K" 'lsp-describe-thing-at-point)
+
+  ;; Bind keys.
+  (evil-define-key '(normal) 'global (kbd "SPC l s s") 'lsp-describe-session)
+  (evil-define-key '(normal) 'global (kbd "SPC l s l") 'lsp-workspace-show-log)
+  (evil-define-key '(normal) 'global (kbd "SPC l s r") 'lsp-workspace-restart)
+  (evil-define-key '(normal) 'global (kbd "SPC l s k") 'lsp-workspace-shutdown)
+
+  (evil-define-key '(normal) 'global (kbd "SPC l w w") 'lsp-workspace-folders-open)
+  (evil-define-key '(normal) 'global (kbd "SPC l w a") 'lsp-workspace-folders-add)
+  (evil-define-key '(normal) 'global (kbd "SPC l w r") 'lsp-workspace-folders-remove)
+  (evil-define-key '(normal) 'global (kbd "SPC l w R") 'lsp-workspace-blocklist-remove)
+
+  (evil-define-key '(normal) 'global (kbd "SPC l c d") 'helm-lsp-diagnostics)
+  (evil-define-key '(normal) 'global (kbd "SPC l c a") 'helm-lsp-code-actions)
+  (evil-define-key '(normal) 'global (kbd "SPC l c h") 'lsp-treemacs-call-hierarchy)
+
+  (evil-define-key '(normal) 'global (kbd "SPC l f b") 'lsp-format-buffer)
+  (evil-define-key '(normal) 'global (kbd "SPC l f r") 'lsp-format-region)
+
+  (evil-define-key '(normal) 'global (kbd "SPC l w s") 'helm-lsp-workspace-symbol)
+  (evil-define-key '(normal) 'global (kbd "SPC l w S") 'helm-lsp-global-workspace-symbol)
+
+  (evil-define-key '(normal) 'global (kbd "SPC l r o") 'lsp-organize-imports)
+  (evil-define-key '(normal) 'global (kbd "SPC l r n") 'lsp-rename)
+
   )
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+
+(use-package helm-lsp
+  :ensure t
+  :commands helm-lsp-workspace-symbol)
+(use-package lsp-treemacs
+  :ensure t
+  :commands lsp-treemacs-errors-list)
+;; (use-package dap-mode)
+;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 
 (defun --->language:lisp () "Lisp Language.")
 ;; - Notation is nothing without denotation.
