@@ -30,9 +30,8 @@
 ;; TODO integrate with `exwm'.
 
 ;; TODO configure flycheck.
-;; TODO the root of project and treemacs.
-;; TODO customize the tab bar face
-;; TODO fix the `cls' template expansion.
+;; TODO should not select the home dir as the project root.
+;; TODO fix the `cls' template expansion. (not work well if slime started.)
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -1024,6 +1023,7 @@
 
 (defun --->lsp () "Language Server Protocol.")
 ;; NOTE A LSP server provides: completion, snippet, index, documentation, cheker, refactor, code-action, formatter.
+;; NOTE A good LSP server should provide the correct AST.
 
 (use-package lsp-mode
   :ensure t
