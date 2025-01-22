@@ -25,11 +25,10 @@
 ;; - Function as the abstract machine.
 ;; - Declarative language is like intention language.
 ;; - The only difficulty is the lack of information.
+;; - I hope symobls from Emacs packages all have a good name, with intuitive prefix and suffix.
 
-;; TODO integrate with `exwm'.
+;; TODO should not select the home dir as the project root. (treemacs) -> read treemacs wiki
 
-;; TODO configure flycheck.
-;; TODO should not select the home dir as the project root.
 ;; TODO fix the `cls' template expansion. (not work well if slime started.)
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -299,6 +298,34 @@
 ;;   :ensure t
 ;;   :after (hl-todo magit)
 ;;   :config (magit-todos-mode 1))
+
+;; (use-package exwm
+;;   :ensure t
+;;   :config
+;;   ;; Set the initial workspace number.
+;;   (setq exwm-workspace-number 4)
+
+;;   ;; Make class name the buffer name.
+;;   (add-hook 'exwm-update-class-hook
+;; 	    (lambda () (exwm-workspace-rename-buffer exwm-class-name)))
+
+;;   ;; Global keybindings.
+;;   (setq exwm-input-global-keys
+;; 	`(([?\s-r] . exwm-reset) ;; s-r: Reset (to line-mode).
+;;           ([?\s-w] . exwm-workspace-switch) ;; s-w: Switch workspace.
+;;           ([?\s-&] . (lambda (cmd) ;; s-&: Launch application.
+;;                        (interactive (list (read-shell-command "$ ")))
+;;                        (start-process-shell-command cmd nil cmd)))
+;;           ;; s-N: Switch to certain workspace.
+;;           ,@(mapcar (lambda (i)
+;;                       `(,(kbd (format "s-%d" i)) .
+;; 			(lambda ()
+;;                           (interactive)
+;;                           (exwm-workspace-switch-create ,i))))
+;;                     (number-sequence 0 9))))
+;;   ;; Enable EXWM
+;;   (exwm-enable)
+;;   )
 
 (defun <view> () "The display for Emacs.")
 (defun --->display () "The appeareance of Emacs.")
@@ -629,7 +656,7 @@
        (treemacs-git-mode 'simple)))
 
     ;; Should display the git ignored files.
-    (treemacs-hide-gitignored-files-mode nil)
+    (setq treemacs-hide-gitignored-files-mode nil)
 
     ;; Enable the indent in treemacs.
     (treemacs-indent-guide-mode)
@@ -654,7 +681,8 @@
   :ensure t
   :config
   ;; NOTE Make the 'treemacs' scoped by 'tab', not by 'frame'.
-  (treemacs-set-scope-type 'Tabs))
+  ;;(treemacs-set-scope-type 'Tabs)
+  )
 
 (defun --->project () "Project related.")
 (use-package rg
@@ -731,7 +759,11 @@
 
 ;; gd / gr ---> find definition / find references.
 ;; TIP Use 'C-j' and 'C-k' to show the details in 'xref-window'.
-(evil-define-key '(normal) 'global (kbd "g s") 'helm-lsp-global-workspace-symbol)
+(evil-define-key '(normal) 'global (kbd "g s") 'helm-lsp-workspace-symbol)
+(evil-define-key '(normal) 'global (kbd "g S") 'helm-lsp-global-workspace-symbol)
+
+(evil-define-key '(normal) 'global (kbd "g c") 'flycheck-list-errors)
+(evil-define-key '(normal) 'global (kbd "g C") 'lsp-treemacs-errors-list)
 
 ;; gm -> as a shortcut of '%'.
 (evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
@@ -895,23 +927,41 @@
 (use-package flycheck
   :ensure t
   :config
-  (global-flycheck-mode))
+  ;; NOTE flycheck = the external executable 'checker' + the abstraction for 'error' object.
+
+  ;; The fringe indicator is too tiny in hi-res mode:
+  ;; - https://github.com/flycheck/flycheck/pull/1744/files
+  ;; - https://emacs.stackexchange.com/questions/52829/fringe-indicators-very-tiny
+  (setq-default left-fringe-width 16 right-fringe-width 16
+		left-margin-width 0 right-margin-width 0)
+
+  ;; User options.
+  (setq flycheck-display-errors-delay 0.5)
+
+
+  ;; Enable it.
+  (global-flycheck-mode)
+
+  ;; Bind keys.
+  (evil-global-set-key 'normal (kbd "[ e") 'previous-error)
+  (evil-global-set-key 'normal (kbd "] e") 'next-error)
+  )
 
 (defun --->formatter () "Format text.")
 ;; TIP Use 'formatter' to format buffer 'automatically', instead of `<<` and `>>` to indent text manually.
-;; (use-package aggressive-indent
-;;   :ensure t
-;;   :config
-;;   ;; NOTE Only enable this mode for these modes.
-;;   (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
-;;   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-;;   (add-hook 'c-mode-hook #'aggressive-indent-mode)
-;;   (add-hook 'java-mode-hook #'aggressive-indent-mode)
-;;   (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
-;;   (add-hook 'tex-mode-hook #'aggressive-indent-mode)
-;;   )
+(use-package aggressive-indent
+  :ensure t
+  :config
+  ;; NOTE Only enable this mode for these modes.
+  (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
+  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+  ;; (add-hook 'c-mode-hook #'aggressive-indent-mode)
+  (add-hook 'java-mode-hook #'aggressive-indent-mode)
+  (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
+  (add-hook 'tex-mode-hook #'aggressive-indent-mode)
+  )
 
-(defun --->text-object () "Analyse text.")
+  (defun --->text-object () "Analyse text.")
 ;; TIP Useful vi text-objects: 'b' = 'parenthesis', 'B' = 'curly', 't' = 'tag', 's' = 'sentence', 'a' = 'argument', 'f' = 'function', 'c' = 'class', 'o' = 'symbol'.
 
 (use-package tree-sitter
@@ -1031,6 +1081,7 @@
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
   :hook (
+	 ;; NOTE To let clangd indexing the project, you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 	 ;; https://clangd.llvm.org/config#files
 	 (c-mode . lsp)
          (c++-mode . lsp)
@@ -1042,18 +1093,15 @@
   (setq gc-cons-threshold 100000000) ;; 100mb
   (setq read-process-output-max (* 8 1024 1024)) ;; 8mb
 
-
   ;; Bind find-references function.
-  (evil-collection-define-key 'normal 'lsp-mode-map
+  (evil-define-key 'normal 'lsp-mode-map
     "gr" 'lsp-find-references)
 
-  ;; TODO peek mode ?
-
-  (evil-collection-define-key 'normal 'lsp-mode-map
+  (evil-define-key 'normal 'lsp-mode-map
     "ga" 'xref-apropos)
 
   ;; Bind document function.
-  (evil-collection-define-key 'normal 'lsp-mode-map
+  (evil-define-key 'normal 'lsp-mode-map
     "K" 'lsp-describe-thing-at-point)
 
   ;; Bind keys.
@@ -1067,16 +1115,11 @@
   (evil-define-key '(normal) 'global (kbd "SPC l w r") 'lsp-workspace-folders-remove)
   (evil-define-key '(normal) 'global (kbd "SPC l w R") 'lsp-workspace-blocklist-remove)
 
-  (evil-define-key '(normal) 'global (kbd "SPC l c d") 'helm-lsp-diagnostics)
-  (evil-define-key '(normal) 'global (kbd "SPC l c D") 'lsp-treemacs-errors-list)
   (evil-define-key '(normal) 'global (kbd "SPC l c a") 'helm-lsp-code-actions)
   (evil-define-key '(normal) 'global (kbd "SPC l c h") 'lsp-treemacs-call-hierarchy)
 
   (evil-define-key '(normal) 'global (kbd "SPC l f b") 'lsp-format-buffer)
   (evil-define-key '(normal) 'global (kbd "SPC l f r") 'lsp-format-region)
-
-  (evil-define-key '(normal) 'global (kbd "SPC l w s") 'helm-lsp-workspace-symbol)
-  (evil-define-key '(normal) 'global (kbd "SPC l w S") 'helm-lsp-global-workspace-symbol)
 
   (evil-define-key '(normal) 'global (kbd "SPC l r o") 'lsp-organize-imports)
   (evil-define-key '(normal) 'global (kbd "SPC l r n") 'lsp-rename)
@@ -1090,9 +1133,17 @@
 (use-package helm-lsp
   :ensure t
   :commands helm-lsp-workspace-symbol)
+
 (use-package lsp-treemacs
   :ensure t
-  :commands lsp-treemacs-errors-list)
+  :commands lsp-treemacs-errors-list
+  :config
+
+  (setq lsp-treemacs-call-hierarchy-expand-depth 5)
+  (setq lsp-treemacs-type-hierarchy-expand-depth 5)
+
+  (setq lsp-treemacs-error-list-expand-depth 2)
+  )
 ;; (use-package dap-mode)
 ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 
@@ -1311,6 +1362,13 @@
   :ensure t
   :config
   (company-auctex-init))
+
+(defun --->language:java () "Java language.")
+(use-package lsp-java
+  :ensure t
+  :config
+  (add-hook 'java-mode-hook #'lsp)
+  )
 
 
 (provide '.emacs)
