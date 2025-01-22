@@ -27,8 +27,6 @@
 ;; - The only difficulty is the lack of information.
 ;; - I hope symobls from Emacs packages all have a good name, with intuitive prefix and suffix.
 
-;; TODO should not select the home dir as the project root. (treemacs) -> read treemacs wiki
-
 ;; TODO fix the `cls' template expansion. (not work well if slime started.)
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -569,12 +567,22 @@
   :ensure t
   :defer t
   :init
+  ;; NOTE Should not use `treemacs-tab-bar' package, it's buggy. The default model used by treemacs is powerful, which supports to make muptile projects as a workspace.
   ;; TIP A good editor will not let you save files 'manually'.
   (evil-define-key '(normal) 'global (kbd "SPC f f") 'helm-find-files)
+
+  ;; TIP To expand a node recursively, push a `prefix-arg'.
   (evil-define-key '(normal) 'global (kbd "SPC f t") 'treemacs)
 
   (evil-define-key '(normal) 'global (kbd "SPC f c") 'treemacs-create-file)
   (evil-define-key '(normal) 'global (kbd "SPC f C") 'treemacs-create-dir)
+
+  (evil-define-key '(normal) 'global (kbd "SPC f w s") 'treemacs-switch-workspace)
+  (evil-define-key '(normal) 'global (kbd "SPC f w e") 'treemacs-edit-workspaces)
+  (evil-define-key '(normal) 'global (kbd "SPC f w c") 'treemacs-create-workspace)
+  (evil-define-key '(normal) 'global (kbd "SPC f w d") 'treemacs-remove-workspace)
+  (evil-define-key '(normal) 'global (kbd "SPC f w r") 'treemacs-rename-workspace)
+
   :config
   ;; NOTE For better integration, use 'treemacs' as the file explorer.
   ;; TIP Press '?' in the 'treemacs window' for 'normal-help'. Press 'C-?' for 'advanced-help'.
@@ -631,7 +639,7 @@
           treemacs-user-mode-line-format           nil
           treemacs-user-header-line-format         nil
           treemacs-wide-toggle-width               70
-          treemacs-width                           35
+          treemacs-width                           40
           treemacs-width-increment                 1
           treemacs-width-is-initially-locked       t
           treemacs-workspace-switch-cleanup        nil)
@@ -655,8 +663,8 @@
       (`(t . _)
        (treemacs-git-mode 'simple)))
 
-    ;; Should display the git ignored files.
-    (setq treemacs-hide-gitignored-files-mode nil)
+    ;; Should not display the .gitignore files.
+    (setq treemacs-hide-gitignored-files-mode t)
 
     ;; Enable the indent in treemacs.
     (treemacs-indent-guide-mode)
@@ -675,14 +683,6 @@
 (use-package treemacs-magit
   :after (treemacs magit)
   :ensure t)
-
-(use-package treemacs-tab-bar
-  :after (treemacs)
-  :ensure t
-  :config
-  ;; NOTE Make the 'treemacs' scoped by 'tab', not by 'frame'.
-  ;;(treemacs-set-scope-type 'Tabs)
-  )
 
 (defun --->project () "Project related.")
 (use-package rg
@@ -704,6 +704,7 @@
   (evil-define-key '(normal) 'global (kbd "SPC p p") 'projectile-switch-project)
   (evil-define-key '(normal) 'global (kbd "SPC p b") 'projectile-switch-to-buffer)
 
+  (evil-define-key '(normal) 'global (kbd "SPC p i") 'projectile-project-info)
   (evil-define-key '(normal) 'global (kbd "SPC p h") 'projectile-dired)
   (evil-define-key '(normal) 'global (kbd "SPC p f") 'projectile-find-file)
   (evil-define-key '(normal) 'global (kbd "SPC SPC") 'projectile-find-file)
@@ -734,6 +735,8 @@
 
   (evil-define-key '(normal) 'global (kbd "SPC p C") 'projectile-add-known-project)
   (evil-define-key '(normal) 'global (kbd "SPC p D") 'projectile-remove-known-project)
+  ;; Pin a project to treemacs.
+  (evil-define-key '(normal) 'global (kbd "SPC p P") 'treemacs-projectile)
 
   (evil-define-key '(normal) 'global (kbd "SPC p L") 'projectile-toggle-project-read-only)
 
@@ -1105,15 +1108,15 @@
     "K" 'lsp-describe-thing-at-point)
 
   ;; Bind keys.
-  (evil-define-key '(normal) 'global (kbd "SPC l s s") 'lsp-describe-session)
-  (evil-define-key '(normal) 'global (kbd "SPC l s l") 'lsp-workspace-show-log)
-  (evil-define-key '(normal) 'global (kbd "SPC l s r") 'lsp-workspace-restart)
-  (evil-define-key '(normal) 'global (kbd "SPC l s k") 'lsp-workspace-shutdown)
+  (evil-define-key '(normal) 'global (kbd "SPC l w d") 'lsp-describe-session)
+  (evil-define-key '(normal) 'global (kbd "SPC l w l") 'lsp-workspace-show-log)
+  (evil-define-key '(normal) 'global (kbd "SPC l w R") 'lsp-workspace-restart)
+  (evil-define-key '(normal) 'global (kbd "SPC l w K") 'lsp-workspace-shutdown)
 
   (evil-define-key '(normal) 'global (kbd "SPC l w w") 'lsp-workspace-folders-open)
   (evil-define-key '(normal) 'global (kbd "SPC l w a") 'lsp-workspace-folders-add)
   (evil-define-key '(normal) 'global (kbd "SPC l w r") 'lsp-workspace-folders-remove)
-  (evil-define-key '(normal) 'global (kbd "SPC l w R") 'lsp-workspace-blocklist-remove)
+  (evil-define-key '(normal) 'global (kbd "SPC l w b") 'lsp-workspace-blocklist-remove)
 
   (evil-define-key '(normal) 'global (kbd "SPC l c a") 'helm-lsp-code-actions)
   (evil-define-key '(normal) 'global (kbd "SPC l c h") 'lsp-treemacs-call-hierarchy)
