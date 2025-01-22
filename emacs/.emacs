@@ -26,7 +26,6 @@
 ;; - Declarative language is like intention language.
 ;; - The only difficulty is the lack of information.
 
-;; TODO run a profile in emacs
 ;; TODO integrate with `exwm'.
 
 ;; TODO configure flycheck.
@@ -732,7 +731,7 @@
 
 ;; gd / gr ---> find definition / find references.
 ;; TIP Use 'C-j' and 'C-k' to show the details in 'xref-window'.
-(evil-define-key '(normal) 'global (kbd "g s") 'projectile-ripgrep)
+(evil-define-key '(normal) 'global (kbd "g s") 'helm-lsp-global-workspace-symbol)
 
 ;; gm -> as a shortcut of '%'.
 (evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
@@ -843,7 +842,7 @@
 (use-package company
   :ensure t
   :config
-  (setq company-minimum-prefix-length 2)
+  (setq company-minimum-prefix-length 1)
   (setq company-idle-delay
 	(lambda () (if (company-in-string-or-comment) nil 0)))
 
@@ -900,17 +899,17 @@
 
 (defun --->formatter () "Format text.")
 ;; TIP Use 'formatter' to format buffer 'automatically', instead of `<<` and `>>` to indent text manually.
-(use-package aggressive-indent
-  :ensure t
-  :config
-  ;; NOTE Only enable this mode for these modes.
-  (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
-  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-  (add-hook 'c-mode-hook #'aggressive-indent-mode)
-  (add-hook 'java-mode-hook #'aggressive-indent-mode)
-  (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
-  (add-hook 'tex-mode-hook #'aggressive-indent-mode)
-  )
+;; (use-package aggressive-indent
+;;   :ensure t
+;;   :config
+;;   ;; NOTE Only enable this mode for these modes.
+;;   (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
+;;   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+;;   (add-hook 'c-mode-hook #'aggressive-indent-mode)
+;;   (add-hook 'java-mode-hook #'aggressive-indent-mode)
+;;   (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
+;;   (add-hook 'tex-mode-hook #'aggressive-indent-mode)
+;;   )
 
 (defun --->text-object () "Analyse text.")
 ;; TIP Useful vi text-objects: 'b' = 'parenthesis', 'B' = 'curly', 't' = 'tag', 's' = 'sentence', 'a' = 'argument', 'f' = 'function', 'c' = 'class', 'o' = 'symbol'.
@@ -1024,7 +1023,7 @@
 (defun --->lsp () "Language Server Protocol.")
 ;; NOTE A LSP server provides: completion, snippet, index, documentation, cheker, refactor, code-action, formatter.
 ;; NOTE A good LSP server should provide the correct AST.
-
+;; NOTE For IDE users, use this equation: IDE = Editor + LSP + DAP.
 (use-package lsp-mode
   :ensure t
   :after (evil)
@@ -1069,6 +1068,7 @@
   (evil-define-key '(normal) 'global (kbd "SPC l w R") 'lsp-workspace-blocklist-remove)
 
   (evil-define-key '(normal) 'global (kbd "SPC l c d") 'helm-lsp-diagnostics)
+  (evil-define-key '(normal) 'global (kbd "SPC l c D") 'lsp-treemacs-errors-list)
   (evil-define-key '(normal) 'global (kbd "SPC l c a") 'helm-lsp-code-actions)
   (evil-define-key '(normal) 'global (kbd "SPC l c h") 'lsp-treemacs-call-hierarchy)
 
