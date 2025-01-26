@@ -30,6 +30,7 @@
 
 ;; TODO fix the `cls' template expansion. (not work well if slime started.)
 ;; TODO set scroll off
+;; TODO auto ts mode for some languages
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -520,16 +521,17 @@
   (evil-define-key '(normal) 'global (kbd "SPC t t") 'tab-switch)
   (evil-define-key '(normal) 'global (kbd "SPC t c") 'tab-bar-new-tab)
 
-  (evil-global-set-key 'normal (kbd "SPC 0") (lambda () (interactive) (tab-bar-switch-to-recent-tab)))
-  (evil-global-set-key 'normal (kbd "SPC 1") (lambda () (interactive) (tab-select 1)))
-  (evil-global-set-key 'normal (kbd "SPC 2") (lambda () (interactive) (tab-select 2)))
-  (evil-global-set-key 'normal (kbd "SPC 3") (lambda () (interactive) (tab-select 3)))
-  (evil-global-set-key 'normal (kbd "SPC 4") (lambda () (interactive) (tab-select 4)))
-  (evil-global-set-key 'normal (kbd "SPC 5") (lambda () (interactive) (tab-select 5)))
-  (evil-global-set-key 'normal (kbd "SPC 6") (lambda () (interactive) (tab-select 6)))
-  (evil-global-set-key 'normal (kbd "SPC 7") (lambda () (interactive) (tab-select 7)))
-  (evil-global-set-key 'normal (kbd "SPC 8") (lambda () (interactive) (tab-select 8)))
-  (evil-global-set-key 'normal (kbd "SPC 9") (lambda () (interactive) (tab-select 9)))
+  (keymap-unset evil-motion-state-map "SPC")
+  (evil-define-key '(normal motion) 'global (kbd "SPC 0") (lambda () (interactive) (tab-bar-switch-to-recent-tab)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 1") (lambda () (interactive) (tab-select 1)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 2") (lambda () (interactive) (tab-select 2)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 3") (lambda () (interactive) (tab-select 3)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 4") (lambda () (interactive) (tab-select 4)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 5") (lambda () (interactive) (tab-select 5)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 6") (lambda () (interactive) (tab-select 6)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 7") (lambda () (interactive) (tab-select 7)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 8") (lambda () (interactive) (tab-select 8)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 9") (lambda () (interactive) (tab-select 9)))
 
   (evil-define-key '(normal) 'global (kbd "SPC t n") 'tab-next)
   (evil-define-key '(normal) 'global (kbd "SPC t p") 'tab-previous)
@@ -673,7 +675,9 @@
     (treemacs-indent-guide-mode)
 
     ;; Override keymap
-    (evil-define-key 'treemacs treemacs-mode-map (kbd "C-l")  'evil-window-right)))
+    (evil-define-key 'treemacs treemacs-mode-map (kbd "C-l")  'evil-window-right)
+
+    ))
 
 (use-package treemacs-evil
   :after (treemacs evil)
@@ -729,15 +733,14 @@
   (evil-define-key '(normal) 'global (kbd "SPC p !") 'projectile-run-shell-command-in-root)
   (evil-define-key '(normal) 'global (kbd "SPC p &") 'projectile-run-async-shell-command-in-root)
 
-  (evil-define-key '(normal) 'global (kbd "SPC p k") 'compile)
-  (evil-define-key '(normal) 'global (kbd "SPC p K") 'projectile-compile-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p C") 'projectile-compile-project)
   (evil-define-key '(normal) 'global (kbd "SPC p R") 'projectile-run-project)
   (evil-define-key '(normal) 'global (kbd "SPC p P") 'projectile-package-project)
   (evil-define-key '(normal) 'global (kbd "SPC p I") 'projectile-install-project)
   (evil-define-key '(normal) 'global (kbd "SPC p T") 'projectile-test-project)
 
-  (evil-define-key '(normal) 'global (kbd "SPC p C") 'projectile-add-known-project)
-  (evil-define-key '(normal) 'global (kbd "SPC p D") 'projectile-remove-known-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p m") 'projectile-add-known-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p M") 'projectile-remove-known-project)
   ;; Pin a project to treemacs.
   (evil-define-key '(normal) 'global (kbd "SPC p P") 'treemacs-projectile)
 
@@ -1087,7 +1090,7 @@
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
   :hook (
-	 ;; NOTE To let clangd indexing the project, you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+	 ;; NOTE To let clangd indexing the project (or includes the proper header files.), you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 (or set the flag in CMakeList.txt file)
 	 ;; NOTE Since the AST is generated via compiling, so the pre-processor works for source file, be careful with the #ifdef macro!
 	 ;; https://clangd.llvm.org/config#files
 	 (c-mode . lsp)
