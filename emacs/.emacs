@@ -1,6 +1,7 @@
 
 (defun <links> () "The interesting links.")
 ;; Useful link:
+;; - https://emacsdocs.org/docs/emacs/The-Emacs-Editor
 ;; - https://www.emacswiki.org/emacs/SiteMap
 ;; - https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
 ;; - https://www.gnu.org/software/emacs/
@@ -28,9 +29,7 @@
 ;; - I hope symobls from Emacs packages all have a good name, with intuitive prefix and suffix.
 ;; - Programming = Modeling + Translating
 
-;; TODO fix the `cls' template expansion. (not work well if slime started.)
-;; TODO set scroll off
-;; TODO auto ts mode for some languages
+;; TODO the `cls' template expansion in lisp mode not work if slime is connected. (company-backends)
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -58,6 +57,9 @@
   (setq evil-want-C-u-delete t)
   (setq evil-undo-system 'undo-redo)
 
+  ;; scroll
+  (setq scroll-margin 5)
+
   ;; search
   (setq evil-flash-delay 5)
 
@@ -74,6 +76,7 @@
   ;; TIP Use 'C-z' to toggle between 'vi-mode' and 'emacs-mode'.
   ;; TIP To edit 'similar-text', use 'vi-visual-block-mode', 'vim-macro' or 'vim-repeat-command'.
 
+  ;; NOTE The kill-ring in Emacs can be replaced by evil registers.
   ;; TIP To list registers ':reg'. Useful registers: 0 (last yank), " (unnamed register), * (x11 clipboard).
   ;; TIP To access a register, use '"<register-name>{py}'.
 
@@ -116,7 +119,7 @@
   ;; TIP The order to escape: 'jk' > 'C-g' > 'C-[' > 'Escape'
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-delay 0.1)
-  
+
   ;; Exclude these modes, we use `q' key to quit in them.
   (setq evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode magit-todos-list-mode
 							     treemacs-mode))
@@ -210,8 +213,7 @@
      (lisp . t)
      (python . t)
      ))
-  (setq org-confirm-babel-evaluate nil)
-  )
+  (setq org-confirm-babel-evaluate nil))
 
 (use-package org-modern
   :ensure t
@@ -249,8 +251,7 @@
   (setq org-modern-hide-stars 'nil)
 
   ;; Enable mode.
-  (global-org-modern-mode)
-  )
+  (global-org-modern-mode))
 
 
 ;; NOTE A fancy render-engine for org is useless.
@@ -289,17 +290,18 @@
 (use-package hl-todo
   :ensure t
   :config
+
+  ;; Enable globally.
   (setq hl-todo-keyword-faces
 	'(("TODO"   . "#FFFF00")
           ("FIXME"  . "#FF0000")
           ("NOTE"  . "#0000FF")
           ("TIP"  . "#00FF00")))
-  (global-hl-todo-mode))
+  (global-hl-todo-mode)
 
-;; (use-package magit-todos
-;;   :ensure t
-;;   :after (hl-todo magit)
-;;   :config (magit-todos-mode 1))
+  ;; Bind.
+  (evil-define-key '(normal) 'global (kbd "SPC u t") 'hl-todo-occur)
+  )
 
 ;; (use-package exwm
 ;;   :ensure t
@@ -571,13 +573,18 @@
 (use-package treemacs
   :ensure t
   :defer t
+  :after (projectile)
   :init
   ;; NOTE Should not use `treemacs-tab-bar' package, it's buggy. The default model used by treemacs is powerful, which supports to make muptile projects as a workspace.
   ;; TIP A good editor will not let you save files 'manually'.
   (evil-define-key '(normal) 'global (kbd "SPC f f") 'helm-find-files)
 
   ;; TIP To expand a node recursively, push a `prefix-arg'.
-  (evil-define-key '(normal) 'global (kbd "SPC f t") 'treemacs)
+  (evil-define-key '(normal) 'global (kbd "SPC f t") (lambda ()
+						       (interactive)
+						       (if (projectile-project-p)
+							   (call-interactively 'treemacs)
+							 (call-interactively 'dired))))
 
   (evil-define-key '(normal) 'global (kbd "SPC f c") 'treemacs-create-file)
   (evil-define-key '(normal) 'global (kbd "SPC f C") 'treemacs-create-dir)
@@ -771,6 +778,9 @@
 (evil-define-key '(normal) 'global (kbd "g s") 'helm-lsp-workspace-symbol)
 (evil-define-key '(normal) 'global (kbd "g S") 'helm-lsp-global-workspace-symbol)
 
+(evil-define-key '(normal) 'global (kbd "g h") 'lsp-treemacs-call-hierarchy)
+(evil-define-key '(normal) 'global (kbd "g H") 'lsp-treemacs-type-hierarchy)
+
 (evil-define-key '(normal) 'global (kbd "g c") 'flycheck-list-errors)
 (evil-define-key '(normal) 'global (kbd "g C") 'lsp-treemacs-errors-list)
 
@@ -779,7 +789,7 @@
 
 ;; NOTE Vim use 'gt' and 'gT' to cycle 'tab', but we use it to goto a 'tag'.
 (evil-define-key '(normal) 'global (kbd "g t") 'helm-semantic-or-imenu)
-(evil-define-key '(normal) 'global (kbd "g T") 'hl-todo-occur)
+(evil-define-key '(normal) 'global (kbd "g T") 'helm-imenu-in-all-buffers)
 
 (evil-define-key '(normal) 'global (kbd "g x") 'browse-url-at-point)
 (evil-define-key '(normal) 'global (kbd "g X") 'browse-url-xdg-open)
@@ -883,6 +893,7 @@
 (use-package company
   :ensure t
   :config
+
   (setq company-minimum-prefix-length 1)
   (setq company-idle-delay
 	(lambda () (if (company-in-string-or-comment) nil 0)))
@@ -895,6 +906,27 @@
   ;; Enable global mode.
   (add-hook 'after-init-hook 'global-company-mode)
   ;; (setq company-global-modes '(not erc-mode message-mode eshell-mode))
+
+  ;; (add-hook 'prog-mode-hook (lambda ()
+  ;; 			      (setq-local company-backends
+  ;; 					  '((company-slime
+  ;; 					     company-yasnippet
+  ;; 					     company-files
+  ;; 					     company-keywords
+  ;; 					     company-capf
+  ;; 					     company-cmake
+  ;; 					     company-c-headers
+  ;; 					     company-clang
+  ;; 					     company-irony-c-headers
+  ;; 					     company-irony
+  ;; 					     company-dabbrev-code
+  ;; 					     company-semantic
+  ;; 					     company-gtags
+  ;; 					     company-etags
+  ;; 					     company-rtags
+  ;; 					     company-elisp
+  ;; 					     )))))
+
   )
 
 (use-package company-quickhelp
@@ -923,10 +955,17 @@
 (defun --->snippet () "Snippet text.")
 (use-package yasnippet
   :ensure t
+  :after (company)
   :config
   ;; TIP Good to have a 'template' system to avoid stupid codes in some stupid languages. (I am not saying about Java).
   ;; TIP Use 'Tab' in `vi-insert-mode' to expand the key into snippet. e.g. 'cls<Tab>' in common-lisp mode.
-  (yas-global-mode 1))
+  (yas-global-mode 1)
+
+  ;; Add company backend
+  ;; (push 'company-yasnippet company-backends)
+
+
+  )
 
 (use-package yasnippet-snippets
   :ensure t)
@@ -967,10 +1006,11 @@
   ;; (add-hook 'c-mode-hook #'aggressive-indent-mode)
   (add-hook 'java-mode-hook #'aggressive-indent-mode)
   (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
-  (add-hook 'tex-mode-hook #'aggressive-indent-mode)
-  )
+  (add-hook 'tex-mode-hook #'aggressive-indent-mode))
 
-  (defun --->text-object () "Analyse text.")
+;; NOTE The indent highlight is distracting, just use the auto formatter and the space characters width.
+
+(defun --->text-object () "Analyse text.")
 ;; TIP Useful vi text-objects: 'b' = 'parenthesis', 'B' = 'curly', 't' = 'tag', 's' = 'sentence', 'a' = 'argument', 'f' = 'function', 'c' = 'class', 'o' = 'symbol'.
 
 (use-package tree-sitter
@@ -1011,7 +1051,7 @@
 (use-package smartparens
   :ensure t
   ;; NOTE Only enable 'smartparens-mode' in these mode.
-  :hook (prog-mode text-mode markdown-mode slime-repl-mode)
+  :hook (prog-mode text-mode markdown-mode slime-repl-mode inferior-emacs-lisp-mode)
   :init
 
   ;; TIP Use 'closed-char' to 'move-over' the paird-structure.
@@ -1099,20 +1139,20 @@
   :commands lsp
   :config
 
+  ;; Options
+  ;; (push "--compile-commands-dir=./build" lsp-clients-clangd-args)
+
   ;; Performance tweak.
   (setq gc-cons-threshold 100000000) ;; 100mb
   (setq read-process-output-max (* 8 1024 1024)) ;; 8mb
 
   ;; Bind find-references function.
-  (evil-define-key 'normal 'lsp-mode-map
-    "gr" 'lsp-find-references)
-
-  ;; (evil-define-key 'normal 'lsp-mode-map
-  ;;   "ga" 'xref-apropos)
+  ;; TODO need to re-enter normal mode to apply the keymap.
+  (evil-define-key 'normal lsp-mode-map "gr" 'lsp-find-references)
+  (evil-define-key 'normal lsp-mode-map "ga" 'xref-apropos)
 
   ;; Bind document function.
-  ;; (evil-define-key 'normal 'lsp-mode-map
-  ;;   "K" 'lsp-describe-thing-at-point)
+  (evil-define-key 'normal lsp-mode-map "K" 'lsp-describe-thing-at-point)
 
   ;; Bind keys.
   (evil-define-key '(normal) 'global (kbd "SPC l w d") 'lsp-describe-session)
@@ -1126,7 +1166,6 @@
   (evil-define-key '(normal) 'global (kbd "SPC l w b") 'lsp-workspace-blocklist-remove)
 
   (evil-define-key '(normal) 'global (kbd "SPC l c a") 'helm-lsp-code-actions)
-  (evil-define-key '(normal) 'global (kbd "SPC l c h") 'lsp-treemacs-call-hierarchy)
 
   (evil-define-key '(normal) 'global (kbd "SPC l f b") 'lsp-format-buffer)
   (evil-define-key '(normal) 'global (kbd "SPC l f r") 'lsp-format-region)
@@ -1155,7 +1194,7 @@
   :commands lsp-treemacs-errors-list
   :config
 
-  (setq lsp-treemacs-call-hierarchy-expand-depth 5)
+  (setq lsp-treemacs-call-hierarchy-expand-depth 32)
   (setq lsp-treemacs-type-hierarchy-expand-depth 5)
 
   (setq lsp-treemacs-error-list-expand-depth 2)
@@ -1205,10 +1244,7 @@
   (setq eldoc-idle-delay 0)
 
   ;; Fix bindings.
-  (when evil-collection-want-find-usages-bindings
-    (evil-define-key 'normal 'slime-mode-map
-      "gr" 'slime-edit-uses))
-  )
+  (evil-define-key 'normal slime-mode-map "gr" 'slime-edit-uses))
 
 (use-package slime-company
   :ensure t
@@ -1258,7 +1294,10 @@
 (evil-define-key '(normal) 'global (kbd "SPC e D") 'slime-disassemble-symbol)
 
 (evil-define-key '(normal) 'global (kbd "SPC e I") 'slime-interrupt)
-(evil-define-key '(normal) 'global (kbd "SPC e p") 'slime-sync-package-and-default-directory)
+(evil-define-key '(normal) 'global (kbd "SPC e p") (lambda ()
+						     (interactive)
+						     (call-interactively 'slime-sync-package-and-default-directory)
+						     (call-interactively 'slime-repl)))
 
 (evil-define-key '(normal) 'global (kbd "SPC e t") 'slime-toggle-trace-fdefinition)
 (evil-define-key '(normal) 'global (kbd "SPC e T") 'slime-trace-dialog)
@@ -1361,7 +1400,6 @@
 						     (let ((browse-url-browser-function 'browse-url-default-browser))
 						       (slime-documentation-lookup))))
 
-
 (defun --->language:markdown () "Markdown language.")
 (use-package markdown-mode
   :ensure t
@@ -1384,6 +1422,9 @@
   :ensure t
   :config
   (add-hook 'java-mode-hook #'lsp))
+
+(defun --->language:elisp () "Elisp language.")
+(setq eval-expression-print-length nil)
 
 
 (provide '.emacs)
