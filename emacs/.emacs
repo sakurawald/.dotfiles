@@ -26,8 +26,10 @@
 ;; - Declarative language is like intention language.
 ;; - The only difficulty is the lack of information.
 ;; - I hope symobls from Emacs packages all have a good name, with intuitive prefix and suffix.
+;; - Programming = Modeling + Translating
 
 ;; TODO fix the `cls' template expansion. (not work well if slime started.)
+;; TODO set scroll off
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -80,7 +82,8 @@
 
   ;; TIP Use 'C-o' to use one command in 'vi-normal-state' and re-enter 'vi-insert-state'.
   ;; TIP Use 'C-r' in 'vi-insert-state' to paste content from a register.
-  (evil-mode 1))
+  (evil-mode 1)
+  )
 
 (use-package evil-collection
   :ensure t
@@ -1085,6 +1088,7 @@
   (setq lsp-keymap-prefix "C-c l")
   :hook (
 	 ;; NOTE To let clangd indexing the project, you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+	 ;; NOTE Since the AST is generated via compiling, so the pre-processor works for source file, be careful with the #ifdef macro!
 	 ;; https://clangd.llvm.org/config#files
 	 (c-mode . lsp)
          (c++-mode . lsp)
@@ -1100,12 +1104,12 @@
   (evil-define-key 'normal 'lsp-mode-map
     "gr" 'lsp-find-references)
 
-  (evil-define-key 'normal 'lsp-mode-map
-    "ga" 'xref-apropos)
+  ;; (evil-define-key 'normal 'lsp-mode-map
+  ;;   "ga" 'xref-apropos)
 
   ;; Bind document function.
-  (evil-define-key 'normal 'lsp-mode-map
-    "K" 'lsp-describe-thing-at-point)
+  ;; (evil-define-key 'normal 'lsp-mode-map
+  ;;   "K" 'lsp-describe-thing-at-point)
 
   ;; Bind keys.
   (evil-define-key '(normal) 'global (kbd "SPC l w d") 'lsp-describe-session)
@@ -1128,6 +1132,12 @@
   (evil-define-key '(normal) 'global (kbd "SPC l r n") 'lsp-rename)
 
   )
+
+(use-package view
+  :config
+  ;; Unset conflicting keymap.
+  (keymap-unset view-mode-map "SPC"))
+
 
 (use-package lsp-ui
   :ensure t
@@ -1193,7 +1203,7 @@
 
   ;; Fix bindings.
   (when evil-collection-want-find-usages-bindings
-    (evil-collection-define-key 'normal 'slime-mode-map
+    (evil-define-key 'normal 'slime-mode-map
       "gr" 'slime-edit-uses))
   )
 
@@ -1370,8 +1380,7 @@
 (use-package lsp-java
   :ensure t
   :config
-  (add-hook 'java-mode-hook #'lsp)
-  )
+  (add-hook 'java-mode-hook #'lsp))
 
 
 (provide '.emacs)
