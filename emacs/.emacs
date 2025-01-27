@@ -8,6 +8,7 @@
 ;; - https://www.gnu.org/fun/
 ;; - https://emacsconf.org/
 ;; - https://funcall.blogspot.com/
+;; - https://sourceware.org/
 ;; - https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf
 ;;
 ;; Some interesting sentences collected:
@@ -428,8 +429,15 @@
   ;; Overrite the navigation keys.
   (evil-define-key '(normal insert) helm-map (kbd "C-j") 'helm-next-line)
   (evil-define-key '(normal insert) helm-map (kbd "C-k") 'helm-previous-line)
+
+  ;; (evil-define-key '(normal insert) helm-map (kbd "C-d") 'helm-next-page)
+  ;; (evil-define-key '(normal insert) helm-map (kbd "C-u") 'helm-previous-page)
+  ;; (define-key helm-map (kbd "C-d") 'helm-next-page)
+  ;; (define-key helm-map (kbd "C-u") 'helm-previous-page)
+
   ;; Used to overwrite the `TIP' message.
-  (define-key helm-map (kbd "C-j") 'helm-next-line))
+  (define-key helm-map (kbd "C-j") 'helm-next-line)
+  )
 
 (defun --->mode-line () "Customize mode-line.")
 (use-package doom-modeline
@@ -682,6 +690,7 @@
     (treemacs-indent-guide-mode)
 
     ;; Override keymap
+    (evil-define-key 'treemacs treemacs-mode-map (kbd "C-h")  'evil-window-left)
     (evil-define-key 'treemacs treemacs-mode-map (kbd "C-l")  'evil-window-right)
 
     ))
@@ -742,6 +751,7 @@
 
   (evil-define-key '(normal) 'global (kbd "SPC p C") 'projectile-compile-project)
   (evil-define-key '(normal) 'global (kbd "SPC p R") 'projectile-run-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p D") 'dap-hydra)
   (evil-define-key '(normal) 'global (kbd "SPC p P") 'projectile-package-project)
   (evil-define-key '(normal) 'global (kbd "SPC p I") 'projectile-install-project)
   (evil-define-key '(normal) 'global (kbd "SPC p T") 'projectile-test-project)
@@ -882,6 +892,7 @@
   (global-hardhat-mode 1)
 
   (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps)
+  (push ".*/github/emacs/.*" hardhat-fullpath-protected-regexps)
   ;; (push ".*/github/raylib/.*" hardhat-fullpath-protected-regexps)
   )
 
@@ -964,6 +975,8 @@
   ;; Add company backend
   ;; (push 'company-yasnippet company-backends)
 
+  ;;TriggerKey
+  ;; (evil-define-key 'insert yas-minor-mode-map (kbd "SPC") 'yas-expand)
 
   )
 
@@ -1003,6 +1016,7 @@
   ;; NOTE Only enable this mode for these modes.
   (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+  (add-hook 'lisp-data-mode #'aggressive-indent-mode)
   ;; (add-hook 'c-mode-hook #'aggressive-indent-mode)
   (add-hook 'java-mode-hook #'aggressive-indent-mode)
   (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
@@ -1104,11 +1118,11 @@
   )
 
 (defun --->social () "Social related tools.")
-(use-package elcord
-  :ensure t
-  :config
-  (require 'elcord)
-  (elcord-mode))
+;; (use-package elcord
+;;   :ensure t
+;;   :config
+;;   (require 'elcord)
+;;   (elcord-mode))
 
 
 (defun --->customize () "The customize in Emacs.")
@@ -1199,8 +1213,26 @@
 
   (setq lsp-treemacs-error-list-expand-depth 2)
   )
-;; (use-package dap-mode)
-;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+
+(use-package dap-mode
+  :ensure t
+  :config
+  ;; TIP To configure the debugger: https://sourceware.org/gdb/current/onlinedocs/gdb.html/Debugger-Adapter-Protocol.html
+
+  ;; Enable mode.
+  (dap-mode 1)
+  (setq dap-auto-configure-features '(sessions locals brekapoints expressions tooltip))
+
+  ;; Add lldb debugger.
+  (require 'dap-lldb)
+  ;; NOTE Use (setq) instead of (push), or it will not work.
+  (setq dap-lldb-debug-program '("/usr/bin/codelldb"))
+
+  ;; Open hydra if breakpoint hit.
+  (add-hook 'dap-stopped-hook
+            (lambda (arg) (call-interactively #'dap-hydra)))
+
+  )
 
 (defun --->language:lisp () "Lisp Language.")
 ;; - Notation is nothing without denotation.
@@ -1425,6 +1457,7 @@
 
 (defun --->language:elisp () "Elisp language.")
 (setq eval-expression-print-length nil)
+(setq find-function-C-source-directory (expand-file-name "~/Workspace/github/emacs/src"))
 
 
 (provide '.emacs)
