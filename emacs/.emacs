@@ -15,6 +15,7 @@
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
 ;; - While Vim is a text editor, the Emacs has a text editor.
+;; - Emacs is a Lisp-machine that support Elisp as one of its languages.
 ;; - A nice Vim macro a day, keeps the VS Code away.
 ;; - An idiot admires complexity, a genius admires simplicity. -- Terry Davis
 ;; - Finally, There are only 2 great languages: C and Lisp.
@@ -29,13 +30,29 @@
 ;; - The only difficulty is the lack of information.
 ;; - I hope symobls from Emacs packages all have a good name, with intuitive prefix and suffix.
 ;; - Programming = Modeling + Translating
+;; - Notation is nothing without denotation.
+;; - Learning Emacs is painful in the beginning, and painful in the end.
+;; - Deprecated means stable.
 
 ;; TODO the `cls' template expansion in lisp mode not work if slime is connected. (company-backends)
+
+;; TODO explore the dired mode.
+;; TODO a better fuzzy serach for helm.
+;; TODO previous buffer should ignore the helm buffer
+
+;; TODO get super-key prefix bindings by using a better window manager.
+
+;; TODO configure treemacs to have a better UI.
+
+;; TODO modify the indentation from 2 spaces to 4 spaces.
+
+;; TODO tweak the ignored-files for treemacs and projectile.
+;; TODO taste general package.
+
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
 ;; NOTE It's also okay to steal some ideas from others' dotfiles.
-
 ;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script.
 
 (defun <package> () "Emacs package manage.")
@@ -57,6 +74,10 @@
   (setq evil-want-C-u-scroll t)
   (setq evil-want-C-u-delete t)
   (setq evil-undo-system 'undo-redo)
+
+  ;; mini-buffer history
+  (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-j") 'next-history-element)
+  (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-k") 'previous-history-element)
 
   ;; scroll
   (setq scroll-margin 5)
@@ -430,6 +451,7 @@
   (evil-define-key '(normal insert) helm-map (kbd "C-j") 'helm-next-line)
   (evil-define-key '(normal insert) helm-map (kbd "C-k") 'helm-previous-line)
 
+  ;; TODO remap keys here
   ;; (evil-define-key '(normal insert) helm-map (kbd "C-d") 'helm-next-page)
   ;; (evil-define-key '(normal insert) helm-map (kbd "C-u") 'helm-previous-page)
   ;; (define-key helm-map (kbd "C-d") 'helm-next-page)
@@ -551,11 +573,12 @@
   (evil-define-key '(normal) 'global (kbd "SPC t d") 'tab-close)
   (evil-define-key '(normal) 'global (kbd "SPC t D") 'tab-close-other)
 
-  (evil-define-key '(normal) 'global (kbd "SPC t u") 'tab-bar-undo-close-tab)
-  )
+  (evil-define-key '(normal) 'global (kbd "SPC t u") 'tab-bar-undo-close-tab))
+
 
 (defun --->frame () "Frame related.")
 ;; TIP Use 'Super+{alpha}' to switch to a useful program. (wmctrl -a "gnu emacs" || emacs): terminal, emacs, browser.
+;; NOTE `super-q' to jump to Emacs, `super-w' to jump to web browser.
 ;; TIP Use 'Super+{num}' to switch to a window in KDE.
 (evil-define-key '(normal) 'global (kbd "SPC z z") 'toggle-frame-fullscreen)
 (evil-define-key '(normal) 'global (kbd "SPC z m") 'toggle-frame-maximized)
@@ -719,9 +742,18 @@
 (use-package projectile
   :ensure t
   :config
-  ;; TIP Enforce the 'projectile-commands' to be executed inside a 'project' indicated by a 'project-makrer'.
+  ;; TIP Enforce the 'projectile-commands' to be executed inside a 'project' indicated by a 'project-makrer'. (I don't want to use projectile commands in the home directory.)
   (setq projectile-require-project-root t)
   (projectile-mode +1)
+
+  ;; Include current project in the project switcher.
+  (setq projectile-current-project-on-switch 'keep)
+
+  ;; Include the top-level dir in find-dir.
+  (setq projectile-find-dir-includes-top-level t)
+
+  ;; Set completion system.
+  (setq projectile-completion-system 'helm)
 
   ;; Bind
   (evil-define-key '(normal) 'global (kbd "SPC p p") 'projectile-switch-project)
@@ -735,7 +767,10 @@
   (evil-define-key '(normal) 'global (kbd "SPC p d") 'projectile-find-dir)
   (evil-define-key '(normal) 'global (kbd "SPC p r") 'projectile-recentf)
 
-  (evil-define-key '(normal) 'global (kbd "SPC p s") 'projectile-save-project-buffers)
+  (evil-define-key '(normal) 'global (kbd "SPC p w") 'projectile-save-project-buffers)
+
+  (evil-define-key '(normal) 'global (kbd "SPC p s") 'projectile-run-async-shell-command-in-root)
+  (evil-define-key '(normal) 'global (kbd "SPC p S") 'projectile-run-shell-command-in-root)
 
   ;; TIP The `tags' does make errors, but the `grep'.
   ;; TIP Use 'C-j' and 'C-k' to show the details in 'grep-result-window'.
@@ -1235,7 +1270,6 @@
   )
 
 (defun --->language:lisp () "Lisp Language.")
-;; - Notation is nothing without denotation.
 
 (use-package slime
   :ensure t
@@ -1458,6 +1492,7 @@
 (defun --->language:elisp () "Elisp language.")
 (setq eval-expression-print-length nil)
 (setq find-function-C-source-directory (expand-file-name "~/Workspace/github/emacs/src"))
+(setq shell-file-name "/bin/bash")
 
 
 (provide '.emacs)
