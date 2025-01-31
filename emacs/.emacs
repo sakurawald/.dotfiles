@@ -11,6 +11,7 @@
 ;; - https://sourceware.org/
 ;; - https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf
 ;; - https://docs.doomemacs.org/
+;; - https://godbolt.org/ (Compiler Explorer)
 ;;
 ;; Some interesting sentences collected:
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -35,51 +36,56 @@
 ;; - Learning Emacs is painful in the beginning, and painful in the end.
 ;; - Deprecated means stable.
 
-;; TODO the `treemacs-find-file' and `treemacs-fit-..' command.
 ;; TODO explore the dired mode.
-;; TODO customize treemacs theme.
+;; TODO explore dirvish and other dired alternatives.
+
+;; TODO convert spaces to tab for indentation.
 
 ;; TODO the `cls' template expansion in lisp mode not work if slime is connected. (company-backends)
 ;; TODO get super-key prefix bindings by using a better window manager.
-;; TODO taste general package.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
 ;; NOTE It's also okay to steal some ideas from others' dotfiles.
 ;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script.
+;; TIP Reduce the following inputs, to stay in the home row: `F1-F12', `Caps_Lock', `Escape', `Tab', `Return', `Backspace', `ArrowKeys', `NumberKeys', `MouseInput'.
+
+(defun <top-level> () "Top-level init form.")
+(setq eval-expression-print-length nil)
+(setq find-function-C-source-directory (expand-file-name "~/Workspace/github/emacs/src"))
+(setq shell-file-name "/bin/bash")
 
 (defun <package> () "Emacs package manage.")
 (defun --->package-manager () "Add melpa-repo into the package.el.")
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
-(package-refresh-contents t)
+;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; (package-initialize)
+;; (package-refresh-contents t)
 
 (defun --->vim-emulator () "Vim emulator.")
 (use-package evil
     :ensure t
-    :init
+    :custom
     ;; keymap: integrate with evil-collection
-    (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
-    (setq evil-want-keybinding nil)
+    (evil-want-integration t) ;; This is optional since it's already set to t by default.
+    (evil-want-keybinding nil)
 
     ;; keymap: vanilla vim
-    (setq evil-want-C-u-scroll t)
-    (setq evil-want-C-u-delete t)
-    (setq evil-undo-system 'undo-redo)
+    (evil-want-C-u-scroll t)
+    (evil-want-C-u-delete t)
+    (evil-undo-system 'undo-redo)
 
     ;; scroll
-    (setq scroll-margin 5)
+    (scroll-margin 5)
 
     ;; search
-    (setq evil-flash-delay 5)
+    (evil-flash-delay 5)
 
     ;; macro
     ;;(setq evil-kbd-macro-suppress-motion-error t)
 
-
     ;; Don't display the state in 'echo-area', it will conflicts with the 'slime-quickdoc'.
-    (setq evil-echo-state nil)
+    (evil-echo-state nil)
 
     :config
     ;; NOTE The manual of vim: https://neovim.io/
@@ -102,8 +108,7 @@
     (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-j") 'next-history-element)
     (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-k") 'previous-history-element)
 
-    (evil-mode 1)
-    )
+    (evil-mode 1))
 
 (use-package evil-collection
     :ensure t
@@ -130,19 +135,20 @@
 (use-package evil-escape
     :ensure t
     :after (evil)
-    :config
+    :custom
     ;; TIP Use 'key-convention': 'C-[' = 'Escape', 'C-i' = 'Tab' and 'C-m' = 'Return'. (Other convention: n/p -> j/k, BackSpace (insert-state) -> C-w/C-u)
     ;; TIP The order to escape: 'jk' > 'C-g' > 'C-[' > 'Escape'
-    (setq-default evil-escape-key-sequence "jk")
-    (setq-default evil-escape-delay 0.1)
+    (evil-escape-key-sequence "jk")
+    (evil-escape-delay 0.1)
 
     ;; Exclude these modes, we use `q' key to quit in them.
-    (setq evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode magit-todos-list-mode
-						treemacs-mode))
+    (evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode magit-todos-list-mode
+					   treemacs-mode))
 
     ;; Exclude the visual-state to make the visual selecting smooth.
-    (setq evil-escape-excluded-states '(visual))
+    (evil-escape-excluded-states '(visual))
 
+    :config
     (evil-escape-mode))
 
 (use-package evil-surround
@@ -156,6 +162,10 @@
 
 (defun <help> () "The help for Emacs.")
 (defun --->help () "The help commands.")
+;; Shadow bindings.
+(evil-define-key '(normal) help-mode-map (kbd "SPC") nil)
+(evil-define-key '(normal) help-mode-map (kbd "S-SPC") nil)
+
 ;; TIP To list the 'built-in' packages in 'Emacs'.
 (evil-define-key '(normal) 'global (kbd "SPC h e") 'finder-by-keyword)
 
@@ -195,11 +205,12 @@
 (evil-define-key '(normal) 'global (kbd "SPC h o") 'apropos-user-option)
 (evil-define-key '(normal) 'global (kbd "SPC h O") 'apropos-value)
 
+
 (defun --->key-cast () "Display the inputed key and executed command.")
 (use-package keycast
     :ensure t
     :config
-    (keycast-mode-line-mode))
+    (keycast-tab-bar-mode))
 
 (defun <assistant> () "The assist for life.")
 (defun --->org () "Org-mode related.")
@@ -225,17 +236,16 @@
     ;; babel
     (org-babel-do-load-languages
 	'org-babel-load-languages
-	'((emacs-lisp . til)
+	'((emacs-lisp . nil)
 	     (lisp . t)
-	     (python . t)
-	     ))
+	     (python . t)))
     (setq org-confirm-babel-evaluate nil))
 
 (use-package org-modern
     :ensure t
     :after (org)
+    :hook (org-mode . org-modern-mode)
     :config
-
     (setq
 	;; Edit settings
 	org-auto-align-tags nil
@@ -264,19 +274,13 @@
 
     ;; Customize star style.
     (setq org-modern-star 'replace)
-    (setq org-modern-hide-stars 'nil)
-
-    ;; Enable mode.
-    (global-org-modern-mode))
+    (setq org-modern-hide-stars 'nil))
 
 
 ;; NOTE A fancy render-engine for org is useless.
 (use-package org-bullets
     :ensure t
-    :after (org)
-    :config
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-    )
+    :hook (org-mode . org-bullets-mode))
 
 (defun --->chat () "Chat with AI.")
 (use-package ellama
@@ -299,8 +303,7 @@
 
     ;; Customize chat-buffer.
     (setq ellama-naming-scheme #'(lambda (_provider _action _prompt) "LLM Chat Buffer"))
-    (setq ellama-assistant-nick "Model")
-    )
+    (setq ellama-assistant-nick "Model"))
 
 (defun --->todo () "Keyword highlight.")
 (use-package hl-todo
@@ -316,8 +319,7 @@
     (global-hl-todo-mode)
 
     ;; Bind.
-    (evil-define-key '(normal) 'global (kbd "SPC u t") 'hl-todo-occur)
-    )
+    (evil-define-key '(normal) 'global (kbd "SPC u t") 'hl-todo-occur))
 
 ;; (use-package exwm
 ;;   :ensure t
@@ -357,14 +359,15 @@
 ;; hide uesless views.
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-(toggle-scroll-bar nil)
+(scroll-bar-mode -1)
 
 ;; frame
-(toggle-frame-maximized)
+;;(toggle-frame-maximized)
 
 ;; lines
 (global-display-line-numbers-mode)
-(toggle-truncate-lines)
+
+;; (toggle-word-wrap)
 
 ;; cursor
 (blink-cursor-mode 0)
@@ -405,8 +408,7 @@
 	     ))
     (load-theme 'base16-sakura t)
 
-    (set-face-foreground 'tab-bar-tab "#00FF00")
-    )
+    (set-face-foreground 'tab-bar-tab "#00FF00"))
 
 (use-package hl-line
     :ensure t
@@ -767,8 +769,7 @@
     :ensure t
     :config
     (evil-define-key '(normal) rg-mode-map (kbd "M-j") 'rg-next-file)
-    (evil-define-key '(normal) rg-mode-map (kbd "M-k") 'rg-prev-file)
-    )
+    (evil-define-key '(normal) rg-mode-map (kbd "M-k") 'rg-prev-file))
 
 ;; NOTE Use 'projectile' as a project interface layer, to 'discovery' and 'indexing' projects.
 (use-package projectile
@@ -837,9 +838,8 @@
 (use-package magit
     :ensure t
     :config
-    ;; Another color 000066
     (set-face-attribute 'magit-diff-context-highlight nil
-	:background "#001847")
+	:background "#001847") ;; or #000066
     )
 
 (defun <navigation> () "The navigation in Emacs.")
@@ -876,11 +876,10 @@
 
 (use-package avy
     :ensure t
+    :bind ("M-z" . avy-goto-word-0)
     :config
-    ;; NOTE You don't need to use 'smooth-scroll', just use `avy' or `grep'.
-
     ;; TIP Jump the cursor to anywhere, even in 'vi-visual-state' and 'vi-insert-state' mode.
-    (global-set-key (kbd "M-z") 'avy-goto-word-0)
+    ;; NOTE You don't need to use 'smooth-scroll', just use `avy' or `grep'.
 
     ;; Define the face to be clearer.
     (set-face-attribute 'avy-lead-face nil
@@ -917,41 +916,42 @@
 
 (defun <edit> () "The edit in Emacs.")
 (defun --->saver () "Auto save files.")
-(setq auto-save-interval 20)
-(setq auto-save-timeout 1)
-(setq auto-save-no-message nil)
+(progn
+    (setq auto-save-interval 20)
+    (setq auto-save-timeout 1)
+    (setq auto-save-no-message nil)
 
-;; Suppress the `Wrote file...' message.
-(setq save-silently t)
+    ;; Suppress the `Wrote file...' message.
+    (setq save-silently t)
 
-;; The instant method, performance may be poor.
-;; (defun save-buffer-instantly (begin end prev-text)
-;;   (when (and (buffer-file-name)
-;; 	     (file-writable-p (buffer-file-name))
-;; 	     (buffer-modified-p))
-;;     (save-buffer)))
-;; (add-hook 'after-change-functions 'save-buffer-instantly)
+    ;; The instant method, performance may be poor.
+    ;; (defun save-buffer-instantly (begin end prev-text)
+    ;;   (when (and (buffer-file-name)
+    ;; 	     (file-writable-p (buffer-file-name))
+    ;; 	     (buffer-modified-p))
+    ;;     (save-buffer)))
+    ;; (add-hook 'after-change-functions 'save-buffer-instantly)
 
-(defun save-buffer* ()
-    (when (and (buffer-file-name) (buffer-modified-p) (evil-normal-state-p))
-	(save-buffer)))
+    (defun save-buffer* ()
+	(when (and (buffer-file-name) (buffer-modified-p) (evil-normal-state-p))
+	    (save-buffer)))
 
-;; Save buffer when Emacs lose the focus.
-(add-hook 'focus-out-hook 'save-buffer*)
+    ;; Save buffer when Emacs lose the focus.
+    (add-hook 'focus-out-hook 'save-buffer*)
 
-;; Save buffer when Vi enters the normal-state.
-(add-hook 'evil-normal-state-entry-hook 'save-buffer*)
+    ;; Save buffer when Vi enters the normal-state.
+    (add-hook 'evil-normal-state-entry-hook 'save-buffer*)
 
-;; Save buffer after execution of some commands.
-(add-hook 'post-command-hook (lambda ()
-				 (when (or (eq this-command 'evil-delete)
-					   (eq this-command 'evil-delete-char)
-					   (eq this-command 'evil-join))
-				     (save-buffer*))))
+    ;; Save buffer after execution of some commands.
+    (add-hook 'post-command-hook (lambda ()
+				     (when (or (eq this-command 'evil-delete)
+					       (eq this-command 'evil-delete-char)
+					       (eq this-command 'evil-join))
+					 (save-buffer*))))
 
-;; Save buffer when window state changed.
-(add-hook 'window-state-change-hook 'save-buffer*)
-
+    ;; Save buffer when window state changed.
+    (add-hook 'window-state-change-hook 'save-buffer*)
+    )
 
 (defun --->read-only () "Read-only files.")
 (use-package hardhat
@@ -1016,19 +1016,18 @@
 
 
 (defun --->fold () "Fold text.")
-
 (use-package hideshow
-    :init
-    ;; TIP You don't need the 'index-menu' if you have 'text-fold' function.
-    (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
-    (add-hook 'lisp-mode-hook 'hs-minor-mode)
-    (add-hook 'c-mode-hook 'hs-minor-mode)
-    (add-hook 'java-mode-hook 'hs-minor-mode)
     :config
     ;; TIP Use 'zc' (fold-close) and 'zo' (fold-open).
     ;; TIP Use 'zm' (fold-more) and 'zr' (fold-reduce).
     ;; TIP Use 'zR' (fold-remove).
     ;; TIP Use 'za' (fold-toggle).
+
+    ;; TIP You don't need the 'index-menu' if you have 'text-fold' function.
+    (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
+    (add-hook 'lisp-mode-hook 'hs-minor-mode)
+    (add-hook 'c-mode-hook 'hs-minor-mode)
+    (add-hook 'java-mode-hook 'hs-minor-mode)
     )
 
 (defun --->snippet () "Snippet text.")
@@ -1078,6 +1077,7 @@
 
 (defun --->formatter () "Format text.")
 ;; TIP Use 'formatter' to format buffer 'automatically', instead of `<<` and `>>` to indent text manually.
+;; See also https://www.gnu.org/software/emacs/manual/html_node/emacs/Text-Display.html
 (use-package aggressive-indent
     :ensure t
     :config
@@ -1091,6 +1091,7 @@
     (add-hook 'tex-mode-hook #'aggressive-indent-mode)
 
     ;; NOTE Code is text that read by human, the indentation means the level of code, should be human-readable. (at least 4 spaces width, or just use tab character.)
+    ;; NOTE The `indentation' should be enlarged, not highlighted.
     ;; Set indent-offset for human readable.
     (setq lisp-indent-offset 4))
 
@@ -1128,10 +1129,9 @@
 
 (defun --->comment () "Comment text.")
 (use-package newcomment
-    :init
+    :config
     (evil-define-key '(normal visual) 'global (kbd "SPC c") 'comment-line)
-    (evil-define-key '(normal visual) 'global (kbd "SPC C") 'comment-region)
-    )
+    (evil-define-key '(normal visual) 'global (kbd "SPC C") 'comment-region))
 
 (defun --->parenthesis () "Parenthesis related.")
 (use-package smartparens
@@ -1176,8 +1176,7 @@
 
 (use-package dictionary
     :init
-    (evil-define-key '(normal) 'global (kbd "SPC u d") 'dictionary-search)
-    )
+    (evil-define-key '(normal) 'global (kbd "SPC u d") 'dictionary-search))
 
 (use-package shell
     :init
@@ -1188,14 +1187,6 @@
     ;; TIP To browse the firefox, use 'vimium' extension. (It's convenient to read manual online.)
     (setq browse-url-browser-function 'eww-browse-url)
     )
-
-(defun --->social () "Social related tools.")
-;; (use-package elcord
-;;   :ensure t
-;;   :config
-;;   (require 'elcord)
-;;   (elcord-mode))
-
 
 (defun --->customize () "The customize in Emacs.")
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
@@ -1215,6 +1206,7 @@
     :init
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
     (setq lsp-keymap-prefix "C-c l")
+
     :hook (
 	      ;; NOTE To let clangd indexing the project (or includes the proper header files.), you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 (or set the flag in CMakeList.txt file)
 	      ;; NOTE Since the AST is generated via compiling, so the pre-processor works for source file, be careful with the #ifdef macro!
@@ -1266,7 +1258,6 @@
     ;; Unset conflicting keymap.
     (keymap-unset view-mode-map "SPC"))
 
-
 (use-package lsp-ui
     :ensure t
     :commands lsp-ui-mode)
@@ -1283,8 +1274,7 @@
     (setq lsp-treemacs-call-hierarchy-expand-depth 32)
     (setq lsp-treemacs-type-hierarchy-expand-depth 5)
 
-    (setq lsp-treemacs-error-list-expand-depth 2)
-    )
+    (setq lsp-treemacs-error-list-expand-depth 2))
 
 (use-package dap-mode
     :ensure t
@@ -1525,11 +1515,6 @@
     :ensure t
     :config
     (add-hook 'java-mode-hook #'lsp))
-
-(defun --->language:elisp () "Elisp language.")
-(setq eval-expression-print-length nil)
-(setq find-function-C-source-directory (expand-file-name "~/Workspace/github/emacs/src"))
-(setq shell-file-name "/bin/bash")
 
 
 (provide '.emacs)
