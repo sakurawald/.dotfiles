@@ -36,11 +36,6 @@
 ;; - Learning Emacs is painful in the beginning, and painful in the end.
 ;; - Deprecated means stable.
 
-;; TODO explore the dired mode.
-;; TODO explore dirvish and other dired alternatives.
-
-;; TODO convert spaces to tab for indentation.
-
 ;; TODO the `cls' template expansion in lisp mode not work if slime is connected. (company-backends)
 ;; TODO get super-key prefix bindings by using a better window manager.
 
@@ -49,6 +44,7 @@
 ;; NOTE It's also okay to steal some ideas from others' dotfiles.
 ;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script.
 ;; TIP Reduce the following inputs, to stay in the home row: `F1-F12', `Caps_Lock', `Escape', `Tab', `Return', `Backspace', `ArrowKeys', `NumberKeys', `MouseInput'.
+;; TIP All the modifier keys are your friend: `Ctrl', `Shift', `Alt', `Super'.
 
 (defun <top-level> () "Top-level init form.")
 (setq eval-expression-print-length nil)
@@ -74,6 +70,7 @@
     (evil-want-C-u-scroll t)
     (evil-want-C-u-delete t)
     (evil-undo-system 'undo-redo)
+    (evil-symbol-word-search t)
 
     ;; scroll
     (scroll-margin 5)
@@ -109,6 +106,7 @@
     (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-k") 'previous-history-element)
 
     (evil-mode 1))
+
 
 (use-package evil-collection
     :ensure t
@@ -165,6 +163,14 @@
 ;; Shadow bindings.
 (evil-define-key '(normal) help-mode-map (kbd "SPC") nil)
 (evil-define-key '(normal) help-mode-map (kbd "S-SPC") nil)
+
+(use-package view
+    :config
+    (evil-define-key '(normal) view-mode-map (kbd "SPC") nil))
+
+(use-package woman
+    :config
+    (evil-define-key '(normal) woman-mode-map (kbd "SPC") nil))
 
 ;; TIP To list the 'built-in' packages in 'Emacs'.
 (evil-define-key '(normal) 'global (kbd "SPC h e") 'finder-by-keyword)
@@ -313,9 +319,9 @@
     ;; Enable globally.
     (setq hl-todo-keyword-faces
 	'(("TODO"   . "#FFFF00")
-             ("FIXME"  . "#FF0000")
-             ("NOTE"  . "#0000FF")
-             ("TIP"  . "#00FF00")))
+	     ("FIXME"  . "#FF0000")
+	     ("NOTE"  . "#0000FF")
+	     ("TIP"  . "#00FF00")))
     (global-hl-todo-mode)
 
     ;; Bind.
@@ -329,22 +335,22 @@
 
 ;;   ;; Make class name the buffer name.
 ;;   (add-hook 'exwm-update-class-hook
-;; 	    (lambda () (exwm-workspace-rename-buffer exwm-class-name)))
+;;	    (lambda () (exwm-workspace-rename-buffer exwm-class-name)))
 
 ;;   ;; Global keybindings.
 ;;   (setq exwm-input-global-keys
-;; 	`(([?\s-r] . exwm-reset) ;; s-r: Reset (to line-mode).
-;;           ([?\s-w] . exwm-workspace-switch) ;; s-w: Switch workspace.
-;;           ([?\s-&] . (lambda (cmd) ;; s-&: Launch application.
-;;                        (interactive (list (read-shell-command "$ ")))
-;;                        (start-process-shell-command cmd nil cmd)))
-;;           ;; s-N: Switch to certain workspace.
-;;           ,@(mapcar (lambda (i)
-;;                       `(,(kbd (format "s-%d" i)) .
-;; 			(lambda ()
-;;                           (interactive)
-;;                           (exwm-workspace-switch-create ,i))))
-;;                     (number-sequence 0 9))))
+;;	`(([?\s-r] . exwm-reset) ;; s-r: Reset (to line-mode).
+;;	     ([?\s-w] . exwm-workspace-switch) ;; s-w: Switch workspace.
+;;	     ([?\s-&] . (lambda (cmd) ;; s-&: Launch application.
+;;			  (interactive (list (read-shell-command "$ ")))
+;;			  (start-process-shell-command cmd nil cmd)))
+;;	     ;; s-N: Switch to certain workspace.
+;;	     ,@(mapcar (lambda (i)
+;;			 `(,(kbd (format "s-%d" i)) .
+;;			(lambda ()
+;;			     (interactive)
+;;			     (exwm-workspace-switch-create ,i))))
+;;		       (number-sequence 0 9))))
 ;;   ;; Enable EXWM
 ;;   (exwm-enable)
 ;;   )
@@ -362,7 +368,7 @@
 (scroll-bar-mode -1)
 
 ;; frame
-;;(toggle-frame-maximized)
+(toggle-frame-maximized)
 
 ;; lines
 (global-display-line-numbers-mode)
@@ -622,11 +628,15 @@
 
 (defun <file> () "Files for Emacs.")
 (defun --->file () "File related.")
-
 (use-package recentf
     :config
-    (add-to-list 'recentf-exclude ".*pdf.*")
-    )
+    (add-to-list 'recentf-exclude ".*pdf.*"))
+
+(use-package dired
+    :config
+    (evil-define-key '(normal) dired-mode-map (kbd "SPC") nil)
+    (evil-define-key '(normal) dired-mode-map (kbd "h") 'dired-up-directory)
+    (evil-define-key '(normal) dired-mode-map (kbd "l") 'dired-find-file))
 
 (use-package treemacs
     :ensure t
@@ -638,6 +648,7 @@
     (evil-define-key '(normal) 'global (kbd "SPC f f") 'helm-find-files)
 
     ;; TIP To expand a node recursively, push a `prefix-arg'.
+    ;; TODO (treemacs-workspace->projects (treemacs-current-workspace)) contains current project dir ?
     (evil-define-key '(normal) 'global (kbd "SPC f t") (lambda ()
 							   (interactive)
 							   (if (projectile-project-p)
@@ -659,60 +670,60 @@
     ;; TIP To navigate in treemacs-window, use 'hjkl' and 'C-{j/k}'.
     ;; TIP Use 'M-m' to mark multiple files.
     (progn
-	(setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
-	    treemacs-deferred-git-apply-delay        0.5
-	    treemacs-directory-name-transformer      #'identity
-	    treemacs-display-in-side-window          t
-	    treemacs-eldoc-display                   'simple
-	    treemacs-file-event-delay                2000
-	    treemacs-file-extension-regex            treemacs-last-period-regex-value
-	    treemacs-file-follow-delay               0.2
-	    treemacs-file-name-transformer           #'identity
-	    treemacs-follow-after-init               t
-	    treemacs-expand-after-init               t
-	    treemacs-find-workspace-method           'find-for-file-or-pick-first
-	    treemacs-git-command-pipe                ""
-	    treemacs-goto-tag-strategy               'refetch-index
-	    treemacs-header-scroll-indicators        '(nil . "^^^^^^")
-	    treemacs-hide-dot-git-directory          nil
-	    treemacs-indentation                     2
-	    treemacs-indentation-string              " "
-	    treemacs-indent-guide-style              'line
-	    treemacs-is-never-other-window           nil
-	    treemacs-max-git-entries                 5000
-	    treemacs-missing-project-action          'ask
+	(setq treemacs-collapse-dirs		       (if treemacs-python-executable 3 0)
+	    treemacs-deferred-git-apply-delay	     0.5
+	    treemacs-directory-name-transformer	     #'identity
+	    treemacs-display-in-side-window	     t
+	    treemacs-eldoc-display		     'simple
+	    treemacs-file-event-delay		     2000
+	    treemacs-file-extension-regex	     treemacs-last-period-regex-value
+	    treemacs-file-follow-delay		     0.2
+	    treemacs-file-name-transformer	     #'identity
+	    treemacs-follow-after-init		     t
+	    treemacs-expand-after-init		     t
+	    treemacs-find-workspace-method	     'find-for-file-or-pick-first
+	    treemacs-git-command-pipe		     ""
+	    treemacs-goto-tag-strategy		     'refetch-index
+	    treemacs-header-scroll-indicators	     '(nil . "^^^^^^")
+	    treemacs-hide-dot-git-directory	     nil
+	    treemacs-indentation		     2
+	    treemacs-indentation-string		     " "
+	    treemacs-indent-guide-style		     'line
+	    treemacs-is-never-other-window	     nil
+	    treemacs-max-git-entries		     5000
+	    treemacs-missing-project-action	     'ask
 	    treemacs-move-files-by-mouse-dragging    t
-	    treemacs-move-forward-on-expand          nil
-	    treemacs-no-png-images                   nil
-	    treemacs-no-delete-other-windows         t
-	    treemacs-project-follow-cleanup          nil
-	    treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-	    treemacs-position                        'left
-	    treemacs-read-string-input               'from-child-frame
-	    treemacs-recenter-distance               0.1
-	    treemacs-recenter-after-file-follow      nil
-	    treemacs-recenter-after-tag-follow       nil
+	    treemacs-move-forward-on-expand	     nil
+	    treemacs-no-png-images		     nil
+	    treemacs-no-delete-other-windows	     t
+	    treemacs-project-follow-cleanup	     nil
+	    treemacs-persist-file		     (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+	    treemacs-position			     'left
+	    treemacs-read-string-input		     'from-child-frame
+	    treemacs-recenter-distance		     0.1
+	    treemacs-recenter-after-file-follow	     nil
+	    treemacs-recenter-after-tag-follow	     nil
 	    treemacs-recenter-after-project-jump     'always
 	    treemacs-recenter-after-project-expand   'on-distance
-	    treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
-	    treemacs-project-follow-into-home        nil
-	    treemacs-show-cursor                     nil
-	    treemacs-show-hidden-files               t
-	    treemacs-silent-filewatch                nil
-	    treemacs-silent-refresh                  nil
-	    treemacs-sorting                         'alphabetic-asc
+	    treemacs-litter-directories		     '("/node_modules" "/.venv" "/.cask")
+	    treemacs-project-follow-into-home	     nil
+	    treemacs-show-cursor		     nil
+	    treemacs-show-hidden-files		     t
+	    treemacs-silent-filewatch		     nil
+	    treemacs-silent-refresh		     nil
+	    treemacs-sorting			     'alphabetic-asc
 	    treemacs-select-when-already-in-treemacs 'move-back
-	    treemacs-space-between-root-nodes        t
-	    treemacs-tag-follow-cleanup              t
-	    treemacs-tag-follow-delay                1.5
-	    treemacs-text-scale                      nil
-	    treemacs-user-mode-line-format           nil
-	    treemacs-user-header-line-format         nil
-	    treemacs-wide-toggle-width               70
-	    treemacs-width                           40
-	    treemacs-width-increment                 1
-	    treemacs-width-is-initially-locked       t
-	    treemacs-workspace-switch-cleanup        nil)
+	    treemacs-space-between-root-nodes	     t
+	    treemacs-tag-follow-cleanup		     t
+	    treemacs-tag-follow-delay		     1.5
+	    treemacs-text-scale			     nil
+	    treemacs-user-mode-line-format	     nil
+	    treemacs-user-header-line-format	     nil
+	    treemacs-wide-toggle-width		     70
+	    treemacs-width			     40
+	    treemacs-width-increment		     1
+	    treemacs-width-is-initially-locked	     t
+	    treemacs-workspace-switch-cleanup	     nil)
 
 	;; icon
 	(treemacs-resize-icons 22)
@@ -762,7 +773,8 @@
     :after (treemacs dired)
     :config
     ;; Decorate the `dired' command with `icons' version.
-    (treemacs-icons-dired-mode))
+    (treemacs-icons-dired-mode)
+    )
 
 (defun --->project () "Project related.")
 (use-package rg
@@ -865,10 +877,14 @@
 ;; gm -> as a shortcut of '%'.
 (evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
 
+(evil-define-key '(normal) 'global (kbd "g b") 'beginning-of-defun)
+
+
 ;; NOTE Vim use 'gt' and 'gT' to cycle 'tab', but we use it to goto a 'tag'.
 (evil-define-key '(normal) 'global (kbd "g t") 'helm-semantic-or-imenu)
 (evil-define-key '(normal) 'global (kbd "g T") 'helm-imenu-in-all-buffers)
 
+;; TIP Use `gf' and `gF' to find file at point.
 (evil-define-key '(normal) 'global (kbd "g x") 'browse-url-at-point)
 (evil-define-key '(normal) 'global (kbd "g X") 'browse-url-xdg-open)
 
@@ -926,10 +942,10 @@
 
     ;; The instant method, performance may be poor.
     ;; (defun save-buffer-instantly (begin end prev-text)
-    ;;   (when (and (buffer-file-name)
-    ;; 	     (file-writable-p (buffer-file-name))
-    ;; 	     (buffer-modified-p))
-    ;;     (save-buffer)))
+    ;;	 (when (and (buffer-file-name)
+    ;;	     (file-writable-p (buffer-file-name))
+    ;;	     (buffer-modified-p))
+    ;;	   (save-buffer)))
     ;; (add-hook 'after-change-functions 'save-buffer-instantly)
 
     (defun save-buffer* ()
@@ -987,24 +1003,24 @@
     ;; (setq company-global-modes '(not erc-mode message-mode eshell-mode))
 
     ;; (add-hook 'prog-mode-hook (lambda ()
-    ;; 			      (setq-local company-backends
-    ;; 					  '((company-slime
-    ;; 					     company-yasnippet
-    ;; 					     company-files
-    ;; 					     company-keywords
-    ;; 					     company-capf
-    ;; 					     company-cmake
-    ;; 					     company-c-headers
-    ;; 					     company-clang
-    ;; 					     company-irony-c-headers
-    ;; 					     company-irony
-    ;; 					     company-dabbrev-code
-    ;; 					     company-semantic
-    ;; 					     company-gtags
-    ;; 					     company-etags
-    ;; 					     company-rtags
-    ;; 					     company-elisp
-    ;; 					     )))))
+    ;;			      (setq-local company-backends
+    ;;					  '((company-slime
+    ;;					     company-yasnippet
+    ;;					     company-files
+    ;;					     company-keywords
+    ;;					     company-capf
+    ;;					     company-cmake
+    ;;					     company-c-headers
+    ;;					     company-clang
+    ;;					     company-irony-c-headers
+    ;;					     company-irony
+    ;;					     company-dabbrev-code
+    ;;					     company-semantic
+    ;;					     company-gtags
+    ;;					     company-etags
+    ;;					     company-rtags
+    ;;					     company-elisp
+    ;;					     )))))
 
     )
 
@@ -1076,8 +1092,10 @@
     )
 
 (defun --->formatter () "Format text.")
+;; See https://www.gnu.org/software/emacs/manual/html_node/efaq/Changing-the-length-of-a-Tab.html
+;; See https://www.gnu.org/software/emacs/manual/html_node/emacs/Text-Display.html
+;; TIP I don't care the `identation' (level of document) is represented by `spaces' or `tabs', but they should be rendered correctly, to be read by human.
 ;; TIP Use 'formatter' to format buffer 'automatically', instead of `<<` and `>>` to indent text manually.
-;; See also https://www.gnu.org/software/emacs/manual/html_node/emacs/Text-Display.html
 (use-package aggressive-indent
     :ensure t
     :config
@@ -1137,7 +1155,7 @@
 (use-package smartparens
     :ensure t
     ;; NOTE Only enable 'smartparens-mode' in these mode.
-    :hook (prog-mode text-mode markdown-mode slime-repl-mode inferior-emacs-lisp-mode)
+    :hook (prog-mode text-mode markdown-mode slime-repl-mode ielm-mode)
     :init
 
     ;; TIP Use 'closed-char' to 'move-over' the paird-structure.
@@ -1154,6 +1172,9 @@
 
     (evil-define-key '(normal) 'global (kbd "SPC s t") 'sp-transpose-sexp)
     (evil-define-key '(normal) 'global (kbd "SPC s r") 'sp-raise-sexp)
+
+    ;; (evil-define-key '(normal visual) 'global (kbd "[ s") 'evil-goto-last-change)
+    ;; (evil-define-key '(normal visual) 'global (kbd "] s") 'evil-goto-last-change-reverse)
     
     :config
     ;; Load default config.
@@ -1186,6 +1207,9 @@
     :config
     ;; TIP To browse the firefox, use 'vimium' extension. (It's convenient to read manual online.)
     (setq browse-url-browser-function 'eww-browse-url)
+
+    (evil-define-key '(normal) eww-mode-map (kbd "SPC") nil)
+    (evil-define-key '(normal) eww-mode-map (kbd "i") 'evil-insert-state)
     )
 
 (defun --->customize () "The customize in Emacs.")
@@ -1212,8 +1236,8 @@
 	      ;; NOTE Since the AST is generated via compiling, so the pre-processor works for source file, be careful with the #ifdef macro!
 	      ;; https://clangd.llvm.org/config#files
 	      (c-mode . lsp)
-              (c++-mode . lsp)
-              (java-mode . lsp))
+	      (c++-mode . lsp)
+	      (java-mode . lsp))
     :commands lsp
     :config
 
@@ -1253,11 +1277,6 @@
 
     )
 
-(use-package view
-    :config
-    ;; Unset conflicting keymap.
-    (keymap-unset view-mode-map "SPC"))
-
 (use-package lsp-ui
     :ensure t
     :commands lsp-ui-mode)
@@ -1292,7 +1311,7 @@
 
     ;; Open hydra if breakpoint hit.
     (add-hook 'dap-stopped-hook
-        (lambda (arg) (call-interactively #'dap-hydra)))
+	(lambda (arg) (call-interactively #'dap-hydra)))
 
     )
 
@@ -1329,8 +1348,8 @@
     (setq slime-auto-start 'always)
     ;; NOTE Auto execute 'slime' command.
     ;;(add-hook 'slime-mode-hook
-    ;;          (lambda ()
-    ;;            (unless (slime-connected-p)
+    ;;		(lambda ()
+    ;;		  (unless (slime-connected-p)
     ;;		(save-excursion (slime)))))
 
     ;; Set instantly slime-autodoc in echo-area.
@@ -1345,7 +1364,7 @@
     :config
     ;; NOTE 'slime-company' must put after 'slime' to work.
     (setq slime-company-completion 'fuzzy
-        slime-company-after-completion 'slime-company-just-one-space))
+	slime-company-after-completion 'slime-company-just-one-space))
 
 (defun --->repl () "Lisp repl.")
 ;; TIP To navigate 'input-history', use 'C-p' and 'C-n'.
@@ -1499,7 +1518,7 @@
     :mode ("README\\.md\\'" . gfm-mode)
     :init (setq markdown-command "multimarkdown")
     :bind (:map markdown-mode-map
-              ("C-c C-e" . markdown-do)))
+	      ("C-c C-e" . markdown-do)))
 
 
 (defun --->language:latex () "LaTeX language.")
@@ -1515,6 +1534,11 @@
     :ensure t
     :config
     (add-hook 'java-mode-hook #'lsp))
+
+(defun --->language:elisp () "Elisp language.")
+;; Fix the xref backend function for elisp in ielm mode.
+(add-hook 'ielm-mode-hook (lambda ()
+			      (push 'elisp--xref-backend xref-backend-functions)))
 
 
 (provide '.emacs)
