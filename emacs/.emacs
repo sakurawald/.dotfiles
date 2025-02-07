@@ -36,7 +36,7 @@
 ;; - Learning Emacs is painful in the beginning, and painful in the end.
 ;; - Deprecated means stable.
 
-;; TODO the `cls' template expansion in lisp mode not work if slime is connected. (company-backends)
+;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -44,7 +44,7 @@
 ;; NOTE It's also okay to steal some ideas from others' dotfiles.
 ;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script.
 ;; TIP Reduce the following inputs, to stay in the home row: `F1-F12', `Caps_Lock', `Escape', `Tab', `Return', `Backspace', `ArrowKeys', `NumberKeys', `MouseInput'.
-;; TIP All the modifier keys are your friend: `Ctrl', `Shift', `Alt', `Super'.
+;; TIP All the modifier keys are your friend: `Ctrl', `Shift', `Meta', `Super'.
 
 (defun <top-level> () "Top-level init form.")
 (setq eval-expression-print-length nil)
@@ -54,7 +54,7 @@
 (defun <package> () "Emacs package manage.")
 (defun --->package-manager () "Add melpa-repo into the package.el.")
 (require 'package)
-;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; (package-initialize)
 ;; (package-refresh-contents t)
 
@@ -140,7 +140,7 @@
     (evil-escape-delay 0.1)
 
     ;; Exclude these modes, we use `q' key to quit in them.
-    (evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode magit-todos-list-mode
+    (evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode
 					   treemacs-mode))
 
     ;; Exclude the visual-state to make the visual selecting smooth.
@@ -300,8 +300,8 @@
 
     ;; Customize the LLM model.
     (setq ellama-provider (make-llm-ollama
-			      :chat-model "llama3.1"
-			      :embedding-model "llama3.1"))
+			      :chat-model "phi4"
+			      :embedding-model "phi4"))
     (setq ellama--current-session-id nil)
 
     ;; Disable the session.
@@ -309,7 +309,16 @@
 
     ;; Customize chat-buffer.
     (setq ellama-naming-scheme #'(lambda (_provider _action _prompt) "LLM Chat Buffer"))
-    (setq ellama-assistant-nick "Model"))
+    (setq ellama-assistant-nick "Model")
+
+    ;; (keymap-set ellama-keymap "<remap> <keyboard-quit>" 'evil-next-line)
+
+    ;; Define session keymap.
+    ;; (add-hook 'ellama-session-mode-hook
+    ;; 	(lambda ()
+    ;; 	    (evil-local-set-key '(normal) (kbd "C-g") 'evil-next-line)))
+
+    )
 
 (defun --->todo () "Keyword highlight.")
 (use-package hl-todo
@@ -327,35 +336,10 @@
     ;; Bind.
     (evil-define-key '(normal) 'global (kbd "SPC u t") 'hl-todo-occur))
 
-;; (use-package exwm
-;;   :ensure t
-;;   :config
-;;   ;; Set the initial workspace number.
-;;   (setq exwm-workspace-number 4)
-
-;;   ;; Make class name the buffer name.
-;;   (add-hook 'exwm-update-class-hook
-;;	    (lambda () (exwm-workspace-rename-buffer exwm-class-name)))
-
-;;   ;; Global keybindings.
-;;   (setq exwm-input-global-keys
-;;	`(([?\s-r] . exwm-reset) ;; s-r: Reset (to line-mode).
-;;	     ([?\s-w] . exwm-workspace-switch) ;; s-w: Switch workspace.
-;;	     ([?\s-&] . (lambda (cmd) ;; s-&: Launch application.
-;;			  (interactive (list (read-shell-command "$ ")))
-;;			  (start-process-shell-command cmd nil cmd)))
-;;	     ;; s-N: Switch to certain workspace.
-;;	     ,@(mapcar (lambda (i)
-;;			 `(,(kbd (format "s-%d" i)) .
-;;			(lambda ()
-;;			     (interactive)
-;;			     (exwm-workspace-switch-create ,i))))
-;;		       (number-sequence 0 9))))
-;;   ;; Enable EXWM
-;;   (exwm-enable)
-;;   )
 
 (defun <view> () "The display for Emacs.")
+;; NOTE Exwm is still buggy, and easy to hang. I would try it again in the future.
+
 (defun --->display () "The appeareance of Emacs.")
 
 ;; NOTE Use a mono-spaced-font like 'source code pro' or 'hack'. (Font is set by KDE)
@@ -452,15 +436,12 @@
 
     ;; NOTE It's impossible to re-map bindinds in 'helm-M-x-mode' using 'evil'.
 
-    ;; Overrite the navigation keys.
+    ;; Bind the navigation keys.
     (evil-define-key '(normal insert) helm-map (kbd "C-j") 'helm-next-line)
     (evil-define-key '(normal insert) helm-map (kbd "C-k") 'helm-previous-line)
 
-    ;; TODO remap keys here
-    ;; (evil-define-key '(normal insert) helm-map (kbd "C-d") 'helm-next-page)
-    ;; (evil-define-key '(normal insert) helm-map (kbd "C-u") 'helm-previous-page)
-    ;; (define-key helm-map (kbd "C-d") 'helm-next-page)
-    ;; (define-key helm-map (kbd "C-u") 'helm-previous-page)
+    (evil-define-key '(normal insert) helm-map (kbd "C-d") 'helm-next-page)
+    (evil-define-key '(normal insert) helm-map (kbd "C-u") 'helm-previous-page)
 
     ;; Used to overwrite the `TIP' message.
     (define-key helm-map (kbd "C-j") 'helm-next-line)
@@ -639,122 +620,122 @@
     (evil-define-key '(normal) dired-mode-map (kbd "l") 'dired-find-file))
 
 (use-package treemacs
-    :ensure t
-    :defer t
-    :after (projectile)
-    :init
-    ;; NOTE Should not use `treemacs-tab-bar' package, it's buggy. The default model used by treemacs is powerful, which supports to make muptile projects as a workspace.
-    ;; TIP A good editor will not let you save files 'manually'.
-    (evil-define-key '(normal) 'global (kbd "SPC f f") 'helm-find-files)
+  :ensure t
+  :defer t
+  :after (projectile)
+  :init
+  ;; NOTE Should not use `treemacs-tab-bar' package, it's buggy. The default model used by treemacs is powerful, which supports to make muptile projects as a workspace.
+  ;; TIP A good editor will not let you save files 'manually'.
+  (evil-define-key '(normal) 'global (kbd "SPC f f") 'helm-find-files)
 
-    ;; TIP To expand a node recursively, push a `prefix-arg'.
-    ;; TODO (treemacs-workspace->projects (treemacs-current-workspace)) contains current project dir ?
-    (evil-define-key '(normal) 'global (kbd "SPC f t") (lambda ()
-							   (interactive)
-							   (if (projectile-project-p)
-							       (call-interactively 'treemacs)
-							       (call-interactively 'dired))))
+  ;; TIP To expand a node recursively, push a `prefix-arg'.
+  (evil-define-key '(normal) 'global (kbd "SPC f t") 'treemacs)
+  (evil-define-key '(normal) 'global (kbd "SPC f d") 'dired)
 
-    (evil-define-key '(normal) 'global (kbd "SPC f c") 'treemacs-create-file)
-    (evil-define-key '(normal) 'global (kbd "SPC f C") 'treemacs-create-dir)
+  (evil-define-key '(normal) 'global (kbd "SPC f c") 'treemacs-create-file)
+  (evil-define-key '(normal) 'global (kbd "SPC f C") 'treemacs-create-dir)
 
-    (evil-define-key '(normal) 'global (kbd "SPC f w s") 'treemacs-switch-workspace)
-    (evil-define-key '(normal) 'global (kbd "SPC f w e") 'treemacs-edit-workspaces)
-    (evil-define-key '(normal) 'global (kbd "SPC f w c") 'treemacs-create-workspace)
-    (evil-define-key '(normal) 'global (kbd "SPC f w d") 'treemacs-remove-workspace)
-    (evil-define-key '(normal) 'global (kbd "SPC f w r") 'treemacs-rename-workspace)
+  (evil-define-key '(normal) 'global (kbd "SPC f g") 'query-replace)
+  (evil-define-key '(normal) 'global (kbd "SPC f G") 'query-replace-regexp)
 
-    :config
-    ;; NOTE For better integration, use 'treemacs' as the file explorer.
-    ;; TIP Press '?' in the 'treemacs window' for 'normal-help'. Press 'C-?' for 'advanced-help'.
-    ;; TIP To navigate in treemacs-window, use 'hjkl' and 'C-{j/k}'.
-    ;; TIP Use 'M-m' to mark multiple files.
-    (progn
-	(setq treemacs-collapse-dirs		       (if treemacs-python-executable 3 0)
-	    treemacs-deferred-git-apply-delay	     0.5
-	    treemacs-directory-name-transformer	     #'identity
-	    treemacs-display-in-side-window	     t
-	    treemacs-eldoc-display		     'simple
-	    treemacs-file-event-delay		     2000
-	    treemacs-file-extension-regex	     treemacs-last-period-regex-value
-	    treemacs-file-follow-delay		     0.2
-	    treemacs-file-name-transformer	     #'identity
-	    treemacs-follow-after-init		     t
-	    treemacs-expand-after-init		     t
-	    treemacs-find-workspace-method	     'find-for-file-or-pick-first
-	    treemacs-git-command-pipe		     ""
-	    treemacs-goto-tag-strategy		     'refetch-index
-	    treemacs-header-scroll-indicators	     '(nil . "^^^^^^")
-	    treemacs-hide-dot-git-directory	     nil
-	    treemacs-indentation		     2
-	    treemacs-indentation-string		     " "
-	    treemacs-indent-guide-style		     'line
-	    treemacs-is-never-other-window	     nil
-	    treemacs-max-git-entries		     5000
-	    treemacs-missing-project-action	     'ask
-	    treemacs-move-files-by-mouse-dragging    t
-	    treemacs-move-forward-on-expand	     nil
-	    treemacs-no-png-images		     nil
-	    treemacs-no-delete-other-windows	     t
-	    treemacs-project-follow-cleanup	     nil
-	    treemacs-persist-file		     (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-	    treemacs-position			     'left
-	    treemacs-read-string-input		     'from-child-frame
-	    treemacs-recenter-distance		     0.1
-	    treemacs-recenter-after-file-follow	     nil
-	    treemacs-recenter-after-tag-follow	     nil
-	    treemacs-recenter-after-project-jump     'always
-	    treemacs-recenter-after-project-expand   'on-distance
-	    treemacs-litter-directories		     '("/node_modules" "/.venv" "/.cask")
-	    treemacs-project-follow-into-home	     nil
-	    treemacs-show-cursor		     nil
-	    treemacs-show-hidden-files		     t
-	    treemacs-silent-filewatch		     nil
-	    treemacs-silent-refresh		     nil
-	    treemacs-sorting			     'alphabetic-asc
-	    treemacs-select-when-already-in-treemacs 'move-back
-	    treemacs-space-between-root-nodes	     t
-	    treemacs-tag-follow-cleanup		     t
-	    treemacs-tag-follow-delay		     1.5
-	    treemacs-text-scale			     nil
-	    treemacs-user-mode-line-format	     nil
-	    treemacs-user-header-line-format	     nil
-	    treemacs-wide-toggle-width		     70
-	    treemacs-width			     40
-	    treemacs-width-increment		     1
-	    treemacs-width-is-initially-locked	     t
-	    treemacs-workspace-switch-cleanup	     nil)
 
-	;; icon
-	(treemacs-resize-icons 22)
+  (evil-define-key '(normal) 'global (kbd "SPC f w s") 'treemacs-switch-workspace)
+  (evil-define-key '(normal) 'global (kbd "SPC f w e") 'treemacs-edit-workspaces)
+  (evil-define-key '(normal) 'global (kbd "SPC f w c") 'treemacs-create-workspace)
+  (evil-define-key '(normal) 'global (kbd "SPC f w d") 'treemacs-remove-workspace)
+  (evil-define-key '(normal) 'global (kbd "SPC f w r") 'treemacs-rename-workspace)
 
-	;; toggles
-	(treemacs-follow-mode t)
-	(treemacs-filewatch-mode t)
-	(treemacs-fringe-indicator-mode 'always)
+  :config
+  ;; NOTE For better integration, use 'treemacs' as the file explorer.
+  ;; TIP Press '?' in the 'treemacs window' for 'normal-help'. Press 'C-?' for 'advanced-help'.
+  ;; TIP To navigate in treemacs-window, use 'hjkl' and 'C-{j/k}'.
+  ;; TIP Use 'M-m' to mark multiple files.
+  (progn
+    (setq treemacs-collapse-dirs		       (if treemacs-python-executable 3 0)
+	  treemacs-deferred-git-apply-delay	     0.5
+	  treemacs-directory-name-transformer	     #'identity
+	  treemacs-display-in-side-window	     t
+	  treemacs-eldoc-display		     'simple
+	  treemacs-file-event-delay		     2000
+	  treemacs-file-extension-regex	     treemacs-last-period-regex-value
+	  treemacs-file-follow-delay		     0.2
+	  treemacs-file-name-transformer	     #'identity
+	  treemacs-follow-after-init		     t
+	  treemacs-expand-after-init		     t
+	  treemacs-find-workspace-method	     'find-for-file-or-pick-first
+	  treemacs-git-command-pipe		     ""
+	  treemacs-goto-tag-strategy		     'refetch-index
+	  treemacs-header-scroll-indicators	     '(nil . "^^^^^^")
+	  treemacs-hide-dot-git-directory	     nil
+	  treemacs-indentation		     2
+	  treemacs-indentation-string		     " "
+	  treemacs-indent-guide-style		     'line
+	  treemacs-is-never-other-window	     nil
+	  treemacs-max-git-entries		     5000
+	  treemacs-missing-project-action	     'ask
+	  treemacs-move-files-by-mouse-dragging    t
+	  treemacs-move-forward-on-expand	     nil
+	  treemacs-no-png-images		     nil
+	  treemacs-no-delete-other-windows	     t
+	  treemacs-project-follow-cleanup	     nil
+	  treemacs-persist-file		     (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+	  treemacs-position			     'left
+	  treemacs-read-string-input		     'from-child-frame
+	  treemacs-recenter-distance		     0.1
+	  treemacs-recenter-after-file-follow	     nil
+	  treemacs-recenter-after-tag-follow	     nil
+	  treemacs-recenter-after-project-jump     'always
+	  treemacs-recenter-after-project-expand   'on-distance
+	  treemacs-litter-directories		     '("/node_modules" "/.venv" "/.cask")
+	  treemacs-project-follow-into-home	     nil
+	  treemacs-show-cursor		     nil
+	  treemacs-show-hidden-files		     t
+	  treemacs-silent-filewatch		     nil
+	  treemacs-silent-refresh		     nil
+	  treemacs-sorting			     'alphabetic-asc
+	  treemacs-select-when-already-in-treemacs 'move-back
+	  treemacs-space-between-root-nodes	     t
+	  treemacs-tag-follow-cleanup		     t
+	  treemacs-tag-follow-delay		     1.5
+	  treemacs-text-scale			     nil
+	  treemacs-user-mode-line-format	     nil
+	  treemacs-user-header-line-format	     nil
+	  treemacs-wide-toggle-width		     70
+	  treemacs-width			     40
+	  treemacs-width-increment		     1
+	  treemacs-width-is-initially-locked	     t
+	  treemacs-workspace-switch-cleanup	     nil)
 
-	;; git
-	(when treemacs-python-executable
-	    (treemacs-git-commit-diff-mode t))
+    ;; icon
+    (treemacs-resize-icons 22)
 
-	(pcase (cons (not (null (executable-find "git")))
-		   (not (null treemacs-python-executable)))
-	    (`(t . t)
-		(treemacs-git-mode 'deferred))
-	    (`(t . _)
-		(treemacs-git-mode 'simple)))
+    ;; toggles
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode 'always)
 
-	;; Should not display the .gitignore files.
-	(setq treemacs-hide-gitignored-files-mode t)
+    ;; git
+    (when treemacs-python-executable
+      (treemacs-git-commit-diff-mode t))
 
-	;; Enable the indent in treemacs.
-	(treemacs-indent-guide-mode)
+    (pcase (cons (not (null (executable-find "git")))
+		 (not (null treemacs-python-executable)))
+      (`(t . t)
+       (treemacs-git-mode 'deferred))
+      (`(t . _)
+       (treemacs-git-mode 'simple)))
 
-	;; Override keymap
-	(evil-define-key 'treemacs treemacs-mode-map (kbd "C-h")  'evil-window-left)
-	(evil-define-key 'treemacs treemacs-mode-map (kbd "C-l")  'evil-window-right))
+    ;; Should not display the .gitignore files.
+    (setq treemacs-hide-gitignored-files-mode t)
 
-    )
+    ;; Enable the indent in treemacs.
+    (treemacs-indent-guide-mode)
+
+    ;; Override keymap
+    (evil-define-key 'treemacs treemacs-mode-map (kbd "C-h")  'evil-window-left)
+    (evil-define-key 'treemacs treemacs-mode-map (kbd "C-l")  'evil-window-right))
+
+  )
 
 (use-package treemacs-evil
     :after (treemacs evil)
@@ -815,7 +796,10 @@
 
     (evil-define-key '(normal) 'global (kbd "SPC p w") 'projectile-save-project-buffers)
 
-    (evil-define-key '(normal) 'global (kbd "SPC p s") 'projectile-run-async-shell-command-in-root)
+    (evil-define-key '(normal) 'global (kbd "SPC p s") (lambda ()
+							   (interactive)
+							   (switch-to-buffer-other-window (current-buffer))
+							   (call-interactively 'projectile-run-shell)))
     (evil-define-key '(normal) 'global (kbd "SPC p S") 'projectile-run-shell-command-in-root)
 
     ;; TIP The `tags' does make errors, but the `grep'.
@@ -986,43 +970,39 @@
 ;; NOTE A good 'complete' package only requires you to press 'return' key, and never let you press 'tab' key.
 ;; NOTE If you need the same number of key-stroke, why use fuzzy?
 (use-package company
-    :ensure t
-    :config
-
-    (setq company-minimum-prefix-length 1)
-    (setq company-idle-delay
+  :ensure t
+  :config
+  (setq company-minimum-prefix-length 1)
+  (setq company-idle-delay
 	(lambda () (if (company-in-string-or-comment) nil 0)))
 
-    ;; TIP Use 'C-n' and 'C-p' to in 'vi-insert-state' to trigger/select the entry in completion-window.
-    ;; TIP Use 'key-conversion' to translate 'C-m' to 'RET'.
-    ;; TIP Use 'C-h' to open the 'quick-doc', use 'C-w' to show the 'source'.
-    ;; TIP Use 'M-{digit}' to quick select the completion entry in popup window.
+  ;; TIP Use 'C-n' and 'C-p' to in 'vi-insert-state' to trigger/select the entry in completion-window.
+  ;; TIP Use 'key-conversion' to translate 'C-m' to 'RET'.
+  ;; TIP Use 'C-h' to open the 'quick-doc', use 'C-w' to show the 'source'.
+  ;; TIP Use 'M-{digit}' to quick select the completion entry in popup window.
+  ;; TIP To see advanced usage, list the `company-active-map'.
 
-    ;; Enable global mode.
-    (add-hook 'after-init-hook 'global-company-mode)
-    ;; (setq company-global-modes '(not erc-mode message-mode eshell-mode))
+  ;; Bind keys.
+  (define-key company-active-map (kbd "C-w") nil)
+  (define-key company-active-map (kbd "C-l") 'company-show-location)
 
-    ;; (add-hook 'prog-mode-hook (lambda ()
-    ;;			      (setq-local company-backends
-    ;;					  '((company-slime
-    ;;					     company-yasnippet
-    ;;					     company-files
-    ;;					     company-keywords
-    ;;					     company-capf
-    ;;					     company-cmake
-    ;;					     company-c-headers
-    ;;					     company-clang
-    ;;					     company-irony-c-headers
-    ;;					     company-irony
-    ;;					     company-dabbrev-code
-    ;;					     company-semantic
-    ;;					     company-gtags
-    ;;					     company-etags
-    ;;					     company-rtags
-    ;;					     company-elisp
-    ;;					     )))))
+  ;; (add-hook 'c-mode-hook (lambda ()
 
-    )
+  ;; 			   ;; Add yasnippet company-backend with slime company-backend.
+  ;; 			   ;; (when (member 'company-slime company-backends)
+  ;; 			   ;;   (delete 'company-slime company-backends)
+  ;; 			   ;;   (push '(company-slime :with company-yasnippet) company-backends))
+
+  ;; 			   (when (member 'company-capf company-backends)
+  ;; 			     (delete 'company-capf company-backends)
+  ;; 			     (push '(company-capf :with company-yasnippet) company-backends))
+
+  ;; 			   ))
+
+  
+  ;; Enable global mode.
+  (add-hook 'after-init-hook 'global-company-mode)
+  )
 
 (use-package company-quickhelp
     :ensure t
@@ -1048,20 +1028,20 @@
 
 (defun --->snippet () "Snippet text.")
 (use-package yasnippet
-    :ensure t
-    :after (company)
-    :config
-    ;; TIP Good to have a 'template' system to avoid stupid codes in some stupid languages. (I am not saying about Java).
-    ;; TIP Use 'Tab' in `vi-insert-mode' to expand the key into snippet. e.g. 'cls<Tab>' in common-lisp mode.
-    (yas-global-mode 1)
+  :ensure t
+  ;; :after (company)
+  :config
+  ;; TIP Good to have a 'template' system to avoid stupid codes in some stupid languages. (I am not saying about Java).
+  ;; TIP Use 'Tab' in `vi-insert-mode' to expand the key into snippet. e.g. 'cls<Tab>' in common-lisp mode.
+  (yas-global-mode 1)
 
-    ;; Add company backend
-    ;; (push 'company-yasnippet company-backends)
+  ;; Add company backend
+  ;; (push 'company-yasnippet company-backends)
 
-    ;;TriggerKey
-    ;; (evil-define-key 'insert yas-minor-mode-map (kbd "SPC") 'yas-expand)
+  ;;TriggerKey
+  ;; (evil-define-key 'insert yas-minor-mode-map (kbd "SPC") 'yas-expand)
 
-    )
+  )
 
 (use-package yasnippet-snippets
     :ensure t)
@@ -1094,29 +1074,31 @@
 (defun --->formatter () "Format text.")
 ;; See https://www.gnu.org/software/emacs/manual/html_node/efaq/Changing-the-length-of-a-Tab.html
 ;; See https://www.gnu.org/software/emacs/manual/html_node/emacs/Text-Display.html
-;; TIP I don't care the `identation' (level of document) is represented by `spaces' or `tabs', but they should be rendered correctly, to be read by human.
+;; TIP I don't care the `identation' (level of document) is represented by `spaces' or `tabs', but they should be rendered correctly, to be easy to read by human.
 ;; TIP Use 'formatter' to format buffer 'automatically', instead of `<<` and `>>` to indent text manually.
 (use-package aggressive-indent
-    :ensure t
-    :config
-    ;; NOTE Only enable this mode for these modes.
-    (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
-    (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-    (add-hook 'lisp-data-mode #'aggressive-indent-mode)
-    ;; (add-hook 'c-mode-hook #'aggressive-indent-mode)
-    (add-hook 'java-mode-hook #'aggressive-indent-mode)
-    (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
-    (add-hook 'tex-mode-hook #'aggressive-indent-mode)
+  :ensure t
+  :config
+  ;; NOTE Only enable this mode for these modes.
+  (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
+  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+  (add-hook 'lisp-data-mode #'aggressive-indent-mode)
+  ;; (add-hook 'c-mode-hook #'aggressive-indent-mode)
+  (add-hook 'java-mode-hook #'aggressive-indent-mode)
+  (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
+  (add-hook 'tex-mode-hook #'aggressive-indent-mode)
 
-    ;; NOTE Code is text that read by human, the indentation means the level of code, should be human-readable. (at least 4 spaces width, or just use tab character.)
-    ;; NOTE The `indentation' should be enlarged, not highlighted.
-    ;; Set indent-offset for human readable.
-    (setq lisp-indent-offset 4))
+  ;; NOTE Code is text that read by human, the indentation means the level of code, should be human-readable. (at least 4 spaces width, or just use tab character.)
+  ;; NOTE The `indentation' should be enlarged, not highlighted.
+
+  ;; Set indent-offset for human readable.
+  (setq lisp-indent-offset nil))
 
 ;; NOTE The indent highlight is distracting, just use the auto formatter and the space characters width.
 
 (defun --->text-object () "Analyse text.")
 ;; TIP Useful vi text-objects: 'b' = 'parenthesis', 'B' = 'curly', 't' = 'tag', 's' = 'sentence', 'a' = 'argument', 'f' = 'function', 'c' = 'class', 'o' = 'symbol'.
+;; TIP To select cuurent function and jump between beginning and end: 'vifoo'
 
 (use-package tree-sitter
     :init
@@ -1124,32 +1106,33 @@
     (global-tree-sitter-mode))
 
 (use-package evil-textobj-tree-sitter
-    :ensure t
-    :config
-    (define-key evil-inner-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj "parameter.inner"))
-    (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj "parameter.outer"))
+  :ensure t
+  :config
+  (define-key evil-inner-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj "parameter.inner"))
+  (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj "parameter.outer"))
 
-    (define-key evil-inner-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
-    (define-key evil-outer-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.outer"))
+  (define-key evil-inner-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
+  (define-key evil-outer-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.outer"))
 
-    (define-key evil-inner-text-objects-map "c" (evil-textobj-tree-sitter-get-textobj "class.inner"))
-    (define-key evil-outer-text-objects-map "c" (evil-textobj-tree-sitter-get-textobj "class.outer")))
+  (define-key evil-inner-text-objects-map "c" (evil-textobj-tree-sitter-get-textobj "class.inner"))
+  (define-key evil-outer-text-objects-map "c" (evil-textobj-tree-sitter-get-textobj "class.outer")))
 
 (use-package highlight-thing
-    :ensure t
-    :config
-    ;; TIP Auto highlight the thing at point.
-    (global-highlight-thing-mode)
-    (setq highlight-thing-delay-seconds 0)
-    (setq highlight-thing-case-sensitive-p nil)
-    (set-face-attribute 'highlight nil
-	:underline "#00FF00"))
+  :disabled nil
+  :ensure t
+  :config
+  ;; TIP Auto highlight the thing at point.
+  (global-highlight-thing-mode)
+  (setq highlight-thing-delay-seconds 0)
+  (setq highlight-thing-case-sensitive-p nil)
+  (set-face-attribute 'highlight nil
+		      :underline "#00FF00"))
 
 (defun --->comment () "Comment text.")
 (use-package newcomment
-    :config
-    (evil-define-key '(normal visual) 'global (kbd "SPC c") 'comment-line)
-    (evil-define-key '(normal visual) 'global (kbd "SPC C") 'comment-region))
+  :config
+  (evil-define-key '(normal visual) 'global (kbd "SPC c") 'comment-line)
+  (evil-define-key '(normal visual) 'global (kbd "SPC C") 'comment-region))
 
 (defun --->parenthesis () "Parenthesis related.")
 (use-package smartparens
@@ -1237,7 +1220,9 @@
 	      ;; https://clangd.llvm.org/config#files
 	      (c-mode . lsp)
 	      (c++-mode . lsp)
-	      (java-mode . lsp))
+	      (java-mode . lsp)
+	      (yaml-ts-mode . lsp)
+	      )
     :commands lsp
     :config
 
@@ -1318,52 +1303,54 @@
 (defun --->language:lisp () "Lisp Language.")
 
 (use-package slime
-    :ensure t
-    :config
-    ;; NOTE The 'slime' env is composed by 'emacs' as the 'client-side', and 'swank' as the 'server-side'.
-    ;; NOTE The 'slime-who-references', 'slime-who-binds' and 'slime-who-sets' only works for 'global-variable'.
-    ;; NOTE The 'slime-who-calls', 'slime-calls-who', 'slime-list-callers' and 'slime-list-callees' only works for 'function' and 'method'.
-    ;; NOTE Read more about xref in: https://slime.common-lisp.dev/doc/html/Xref-buffer-commands.html#Xref-buffer-commands
-    ;; NOTE The 'semantic-identation' feature: https://slime.common-lisp.dev/doc/html/Semantic-indentation.html#Semantic-indentation
-    ;; TIP The 'quote-form' is not counted as 'slime-edit-uses', like the 'make-instance'.
+  :ensure t
+  :config
+  ;; NOTE The 'slime' env is composed by 'emacs' as the 'client-side', and 'swank' as the 'server-side'.
+  ;; NOTE The 'slime-who-references', 'slime-who-binds' and 'slime-who-sets' only works for 'global-variable'.
+  ;; NOTE The 'slime-who-calls', 'slime-calls-who', 'slime-list-callers' and 'slime-list-callees' only works for 'function' and 'method'.
+  ;; NOTE Read more about xref in: https://slime.common-lisp.dev/doc/html/Xref-buffer-commands.html#Xref-buffer-commands
+  ;; NOTE The 'semantic-identation' feature: https://slime.common-lisp.dev/doc/html/Semantic-indentation.html#Semantic-indentation
+  ;; TIP The 'quote-form' is not counted as 'slime-edit-uses', like the 'make-instance'.
 
-    ;; Set the inferior-program.
-    (setq inferior-lisp-program "ros dynamic-space-size=4GiB run")
+  ;; Set the inferior-program.
+  (setq inferior-lisp-program "ros dynamic-space-size=4GiB run")
 
-    ;; NOTE Use 'slime-setup' instead of `(setq slime-contribs '(slime-fancy))`.
-    (slime-setup '(
-		      slime-asdf
-		      slime-quicklisp
-		      ;; TIP The 'slime-fancy' contrib includes the following packages: slime-repl slime-autodoc slime-c-p-c slime-editing-commands slime-fancy-inspector slime-fancy-trace slime-fuzzy slime-mdot-fu slime-macrostep slime-presentations slime-scratch slime-references slime-package-fu slime-fontifying-fu slime-trace-dialog slime-indentation.
-		      slime-fancy
-		      slime-banner
-		      slime-xref-browser
-		      ;; slime-highlight-edits (this only works for compile)
-		      slime-company))
+  ;; NOTE Use 'slime-setup' instead of `(setq slime-contribs '(slime-fancy))`.
+  (slime-setup '(
+		 slime-asdf
+		 slime-quicklisp
+		 ;; TIP The 'slime-fancy' contrib includes the following packages: slime-repl slime-autodoc slime-c-p-c slime-editing-commands slime-fancy-inspector slime-fancy-trace slime-fuzzy slime-mdot-fu slime-macrostep slime-presentations slime-scratch slime-references slime-package-fu slime-fontifying-fu slime-trace-dialog slime-indentation.
+		 slime-fancy
+		 slime-banner
+		 slime-xref-browser
+		 ;; slime-highlight-edits (this only works for compile)
+		 slime-company))
 
-    ;; Options for contribs.
-    (setq slime-startup-animation nil)
 
-    ;; Start slime automatically if needed.
-    (setq slime-auto-start 'always)
-    ;; NOTE Auto execute 'slime' command.
-    ;;(add-hook 'slime-mode-hook
-    ;;		(lambda ()
-    ;;		  (unless (slime-connected-p)
-    ;;		(save-excursion (slime)))))
+  ;; Options for contribs.
+  (setq slime-startup-animation nil)
 
-    ;; Set instantly slime-autodoc in echo-area.
-    (setq eldoc-idle-delay 0)
+  ;; Start slime automatically if needed.
+  (setq slime-auto-start 'always)
+  ;; NOTE Auto execute 'slime' command.
+  ;;(add-hook 'slime-mode-hook
+  ;;		(lambda ()
+  ;;		  (unless (slime-connected-p)
+  ;;		(save-excursion (slime)))))
 
-    ;; Fix bindings.
-    (evil-define-key 'normal slime-mode-map "gr" 'slime-edit-uses))
+  ;; Set instantly slime-autodoc in echo-area.
+  (setq eldoc-idle-delay 0)
+
+  ;; Fix bindings.
+  (evil-define-key 'normal slime-mode-map "gr" 'slime-edit-uses))
 
 (use-package slime-company
-    :ensure t
-    :after (slime company)
-    :config
-    ;; NOTE 'slime-company' must put after 'slime' to work.
-    (setq slime-company-completion 'fuzzy
+  :ensure t
+  :after (slime company)
+  :config
+
+  ;; NOTE 'slime-company' must put after 'slime' to work.
+  (setq slime-company-completion 'fuzzy
 	slime-company-after-completion 'slime-company-just-one-space))
 
 (defun --->repl () "Lisp repl.")
@@ -1375,9 +1362,9 @@
 
 ;; NOTE If you start 'slime' via 'slime' command, then all the IO will be re-directed to the REPL by default. (https://slime.common-lisp.dev/doc/html/Global-IO-Redirection.html)
 (evil-define-key '(normal) 'global (kbd "SPC r r") (lambda ()
-						       (interactive)
-						       (slime-repl)
-						       (slime-restart-inferior-lisp)))
+						     (interactive)
+						     (slime-repl)
+						     (slime-restart-inferior-lisp)))
 (evil-define-key '(normal) 'global (kbd "SPC r l") 'slime-list-connections)
 (evil-define-key '(normal) 'global (kbd "SPC r t") 'slime-list-threads)
 
