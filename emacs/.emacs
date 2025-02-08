@@ -35,8 +35,10 @@
 ;; - Notation is nothing without denotation.
 ;; - Learning Emacs is painful in the beginning, and painful in the end.
 ;; - Deprecated means stable.
+;; - A fancy GUI application usually has less features.
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
+;; TODO company sort candidates by statistics.
 ;; TODO get super-key prefix bindings by using a better window manager.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -321,20 +323,21 @@
     )
 
 (defun --->todo () "Keyword highlight.")
+
 (use-package hl-todo
-    :ensure t
-    :config
+  :ensure t
+  :config
 
-    ;; Enable globally.
-    (setq hl-todo-keyword-faces
+  ;; Enable globally.
+  (setq hl-todo-keyword-faces
 	'(("TODO"   . "#FFFF00")
-	     ("FIXME"  . "#FF0000")
-	     ("NOTE"  . "#0000FF")
-	     ("TIP"  . "#00FF00")))
-    (global-hl-todo-mode)
+	  ("FIXME"  . "#FF0000")
+	  ("NOTE"  . "#0000FF")
+	  ("TIP"  . "#00FF00")))
+  (global-hl-todo-mode)
 
-    ;; Bind.
-    (evil-define-key '(normal) 'global (kbd "SPC u t") 'hl-todo-occur))
+  ;; Bind.
+  (evil-define-key '(normal) 'global (kbd "SPC u t") 'hl-todo-occur))
 
 
 (defun <view> () "The display for Emacs.")
@@ -363,51 +366,57 @@
 (blink-cursor-mode 0)
 
 (defun --->dimmer () "Dim other windows.")
+
 (use-package dimmer
-    :ensure t
-    :config
-    (dimmer-mode t))
+  :ensure t
+  :config
+  (dimmer-mode t))
 
 (defun --->theme () "The theme for Emacs.")
 (use-package base16-theme
-    :ensure t
-    :config
-    ;; TIP Don't use the 'transparent-frame', it's ugly.
-    ;; NOTE See spec in https://github.com/chriskempson/base16/blob/main/styling.md
-    ;; TIP Use 'list-colors-display' to see all known-colors.
+  :ensure t
+  :config
+  ;; TIP Don't use the 'transparent-frame', it's ugly.
+  ;; NOTE See spec in https://github.com/chriskempson/base16/blob/main/styling.md
+  ;; TIP Use 'list-colors-display' to see all known-colors.
 
-    ;; NOTE Instead of defining a new theme, we modify the existing one for convinence.
-    (setq base16-sakura-theme-colors
+  ;; NOTE Instead of defining a new theme, we modify the existing one for convinence.
+  (setq base16-sakura-theme-colors
 	'(
-	     :base00 "#000000" ;; default background: window
-	     :base01 "#1C1C1C" ;; status bar, line numbers and folding marks
-	     :base02 "#383838" ;; selection
-	     :base03 "#545454" ;; comment
-	     :base04 "#A2A2A2" ;; dark-theme foreground: doc-string
-	     :base05 "#FFFFFF" ;; default foreground: text
-	     :base06 "#DEDEDE" ;; light-theme foreground (not often used)
-	     :base07 "#FCFCFC" ;; light-theme background (not often used)
-	     :base08 "#FC5454" ;; cursor, symbol flags, sldb-condition
-	     :base09 "#FFA500" ;; self-evaluating object, tab name.
-	     :base0A "#FFFF00" ;; type, class
-	     :base0B "#00FF00" ;; string
-	     :base0C "#00FFFF" ;; keyword symbol
-	     :base0D "#5454fc" ;; function name
-	     :base0E "#FF00FF" ;; operator name
-	     :base0F "#008000" ;; deprecated (opening/closing embedded language tags, e.g. '<?php ?>')
-	     ))
-    (load-theme 'base16-sakura t)
+	  :base00 "#000000" ;; default background: window
+	  :base01 "#1C1C1C" ;; status bar, line numbers and folding marks
+	  :base02 "#383838" ;; selection
+	  :base03 "#545454" ;; comment
+	  :base04 "#A2A2A2" ;; dark-theme foreground: doc-string
+	  :base05 "#FFFFFF" ;; default foreground: text
+	  :base06 "#DEDEDE" ;; light-theme foreground (not often used)
+	  :base07 "#FCFCFC" ;; light-theme background (not often used)
+	  :base08 "#FC5454" ;; cursor, symbol flags, sldb-condition
+	  :base09 "#FFA500" ;; self-evaluating object, tab name.
+	  :base0A "#FFFF00" ;; type, class
+	  :base0B "#00FF00" ;; string
+	  :base0C "#00FFFF" ;; keyword symbol
+	  :base0D "#5454fc" ;; function name
+	  :base0E "#FF00FF" ;; operator name
+	  :base0F "#008000" ;; deprecated (opening/closing embedded language tags, e.g. '<?php ?>')
+	  ))
+  (load-theme 'base16-sakura t)
 
-    (set-face-foreground 'tab-bar-tab "#00FF00"))
+  (set-face-foreground 'tab-bar-tab "#00FF00"))
 
 (use-package hl-line
-    :ensure t
-    :after (base16-theme)
-    :config
-    ;; Override the 'hl-line' face.
-    (global-hl-line-mode t)
-    (set-face-background 'hl-line "#000066"))
+  :ensure t
+  :after (base16-theme)
+  :config
+  ;; Override the 'hl-line' face.
+  (global-hl-line-mode t)
+  (set-face-background 'hl-line "#000066"))
 
+;; TIP Color the hex color code, useful for web development.
+(use-package colorful-mode
+  :ensure t
+  ;; NOTE The global colorful mode will makes the `list-face-display' failed to work.
+  :hook (prog-mode . colorful-mode))
 
 (defun --->mini-buffer () "Customize mini-buffer.")
 (use-package helm
@@ -766,70 +775,70 @@
 
 ;; NOTE Use 'projectile' as a project interface layer, to 'discovery' and 'indexing' projects.
 (use-package projectile
-    :ensure t
-    :config
-    ;; TIP Enforce the 'projectile-commands' to be executed inside a 'project' indicated by a 'project-makrer'. (I don't want to use projectile commands in the home directory.)
-    (setq projectile-require-project-root t)
-    (projectile-mode +1)
+  :ensure t
+  :config
+  ;; TIP Enforce the 'projectile-commands' to be executed inside a 'project' indicated by a 'project-makrer'. (I don't want to use projectile commands in the home directory.)
+  (setq projectile-require-project-root t)
+  (projectile-mode +1)
 
-    ;; Include current project in the project switcher.
-    (setq projectile-current-project-on-switch 'keep)
+  ;; Include current project in the project switcher.
+  (setq projectile-current-project-on-switch 'keep)
 
-    ;; Include the top-level dir in find-dir.
-    (setq projectile-find-dir-includes-top-level t)
+  ;; Include the top-level dir in find-dir.
+  (setq projectile-find-dir-includes-top-level t)
 
-    ;; Set completion system.
-    (setq projectile-completion-system 'helm)
+  ;; Set completion system.
+  (setq projectile-completion-system 'helm)
 
-    ;; Bind
-    (evil-define-key '(normal) 'global (kbd "SPC p p") 'projectile-switch-project)
-    (evil-define-key '(normal) 'global (kbd "SPC p b") 'projectile-switch-to-buffer)
+  ;; Bind
+  (evil-define-key '(normal) 'global (kbd "SPC p p") 'projectile-switch-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p b") 'projectile-switch-to-buffer)
 
-    ;; NOTE For `gitignored files', the `treemacs' shows them, but `projectile' hides them.
-    (evil-define-key '(normal) 'global (kbd "SPC p i") 'projectile-project-info)
-    (evil-define-key '(normal) 'global (kbd "SPC p h") 'projectile-dired)
-    (evil-define-key '(normal) 'global (kbd "SPC p f") 'helm-projectile-find-file)
-    (evil-define-key '(normal) 'global (kbd "SPC SPC") 'helm-projectile-find-file)
-    (evil-define-key '(normal) 'global (kbd "SPC p F") 'projectile-find-file-other-window)
-    (evil-define-key '(normal) 'global (kbd "SPC p d") 'projectile-find-dir)
-    (evil-define-key '(normal) 'global (kbd "SPC p r") 'projectile-recentf)
+  ;; NOTE For `gitignored files', the `treemacs' shows them, but `projectile' hides them.
+  (evil-define-key '(normal) 'global (kbd "SPC p i") 'projectile-project-info)
+  (evil-define-key '(normal) 'global (kbd "SPC p h") 'projectile-dired)
+  (evil-define-key '(normal) 'global (kbd "SPC p f") 'helm-projectile-find-file)
+  (evil-define-key '(normal) 'global (kbd "SPC SPC") 'helm-projectile-find-file)
+  (evil-define-key '(normal) 'global (kbd "SPC p F") 'projectile-find-file-other-window)
+  (evil-define-key '(normal) 'global (kbd "SPC p d") 'projectile-find-dir)
+  (evil-define-key '(normal) 'global (kbd "SPC p r") 'projectile-recentf)
 
-    (evil-define-key '(normal) 'global (kbd "SPC p w") 'projectile-save-project-buffers)
+  (evil-define-key '(normal) 'global (kbd "SPC p w") 'projectile-save-project-buffers)
 
-    (evil-define-key '(normal) 'global (kbd "SPC p s") (lambda ()
-							   (interactive)
-							   (switch-to-buffer-other-window (current-buffer))
-							   (call-interactively 'projectile-run-shell)))
-    (evil-define-key '(normal) 'global (kbd "SPC p S") 'projectile-run-shell-command-in-root)
+  (evil-define-key '(normal) 'global (kbd "SPC p s") (lambda ()
+						       (interactive)
+						       (switch-to-buffer-other-window (current-buffer))
+						       (call-interactively 'projectile-run-shell)))
+  (evil-define-key '(normal) 'global (kbd "SPC p S") 'projectile-run-shell-command-in-root)
 
-    ;; TIP The `tags' does make errors, but the `grep'.
-    ;; TIP Use 'C-j' and 'C-k' to show the details in 'grep-result-window'.
-    ;; TIP Use `ripgrep' for: better result highlight, respect .gitignore file.
-    (evil-define-key '(normal) 'global (kbd "SPC p g") (lambda () (interactive)
-							   ;; Push the 4 as prefix-arg to enable the regex pattern.
-							   (let ((current-prefix-arg 4))
-							       (call-interactively #'projectile-ripgrep))))
-    (evil-define-key '(normal) 'global (kbd "SPC p G") 'projectile-replace-regexp)
+  ;; TIP The `tags' does make errors, but the `grep'.
+  ;; TIP Use 'C-j' and 'C-k' to show the details in 'grep-result-window'.
+  ;; TIP Use `ripgrep' for: better result highlight, respect .gitignore file.
+  (evil-define-key '(normal) 'global (kbd "SPC p g") (lambda () (interactive)
+						       ;; Push the 4 as prefix-arg to enable the regex pattern.
+						       (let ((current-prefix-arg 4))
+							 (call-interactively #'projectile-ripgrep))))
+  (evil-define-key '(normal) 'global (kbd "SPC p G") 'projectile-replace-regexp)
 
-    (evil-define-key '(normal) 'global (kbd "SPC p !") 'projectile-run-shell-command-in-root)
-    (evil-define-key '(normal) 'global (kbd "SPC p &") 'projectile-run-async-shell-command-in-root)
+  (evil-define-key '(normal) 'global (kbd "SPC p !") 'projectile-run-shell-command-in-root)
+  (evil-define-key '(normal) 'global (kbd "SPC p &") 'projectile-run-async-shell-command-in-root)
 
-    (evil-define-key '(normal) 'global (kbd "SPC p C") 'projectile-compile-project)
-    (evil-define-key '(normal) 'global (kbd "SPC p R") 'projectile-run-project)
-    (evil-define-key '(normal) 'global (kbd "SPC p D") 'dap-hydra)
-    (evil-define-key '(normal) 'global (kbd "SPC p P") 'projectile-package-project)
-    (evil-define-key '(normal) 'global (kbd "SPC p I") 'projectile-install-project)
-    (evil-define-key '(normal) 'global (kbd "SPC p T") 'projectile-test-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p C") 'projectile-compile-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p R") 'projectile-run-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p D") 'dap-hydra)
+  (evil-define-key '(normal) 'global (kbd "SPC p P") 'projectile-package-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p I") 'projectile-install-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p T") 'projectile-test-project)
 
-    (evil-define-key '(normal) 'global (kbd "SPC p m") 'projectile-add-known-project)
-    (evil-define-key '(normal) 'global (kbd "SPC p M") 'projectile-remove-known-project)
-    ;; Pin a project to treemacs.
-    (evil-define-key '(normal) 'global (kbd "SPC p P") 'treemacs-projectile)
+  (evil-define-key '(normal) 'global (kbd "SPC p m") 'projectile-add-known-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p M") 'projectile-remove-known-project)
+  ;; Pin a project to treemacs.
+  (evil-define-key '(normal) 'global (kbd "SPC p P") 'treemacs-projectile)
 
-    (evil-define-key '(normal) 'global (kbd "SPC p L") 'projectile-toggle-project-read-only)
+  (evil-define-key '(normal) 'global (kbd "SPC p L") 'projectile-toggle-project-read-only)
 
-    (evil-define-key '(normal) 'global (kbd "SPC p v") 'projectile-vc)
-    )
+  (evil-define-key '(normal) 'global (kbd "SPC p v") 'projectile-vc)
+  )
 
 (use-package magit
     :ensure t
@@ -996,7 +1005,6 @@
   ;; 			   (when (member 'company-capf company-backends)
   ;; 			     (delete 'company-capf company-backends)
   ;; 			     (push '(company-capf :with company-yasnippet) company-backends))
-
   ;; 			   ))
 
   
@@ -1095,15 +1103,45 @@
   (setq lisp-indent-offset nil))
 
 ;; NOTE The indent highlight is distracting, just use the auto formatter and the space characters width.
+;; (use-package indent-bars
+;;   :ensure t
+;;   :hook ((emacs-lisp-mode lisp-mode) . indent-bars-mode)
+;;   :config
+;;   ;; (setq
+;;   ;;  indent-bars-color '(highlight :face-bg t :blend 0.15)
+;;   ;;  indent-bars-pattern "."
+;;   ;;  indent-bars-width-frac 0.1
+;;   ;;  indent-bars-pad-frac 0.1
+;;   ;;  indent-bars-zigzag nil
+;;   ;;  indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 1) ; blend=1: blend with BG only
+;;   ;;  indent-bars-highlight-current-depth '(:blend 0.5) ; pump up the BG blend on current
+;;   ;;  indent-bars-display-on-blank-lines t)
+;;   ;; (setq
+;;   ;;  ;; indent-bars-color '(ansi-color-white :face-bg t :blend 0.5)
+;;   ;;  indent-bars-pattern "."
+;;   ;;  indent-bars-width-frac 0.1
+;;   ;;  indent-bars-pad-frac 0.1
+;;   ;;  indent-bars-zigzag nil
+;;   ;;  indent-bars-color-by-depth nil
+;;   ;;  indent-bars-highlight-current-depth '(:face default :blend 0.4)
+;;   ;;  indent-bars-display-on-blank-lines nil)
+;;   ;; (setq
+;;   ;;  indent-bars-pattern "."
+;;   ;;  indent-bars-width-frac 0.1
+;;   ;;  indent-bars-pad-frac 0.1
+;;   ;;  indent-bars-color-by-depth nil
+;;   ;;  indent-bars-display-on-blank-lines t
+;;   ;;  indent-bars-highlight-current-depth '(:face default :blend 0.4))
+;;   )
 
 (defun --->text-object () "Analyse text.")
 ;; TIP Useful vi text-objects: 'b' = 'parenthesis', 'B' = 'curly', 't' = 'tag', 's' = 'sentence', 'a' = 'argument', 'f' = 'function', 'c' = 'class', 'o' = 'symbol'.
 ;; TIP To select cuurent function and jump between beginning and end: 'vifoo'
 
 (use-package tree-sitter
-    :init
-    ;; NOTE Enable 'tree-sitter-mode' provided by 'tree-sitter.el' in Emacs v29.0. (Not use the 'treesit.el')
-    (global-tree-sitter-mode))
+  :init
+  ;; NOTE Enable 'tree-sitter-mode' provided by 'tree-sitter.el' in Emacs v29.0. (Not use the 'treesit.el')
+  (global-tree-sitter-mode))
 
 (use-package evil-textobj-tree-sitter
   :ensure t
@@ -1118,15 +1156,15 @@
   (define-key evil-outer-text-objects-map "c" (evil-textobj-tree-sitter-get-textobj "class.outer")))
 
 (use-package highlight-thing
-  :disabled nil
   :ensure t
   :config
   ;; TIP Auto highlight the thing at point.
   (global-highlight-thing-mode)
-  (setq highlight-thing-delay-seconds 0)
+
+  (setq highlight-thing-delay-seconds 0.5)
   (setq highlight-thing-case-sensitive-p nil)
   (set-face-attribute 'highlight nil
-		      :underline "#00FF00"))
+		      :inverse-video t))
 
 (defun --->comment () "Comment text.")
 (use-package newcomment
@@ -1136,33 +1174,36 @@
 
 (defun --->parenthesis () "Parenthesis related.")
 (use-package smartparens
-    :ensure t
-    ;; NOTE Only enable 'smartparens-mode' in these mode.
-    :hook (prog-mode text-mode markdown-mode slime-repl-mode ielm-mode)
-    :init
+  :ensure t
+  ;; NOTE Only enable 'smartparens-mode' in these mode.
+  :hook (prog-mode text-mode markdown-mode slime-repl-mode ielm-mode)
+  :init
 
-    ;; TIP Use 'closed-char' to 'move-over' the paird-structure.
-    (evil-define-key '(normal visual) 'global (kbd "SPC s w") 'sp-wrap-round)
-    (evil-define-key '(normal visual) 'global (kbd "SPC s W") 'sp-splice-sexp)
+  ;; TIP Use 'closed-char' to 'move-over' the paird-structure.
+  (evil-define-key '(normal visual) 'global (kbd "SPC s w") 'sp-wrap-round)
+  (evil-define-key '(normal visual) 'global (kbd "SPC s W") 'sp-splice-sexp)
 
-    (evil-define-key '(normal) 'global (kbd "SPC s m") 'sp-mark-sexp)
-    (evil-define-key '(normal) 'global (kbd "SPC s k") 'sp-kill-sexp)
+  (evil-define-key '(normal) 'global (kbd "SPC s m") 'sp-mark-sexp)
+  (evil-define-key '(normal) 'global (kbd "SPC s k") 'sp-kill-sexp)
 
-    (evil-define-key '(normal) 'global (kbd "SPC s s") 'sp-forward-slurp-sexp)
-    (evil-define-key '(normal) 'global (kbd "SPC s S") 'sp-backward-slurp-sexp)
-    (evil-define-key '(normal) 'global (kbd "SPC s b") 'sp-forward-barf-sexp)
-    (evil-define-key '(normal) 'global (kbd "SPC s B") 'sp-backward-barf-sexp)
+  (evil-define-key '(normal) 'global (kbd "SPC s s") 'sp-forward-slurp-sexp)
+  (evil-define-key '(normal) 'global (kbd "SPC s S") 'sp-backward-slurp-sexp)
+  (evil-define-key '(normal) 'global (kbd "SPC s b") 'sp-forward-barf-sexp)
+  (evil-define-key '(normal) 'global (kbd "SPC s B") 'sp-backward-barf-sexp)
 
-    (evil-define-key '(normal) 'global (kbd "SPC s t") 'sp-transpose-sexp)
-    (evil-define-key '(normal) 'global (kbd "SPC s r") 'sp-raise-sexp)
+  (evil-define-key '(normal) 'global (kbd "SPC s t") 'sp-transpose-sexp)
+  (evil-define-key '(normal) 'global (kbd "SPC s r") 'sp-raise-sexp)
 
-    ;; (evil-define-key '(normal visual) 'global (kbd "[ s") 'evil-goto-last-change)
-    ;; (evil-define-key '(normal visual) 'global (kbd "] s") 'evil-goto-last-change-reverse)
-    
-    :config
-    ;; Load default config.
-    (require 'smartparens-config)
-    )
+  ;; (evil-define-key '(normal visual) 'global (kbd "[ s") 'evil-goto-last-change)
+  ;; (evil-define-key '(normal visual) 'global (kbd "] s") 'evil-goto-last-change-reverse)
+
+  ;; (evil-define-key '(normal insert visual) lisp-mode-map (kbd ")") 'sp-forward-sexp)
+  ;; (evil-define-key '(normal insert visual) lisp-mode-map (kbd "(") 'sp-backward-sexp)
+  
+  :config
+  ;; Load default config.
+  (require 'smartparens-config)
+  )
 
 ;; (use-package evil-smartparens
 ;;   :ensure t
@@ -1350,8 +1391,10 @@
   :config
 
   ;; NOTE 'slime-company' must put after 'slime' to work.
-  (setq slime-company-completion 'fuzzy
-	slime-company-after-completion 'slime-company-just-one-space))
+  (setq slime-company-completion 'fuzzy)
+  ;;(setq slime-company-after-completion nil)
+  ;;(setq slime-company-after-completion 'slime-company-just-one-space)
+  )
 
 (defun --->repl () "Lisp repl.")
 ;; TIP To navigate 'input-history', use 'C-p' and 'C-n'.
