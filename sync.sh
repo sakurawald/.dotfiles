@@ -32,6 +32,9 @@ cp ~/.config/sioyek/keys_user.config ./sioyek/
 # alacritty
 cp ~/.config/alacritty/alacritty.toml ./alacritty/
 
+# swank
+cp ~/.swank.lisp ./swank/
+
 # spectacle
 # cp ~/.config/spectaclerc ./spectacle/
 

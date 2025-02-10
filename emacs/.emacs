@@ -17,7 +17,7 @@
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
 ;; - While Vim is a text editor, the Emacs has a text editor.
-;; - Emacs is a Lisp-machine (environment) that support Elisp as one of its languages.
+;; - Emacs is a Lisp-machine (environment) that supports Elisp as one of its languages.
 ;; - A nice Vim macro a day, keeps the VS Code away.
 ;; - An idiot admires complexity, a genius admires simplicity. -- Terry Davis
 ;; - Finally, There are only 2 great languages: C and Lisp.
@@ -36,9 +36,9 @@
 ;; - Learning Emacs is painful in the beginning, and painful in the end.
 ;; - Deprecated means stable.
 ;; - A fancy GUI application usually has less features.
+;; - A text editor is a video game.
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
-;; TODO company sort candidates by statistics.
 ;; TODO get super-key prefix bindings by using a better window manager.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -214,11 +214,15 @@
 (evil-define-key '(normal) 'global (kbd "SPC h O") 'apropos-value)
 
 
+
 (defun --->key-cast () "Display the inputed key and executed command.")
 (use-package keycast
-    :ensure t
-    :config
-    (keycast-tab-bar-mode))
+  :disabled t
+  :ensure t
+  :config
+  ;; (keycast-tab-bar-mode)
+  ;; (keycast-header-line-mode)
+  )
 
 (defun <assistant> () "The assist for life.")
 (defun --->org () "Org-mode related.")
@@ -486,23 +490,26 @@
 
 (defun --->mode-line () "Customize mode-line.")
 (use-package doom-modeline
-    :ensure t
-    :hook (after-init . doom-modeline-mode)
-    :config
-    ;; NOTE Currently, the 'doom-modeline' is the only one that actively developed.
+  :ensure t
+  :hook (after-init . doom-modeline-mode)
+  :config
+  ;; NOTE Currently, the 'doom-modeline' is the only one that actively developed.
 
-    ;; Display the 'evil-state' as 'text'.
-    (setq doom-modeline-modal-icon nil)
+  ;; Display the 'evil-state' as 'text'.
+  (setq doom-modeline-modal-icon nil)
 
-    ;; Display the column num.
-    (setq column-number-mode t)
+  ;; Display the column num.
+  (setq column-number-mode t)
 
-    ;; Display the macro-register.
-    (setq doom-modeline-always-show-macro-register t)
+  ;; Display the macro-register.
+  (setq doom-modeline-always-show-macro-register t)
 
-    ;; Display match counts in visual-replace.
-    (setq visual-replace-display-total t)
-    )
+  ;; Display project name.
+  (setq doom-modeline-project-name t)
+
+  ;; Display match counts in visual-replace.
+  (setq visual-replace-display-total t)
+  )
 
 (use-package evil-anzu
     :ensure t
@@ -1418,7 +1425,10 @@
 (defun --->evaluate () "Lisp evaluate.")
 ;; TIP See slime logs in 'slime-event-buffer'.
 
-(evil-define-key '(normal) 'global (kbd "SPC e w") 'slime-repl)
+(evil-define-key '(normal) 'global (kbd "SPC e w") (lambda ()
+						     (interactive)
+						     (call-interactively 'slime-repl)
+						     (call-interactively 'evil-insert-state)))
 (evil-define-key '(normal) 'global (kbd "SPC e c") 'slime-handle-repl-shortcut)
 
 
@@ -1437,9 +1447,10 @@
 
 (evil-define-key '(normal) 'global (kbd "SPC e I") 'slime-interrupt)
 (evil-define-key '(normal) 'global (kbd "SPC e p") (lambda ()
-						       (interactive)
-						       (call-interactively 'slime-sync-package-and-default-directory)
-						       (call-interactively 'slime-repl)))
+						     (interactive)
+						     (call-interactively 'slime-sync-package-and-default-directory)
+						     (call-interactively 'slime-repl)
+						     (call-interactively 'evil-insert-state)))
 
 (evil-define-key '(normal) 'global (kbd "SPC e t") 'slime-toggle-trace-fdefinition)
 (evil-define-key '(normal) 'global (kbd "SPC e T") 'slime-trace-dialog)
