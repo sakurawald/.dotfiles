@@ -508,14 +508,28 @@
   (setq doom-modeline-project-name t)
 
   ;; Display match counts in visual-replace.
-  (setq visual-replace-display-total t)
-  )
+  (setq visual-replace-display-total t))
+
+(use-package time
+  :custom
+  ;; Use 24hrs.
+  (display-time-24hr-format t)
+
+  ;; Enable day-and-date indicator.
+  (display-time-day-and-date t)
+
+  ;; Disable the system load indicator.
+  (display-time-default-load-average nil)
+
+  :config
+  (display-time-mode))
+
 
 (use-package evil-anzu
-    :ensure t
-    :config
-    ;; NOTE Enable hit-counter for evil-isearch in mode-line.
-    (global-anzu-mode +1))
+  :ensure t
+  :config
+  ;; NOTE Enable hit-counter for evil-isearch in mode-line.
+  (global-anzu-mode +1))
 
 (defun --->buffer () "Buffer related.")
 ;; NOTE buffer < window < tab < frame
@@ -1359,6 +1373,7 @@
   ;; NOTE Read more about xref in: https://slime.common-lisp.dev/doc/html/Xref-buffer-commands.html#Xref-buffer-commands
   ;; NOTE The 'semantic-identation' feature: https://slime.common-lisp.dev/doc/html/Semantic-indentation.html#Semantic-indentation
   ;; TIP The 'quote-form' is not counted as 'slime-edit-uses', like the 'make-instance'.
+  ;; TIP To configure the `swank', see https://slime.common-lisp.dev/doc/html/Other-configurables.html#Other-configurables
 
   ;; Set the inferior-program.
   (setq inferior-lisp-program "ros dynamic-space-size=4GiB run")
