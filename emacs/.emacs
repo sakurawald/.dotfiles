@@ -9,9 +9,9 @@
 ;; - https://emacsconf.org/
 ;; - https://funcall.blogspot.com/
 ;; - https://sourceware.org/
-;; - https://www.cs.cmu.edu/~15131/f17/topics/extratations/emacs-basics.pdf
 ;; - https://docs.doomemacs.org/
 ;; - https://godbolt.org/ (Compiler Explorer)
+;; - https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node1.html
 ;;
 ;; Some interesting sentences collected:
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -23,7 +23,7 @@
 ;; - Finally, There are only 2 great languages: C and Lisp.
 ;; - To learn, is to connect.
 ;; - Patterns mean "I have run out of language." -- Rich Hickey
-;; - Design patterns is a compromise to the lack of expressiveness of the language.
+;; - Design patterns is a compromise to the lack of expressiveness of the language (evaluator).
 ;; - Premature optimization is the root of all evil. -- Donald Knuth (https://wiki.c2.com/?PrematureOptimization)
 ;; - If it works, don't touch it.
 ;; - Object is a lie, use function instead.
@@ -59,6 +59,15 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; (package-initialize)
 ;; (package-refresh-contents t)
+
+(use-package package
+  :config
+  ;; TIP Install the native-compilation version of Emacs -> pacman -S emacs-nativecomp
+  ;; TIP See https://zenodo.org/records/3736363
+  ;; Native compile a package when installing it.
+  (setq package-native-compile t))
+
+
 
 (defun --->vim-emulator () "Vim emulator.")
 (use-package evil
@@ -353,7 +362,7 @@
 (setq inhibit-startup-screen t)
 (setq initial-major-mode 'lisp-mode)
 
-;; hide uesless views.
+;; Hide uesless views.
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -361,8 +370,8 @@
 ;; frame
 (toggle-frame-maximized)
 
-;; lines
-(global-display-line-numbers-mode)
+;; NOTE I have to ask the point of displaying line number of a file.
+;; (global-display-line-numbers-mode)
 
 ;; (toggle-word-wrap)
 
@@ -386,24 +395,23 @@
 
   ;; NOTE Instead of defining a new theme, we modify the existing one for convinence.
   (setq base16-sakura-theme-colors
-	'(
-	  :base00 "#000000" ;; default background: window
-	  :base01 "#1C1C1C" ;; status bar, line numbers and folding marks
-	  :base02 "#383838" ;; selection
-	  :base03 "#545454" ;; comment
-	  :base04 "#A2A2A2" ;; dark-theme foreground: doc-string
-	  :base05 "#FFFFFF" ;; default foreground: text
-	  :base06 "#DEDEDE" ;; light-theme foreground (not often used)
-	  :base07 "#FCFCFC" ;; light-theme background (not often used)
-	  :base08 "#FC5454" ;; cursor, symbol flags, sldb-condition
-	  :base09 "#FFA500" ;; self-evaluating object, tab name.
-	  :base0A "#FFFF00" ;; type, class
-	  :base0B "#00FF00" ;; string
-	  :base0C "#00FFFF" ;; keyword symbol
-	  :base0D "#5454fc" ;; function name
-	  :base0E "#FF00FF" ;; operator name
-	  :base0F "#008000" ;; deprecated (opening/closing embedded language tags, e.g. '<?php ?>')
-	  ))
+	'(:base00 "#000000" ;; default background: window
+		  :base01 "#1C1C1C" ;; status bar, line numbers and folding marks
+		  :base02 "#383838" ;; selection
+		  :base03 "#545454" ;; comment
+		  :base04 "#A2A2A2" ;; dark-theme foreground: doc-string
+		  :base05 "#FFFFFF" ;; default foreground: text
+		  :base06 "#DEDEDE" ;; light-theme foreground (not often used)
+		  :base07 "#FCFCFC" ;; light-theme background (not often used)
+		  :base08 "#FC5454" ;; cursor, symbol flags, sldb-condition
+		  :base09 "#FFA500" ;; self-evaluating object, tab name.
+		  :base0A "#FFFF00" ;; type, class
+		  :base0B "#00FF00" ;; string
+		  :base0C "#00FFFF" ;; keyword symbol
+		  :base0D "#5454fc" ;; function name
+		  :base0E "#FF00FF" ;; operator name
+		  :base0F "#008000" ;; deprecated (opening/closing embedded language tags, e.g. '<?php ?>')
+		  ))
   (load-theme 'base16-sakura t)
 
   (set-face-foreground 'tab-bar-tab "#00FF00"))
@@ -1376,6 +1384,7 @@
   ;; TIP To configure the `swank', see https://slime.common-lisp.dev/doc/html/Other-configurables.html#Other-configurables
 
   ;; Set the inferior-program.
+  ;; TIP Put (sb-ext:set-sbcl-source-location "~/.roswell/src/sbcl-2.5.1") in ~/.roswell/init.lisp to set the src files of sbcl.
   (setq inferior-lisp-program "ros dynamic-space-size=4GiB run")
 
   ;; NOTE Use 'slime-setup' instead of `(setq slime-contribs '(slime-fancy))`.
@@ -1438,8 +1447,8 @@
 (evil-define-key '(normal) 'global (kbd "M-c") 'slime-repl-clear-buffer)
 
 (defun --->evaluate () "Lisp evaluate.")
-;; TIP See slime logs in 'slime-event-buffer'.
 
+;; TIP See slime logs in 'slime-event-buffer'.
 (evil-define-key '(normal) 'global (kbd "SPC e w") (lambda ()
 						     (interactive)
 						     (call-interactively 'slime-repl)
@@ -1450,8 +1459,13 @@
 ;; TIP Don't use `slime-repl-region`, use `eval-defun` to treat the `defun-like-form` as minimal unit.
 (evil-define-key '(normal) 'global (kbd "SPC e d") 'slime-eval-defun)
 (evil-define-key '(normal) 'global (kbd "SPC e b") 'slime-eval-buffer)
-;; TIP Use repl to 'resend' the last form to repl. (Seems only work in repl window.)
-(evil-define-key '(normal) 'global (kbd "SPC e r") 'slime-repl-resend)
+;; TIP Use repl to 'resend' the last form to repl.
+(evil-define-key '(normal) 'global (kbd "SPC e R") (lambda ()
+						     (interactive)
+						     ;; The slime-repl-resend only works in slime-repl window.
+						     (call-interactively 'slime-repl)
+						     (call-interactively 'slime-repl-resend)))
+
 (evil-define-key '(visual) 'global (kbd "SPC e r") 'slime-eval-region)
 (evil-define-key '(normal) 'global (kbd "SPC e s") 'slime-interactive-eval)
 
@@ -1499,8 +1513,11 @@
 ;; . ---> show-source
 
 ;; TIP if there is no symbol under cursor, then the command will ask for a form to inspect.
-(evil-define-key '(normal) 'global (kbd "SPC i i") 'slime-inspect)
-(evil-define-key '(normal) 'global (kbd "SPC i I") 'slime-inspect-presentation-at-point)
+(evil-define-key '(normal) 'global (kbd "SPC e i") (lambda ()
+						     (interactive)
+						     (condition-case err
+							 (call-interactively 'slime-inspect)
+						       (call-interactively 'slime-inspect-presentation-at-point))))
 
 ;; Define keys for 'slime-inspector-mode' major-mode.
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC v") 'slime-inspector-toggle-verbose)
@@ -1524,7 +1541,7 @@
 
 ;; n ---> down
 ;; p ---> up
-;; TIP Use 'M-n' and 'M-p' to nagivate the `backtracd` with `source form`.
+;; TIP Use 'M-n' and 'M-p' to nagivate the `backtrace` with `source form`.
 ;; M-n ---> details down
 ;; M-p ---> details up
 
