@@ -37,6 +37,9 @@
 ;; - Deprecated means stable.
 ;; - A fancy GUI application usually has less features.
 ;; - A text editor is a video game.
+;; - Programs must be written for people to read, and only incidentally for machines to execute. -- Harold Abelson (SICP)
+;; - I want a map if i am in forest.
+;; - Garbage in, garbage out.
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
@@ -47,6 +50,7 @@
 ;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script.
 ;; TIP Reduce the following inputs, to stay in the home row: `F1-F12', `Caps_Lock', `Escape', `Tab', `Return', `Backspace', `ArrowKeys', `NumberKeys', `MouseInput'.
 ;; TIP All the modifier keys are your friend: `Ctrl', `Shift', `Meta', `Super'.
+;; TIP Get some good ideas from https://github.com/t3chnoboy/awesome-awesome-awesome
 
 (defun <top-level> () "Top-level init form.")
 (setq eval-expression-print-length nil)
@@ -66,8 +70,6 @@
   ;; TIP See https://zenodo.org/records/3736363
   ;; Native compile a package when installing it.
   (setq package-native-compile t))
-
-
 
 (defun --->vim-emulator () "Vim emulator.")
 (use-package evil
@@ -180,8 +182,11 @@
     (evil-define-key '(normal) view-mode-map (kbd "SPC") nil))
 
 (use-package woman
-    :config
-    (evil-define-key '(normal) woman-mode-map (kbd "SPC") nil))
+  :config
+  (evil-define-key '(normal) woman-mode-map (kbd "SPC") nil)
+
+  (evil-define-key '(normal) 'global (kbd "SPC u k") 'hl-todo-occur)
+  )
 
 ;; TIP To list the 'built-in' packages in 'Emacs'.
 (evil-define-key '(normal) 'global (kbd "SPC h e") 'finder-by-keyword)
@@ -236,31 +241,32 @@
 (defun <assistant> () "The assist for life.")
 (defun --->org () "Org-mode related.")
 (use-package org
-    :config
-    ;; TIP Use 'S-{arrow}' to control the 'priority' and 'status'. (Or 'SPC o {hjkl}')
-    ;; TIP Use 'M-{arrow}' to control 'order' and 'level'.
-    ;; TIP Use 'C-Ret' to insert a 'contextual-heading'.
-    (evil-define-key '(normal) org-mode-map (kbd "SPC o h") 'org-shiftleft)
-    (evil-define-key '(normal) org-mode-map (kbd "SPC o j") 'org-shiftdown)
-    (evil-define-key '(normal) org-mode-map (kbd "SPC o k") 'org-shiftup)
-    (evil-define-key '(normal) org-mode-map (kbd "SPC o l") 'org-shiftright)
+  :config
+  ;; TIP Use 'S-{arrow}' to control the 'priority' and 'status'. (Or 'SPC o {hjkl}')
+  ;; TIP Use 'M-{arrow}' to control 'order' and 'level'.
+  ;; TIP Use 'C-Ret' to insert a 'contextual-heading'.
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o h") 'org-shiftleft)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o j") 'org-shiftdown)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o k") 'org-shiftup)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o l") 'org-shiftright)
 
-    ;; Set the search path for agenda files.
-    (setq org-agenda-files (file-expand-wildcards "~/Workspace/github/note/*.org"))
-    (add-to-list 'evil-normal-state-modes 'org-agenda-mode)
+  ;; Set the search path for agenda files.
+  (setq org-agenda-files (file-expand-wildcards "~/Workspace/github/note/*.org"))
+  (add-to-list 'evil-normal-state-modes 'org-agenda-mode)
 
-    (evil-define-key '(normal) org-mode-map (kbd "SPC o a") 'org-agenda)
-    (evil-define-key '(normal) org-mode-map (kbd "SPC o c") 'org-goto-calendar)
-    (evil-define-key '(visual) org-mode-map (kbd "SPC o s") 'org-sort)
-    (evil-define-key '(normal) org-mode-map (kbd "SPC o m") 'org-babel-mark-block)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o a") 'org-agenda)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o c") 'org-goto-calendar)
+  (evil-define-key '(visual) org-mode-map (kbd "SPC o s") 'org-sort)
+  (evil-define-key '(normal) org-mode-map (kbd "SPC o m") 'org-babel-mark-block)
 
-    ;; babel
-    (org-babel-do-load-languages
-	'org-babel-load-languages
-	'((emacs-lisp . nil)
-	     (lisp . t)
-	     (python . t)))
-    (setq org-confirm-babel-evaluate nil))
+  ;; babel
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . nil)
+     (lisp . t)
+     (python . t)
+     ))
+  (setq org-confirm-babel-evaluate nil))
 
 (use-package org-modern
     :ensure t
@@ -545,8 +551,10 @@
 ;; TIP To filter the result with '.lisp', using the pattern '*lisp'.
 ;; TIP The 'helm-mini' combines 'list-buffers' and 'recentf' as multiple sources.
 (evil-define-key '(normal) 'global (kbd "SPC b b") 'helm-mini)
-
-(evil-define-key '(normal) 'global (kbd "SPC b B") 'switch-to-buffer-other-tab)
+(evil-define-key '(normal) 'global (kbd "SPC b B") (lambda ()
+						     (interactive)
+						     (call-interactively 'tab-bar-new-tab)
+						     (call-interactively 'helm-mini)))
 
 (evil-define-key '(normal) 'global (kbd "SPC b l") 'list-buffers)
 
@@ -591,41 +599,49 @@
 
 (defun --->tab () "Tab related.")
 (use-package tab-bar
-    :config
-    ;; NOTE Besides the `tab-bar', there is a `tab-line' for each `tab'.
-    ;; TIP Use `C-Tab` and `C-S-Tab` to cycle tabs.
-    ;; TIP The `tab-switch` will switch to the named tab or create it.
+  :config
+  ;; NOTE Besides the `tab-bar', there is a `tab-line' for each `tab'.
+  ;; TIP Use `C-Tab` and `C-S-Tab` to cycle tabs.
+  ;; TIP The `tab-switch` will switch to the named tab or create it.
 
-    ;; Customize the view of tabs.
-    (toggle-tab-bar-mode-from-frame)
-    (setq tab-bar-close-button-show nil)
-    (setq tab-bar-new-button-show nil)
-    (setq tab-bar-tab-hints t)
+  ;; Customize the view of tabs.
+  (toggle-tab-bar-mode-from-frame)
+  (setq tab-bar-close-button-show nil)
+  (setq tab-bar-new-button-show nil)
+  (setq tab-bar-tab-hints t)
 
-    (evil-define-key '(normal) 'global (kbd "SPC t t") 'tab-switch)
-    (evil-define-key '(normal) 'global (kbd "SPC t c") 'tab-bar-new-tab)
+  (evil-define-key '(normal) 'global (kbd "SPC t t") 'tab-switch)
+  (evil-define-key '(normal) 'global (kbd "SPC t c") 'tab-bar-new-tab)
 
-    (keymap-unset evil-motion-state-map "SPC")
-    (evil-define-key '(normal motion) 'global (kbd "SPC 0") (lambda () (interactive) (tab-bar-switch-to-recent-tab)))
-    (evil-define-key '(normal motion) 'global (kbd "SPC 1") (lambda () (interactive) (tab-select 1)))
-    (evil-define-key '(normal motion) 'global (kbd "SPC 2") (lambda () (interactive) (tab-select 2)))
-    (evil-define-key '(normal motion) 'global (kbd "SPC 3") (lambda () (interactive) (tab-select 3)))
-    (evil-define-key '(normal motion) 'global (kbd "SPC 4") (lambda () (interactive) (tab-select 4)))
-    (evil-define-key '(normal motion) 'global (kbd "SPC 5") (lambda () (interactive) (tab-select 5)))
-    (evil-define-key '(normal motion) 'global (kbd "SPC 6") (lambda () (interactive) (tab-select 6)))
-    (evil-define-key '(normal motion) 'global (kbd "SPC 7") (lambda () (interactive) (tab-select 7)))
-    (evil-define-key '(normal motion) 'global (kbd "SPC 8") (lambda () (interactive) (tab-select 8)))
-    (evil-define-key '(normal motion) 'global (kbd "SPC 9") (lambda () (interactive) (tab-select 9)))
+  (keymap-unset evil-motion-state-map "SPC")
+  (evil-define-key '(normal motion) 'global (kbd "SPC 0") (lambda () (interactive) (tab-bar-switch-to-recent-tab)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 1") (lambda () (interactive) (tab-select 1)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 2") (lambda () (interactive) (tab-select 2)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 3") (lambda () (interactive) (tab-select 3)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 4") (lambda () (interactive) (tab-select 4)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 5") (lambda () (interactive) (tab-select 5)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 6") (lambda () (interactive) (tab-select 6)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 7") (lambda () (interactive) (tab-select 7)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 8") (lambda () (interactive) (tab-select 8)))
+  (evil-define-key '(normal motion) 'global (kbd "SPC 9") (lambda () (interactive) (tab-select 9)))
 
-    (evil-define-key '(normal) 'global (kbd "SPC t n") 'tab-next)
-    (evil-define-key '(normal) 'global (kbd "SPC t p") 'tab-previous)
+  (evil-define-key '(normal) 'global (kbd "SPC t n") 'tab-next)
+  (evil-define-key '(normal) 'global (kbd "SPC t p") 'tab-previous)
 
-    (evil-define-key '(normal) 'global (kbd "SPC t m") 'tab-bar-move-tab-to)
+  (evil-define-key '(normal) 'global (kbd "SPC t m") 'tab-bar-move-tab-to)
 
-    (evil-define-key '(normal) 'global (kbd "SPC t d") 'tab-close)
-    (evil-define-key '(normal) 'global (kbd "SPC t D") 'tab-close-other)
+  (evil-define-key '(normal) 'global (kbd "SPC t d") 'tab-close)
+  (evil-define-key '(normal) 'global (kbd "SPC t D") 'tab-close-other)
 
-    (evil-define-key '(normal) 'global (kbd "SPC t u") 'tab-bar-undo-close-tab))
+  (evil-define-key '(normal) 'global (kbd "SPC t u") 'tab-bar-undo-close-tab)
+
+  ;; Macros.
+  (defmacro with-new-tab-bar (&rest body)
+    "Create a new tab and execute BODY in the new tab context."
+    `(progn
+       (tab-bar-new-tab)
+       ,@body))
+  )
 
 
 (defun --->frame () "Frame related.")
@@ -805,10 +821,10 @@
 ;; NOTE Use 'projectile' as a project interface layer, to 'discovery' and 'indexing' projects.
 (use-package projectile
   :ensure t
+  :after (tab-bar)
   :config
   ;; TIP Enforce the 'projectile-commands' to be executed inside a 'project' indicated by a 'project-makrer'. (I don't want to use projectile commands in the home directory.)
   (setq projectile-require-project-root t)
-  (projectile-mode +1)
 
   ;; Include current project in the project switcher.
   (setq projectile-current-project-on-switch 'keep)
@@ -819,8 +835,18 @@
   ;; Set completion system.
   (setq projectile-completion-system 'helm)
 
+  ;; Auto-discovery projects.
+  (setq projectile-auto-discover t)
+  (setq projectile-project-search-path '("~/Workspace/github"))
+  
+
   ;; Bind
   (evil-define-key '(normal) 'global (kbd "SPC p p") 'projectile-switch-project)
+  (evil-define-key '(normal) 'global (kbd "SPC p P") (lambda ()
+						       (interactive)
+						       (tab-bar-new-tab)
+						       (projectile-switch-project)))
+
   (evil-define-key '(normal) 'global (kbd "SPC p b") 'projectile-switch-to-buffer)
 
   ;; NOTE For `gitignored files', the `treemacs' shows them, but `projectile' hides them.
@@ -867,7 +893,9 @@
   (evil-define-key '(normal) 'global (kbd "SPC p L") 'projectile-toggle-project-read-only)
 
   (evil-define-key '(normal) 'global (kbd "SPC p v") 'projectile-vc)
-  )
+
+  ;; Enable mode.
+  (projectile-mode +1))
 
 (use-package magit
     :ensure t
@@ -1166,6 +1194,7 @@
 (defun --->text-object () "Analyse text.")
 ;; TIP Useful vi text-objects: 'b' = 'parenthesis', 'B' = 'curly', 't' = 'tag', 's' = 'sentence', 'a' = 'argument', 'f' = 'function', 'c' = 'class', 'o' = 'symbol'.
 ;; TIP To select cuurent function and jump between beginning and end: 'vifoo'
+;; TIP It's very useful to use `vio' and `vib' in lisp family language.
 
 (use-package tree-sitter
   :init
@@ -1278,63 +1307,62 @@
 ;; NOTE A good LSP server should provide the correct AST.
 ;; NOTE For IDE users, use this equation: IDE = Editor + LSP + DAP.
 (use-package lsp-mode
-    :ensure t
-    :after (evil)
-    :init
-    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    (setq lsp-keymap-prefix "C-c l")
+  :ensure t
+  :after (evil)
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
 
-    :hook (
-	      ;; NOTE To let clangd indexing the project (or includes the proper header files.), you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 (or set the flag in CMakeList.txt file)
-	      ;; NOTE Since the AST is generated via compiling, so the pre-processor works for source file, be careful with the #ifdef macro!
-	      ;; https://clangd.llvm.org/config#files
-	      (c-mode . lsp)
-	      (c++-mode . lsp)
-	      (java-mode . lsp)
-	      (yaml-ts-mode . lsp)
-	      )
-    :commands lsp
-    :config
+  :hook (
+	 ;; NOTE To let clangd indexing the project (or includes the proper header files.), you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 (or set the flag in CMakeList.txt file)
+	 ;; NOTE Since the AST is generated via compiling, so the pre-processor works for source file, be careful with the #ifdef macro!
+	 ;; https://clangd.llvm.org/config#files
+	 (c-mode . lsp)
+	 (c++-mode . lsp)
+	 (java-mode . lsp)
+	 (yaml-ts-mode . lsp)
+	 )
+  :commands lsp
+  :config
 
-    ;; Options
-    ;; (push "--compile-commands-dir=./build" lsp-clients-clangd-args)
+  ;; Options
+  ;; (push "--compile-commands-dir=./build" lsp-clients-clangd-args)
 
-    ;; Performance tweak.
-    (setq gc-cons-threshold 100000000) ;; 100mb
-    (setq read-process-output-max (* 8 1024 1024)) ;; 8mb
+  ;; Performance tweak.
+  (setq gc-cons-threshold 100000000) ;; 100mb
+  (setq read-process-output-max (* 8 1024 1024)) ;; 8mb
 
-    ;; Bind find-references function.
-    ;; TODO need to re-enter normal mode to apply the keymap.
-    (evil-define-key 'normal lsp-mode-map "gr" 'lsp-find-references)
-    (evil-define-key 'normal lsp-mode-map "ga" 'xref-apropos)
+  ;; Bind find-references function.
+  ;; TODO need to re-enter normal mode to apply the keymap.
+  (evil-define-key 'normal lsp-mode-map "gr" 'lsp-find-references)
+  (evil-define-key 'normal lsp-mode-map "ga" 'xref-apropos)
 
-    ;; Bind document function.
-    (evil-define-key 'normal lsp-mode-map "K" 'lsp-describe-thing-at-point)
+  ;; Bind document function.
+  (evil-define-key 'normal lsp-mode-map "K" 'lsp-describe-thing-at-point)
 
-    ;; Bind keys.
-    (evil-define-key '(normal) 'global (kbd "SPC l w d") 'lsp-describe-session)
-    (evil-define-key '(normal) 'global (kbd "SPC l w l") 'lsp-workspace-show-log)
-    (evil-define-key '(normal) 'global (kbd "SPC l w R") 'lsp-workspace-restart)
-    (evil-define-key '(normal) 'global (kbd "SPC l w K") 'lsp-workspace-shutdown)
+  ;; Bind keys.
+  (evil-define-key '(normal) 'global (kbd "SPC l w d") 'lsp-describe-session)
+  (evil-define-key '(normal) 'global (kbd "SPC l w l") 'lsp-workspace-show-log)
+  (evil-define-key '(normal) 'global (kbd "SPC l w R") 'lsp-workspace-restart)
+  (evil-define-key '(normal) 'global (kbd "SPC l w K") 'lsp-workspace-shutdown)
 
-    (evil-define-key '(normal) 'global (kbd "SPC l w w") 'lsp-workspace-folders-open)
-    (evil-define-key '(normal) 'global (kbd "SPC l w a") 'lsp-workspace-folders-add)
-    (evil-define-key '(normal) 'global (kbd "SPC l w r") 'lsp-workspace-folders-remove)
-    (evil-define-key '(normal) 'global (kbd "SPC l w b") 'lsp-workspace-blocklist-remove)
+  (evil-define-key '(normal) 'global (kbd "SPC l w w") 'lsp-workspace-folders-open)
+  (evil-define-key '(normal) 'global (kbd "SPC l w a") 'lsp-workspace-folders-add)
+  (evil-define-key '(normal) 'global (kbd "SPC l w r") 'lsp-workspace-folders-remove)
+  (evil-define-key '(normal) 'global (kbd "SPC l w b") 'lsp-workspace-blocklist-remove)
 
-    (evil-define-key '(normal) 'global (kbd "SPC l c a") 'helm-lsp-code-actions)
+  (evil-define-key '(normal) 'global (kbd "SPC l c a") 'helm-lsp-code-actions)
 
-    (evil-define-key '(normal) 'global (kbd "SPC l f b") 'lsp-format-buffer)
-    (evil-define-key '(normal) 'global (kbd "SPC l f r") 'lsp-format-region)
+  (evil-define-key '(normal) 'global (kbd "SPC l f b") 'lsp-format-buffer)
+  (evil-define-key '(normal) 'global (kbd "SPC l f r") 'lsp-format-region)
 
-    (evil-define-key '(normal) 'global (kbd "SPC l r o") 'lsp-organize-imports)
-    (evil-define-key '(normal) 'global (kbd "SPC l r n") 'lsp-rename)
-
-    )
+  (evil-define-key '(normal) 'global (kbd "SPC l r o") 'lsp-organize-imports)
+  (evil-define-key '(normal) 'global (kbd "SPC l r n") 'lsp-rename)
+  )
 
 (use-package lsp-ui
-    :ensure t
-    :commands lsp-ui-mode)
+  :ensure t
+  :commands lsp-ui-mode)
 
 (use-package helm-lsp
     :ensure t
@@ -1474,7 +1502,6 @@
 
 (evil-define-key '(normal) 'global (kbd "SPC e D") 'slime-disassemble-symbol)
 
-(evil-define-key '(normal) 'global (kbd "SPC e I") 'slime-interrupt)
 (evil-define-key '(normal) 'global (kbd "SPC e p") (lambda ()
 						     (interactive)
 						     (call-interactively 'slime-sync-package-and-default-directory)
@@ -1518,6 +1545,8 @@
 						     (condition-case err
 							 (call-interactively 'slime-inspect)
 						       (call-interactively 'slime-inspect-presentation-at-point))))
+
+(evil-define-key '(normal) 'global (kbd "SPC e I") 'slime-interrupt)
 
 ;; Define keys for 'slime-inspector-mode' major-mode.
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC v") 'slime-inspector-toggle-verbose)
@@ -1581,9 +1610,9 @@
 ;; TIP The command will ask for string if not string at point.
 (evil-define-key '(normal) 'global (kbd "SPC d m") 'slime-documentation-lookup)
 (evil-define-key '(normal) 'global (kbd "SPC d M") (lambda ()
-						       (interactive)
-						       (let ((browse-url-browser-function 'browse-url-default-browser))
-							   (slime-documentation-lookup))))
+						     (interactive)
+						     (let ((browse-url-browser-function 'browse-url-default-browser))
+						       (slime-documentation-lookup))))
 
 (defun --->language:markdown () "Markdown language.")
 (use-package markdown-mode
