@@ -429,7 +429,7 @@
   ;; Override the 'hl-line' face.
   (global-hl-line-mode t)
   ;; Other choice: "dark blue", "navy", "#000066",
-  (set-face-background 'hl-line "#00008b"))
+  (set-face-background 'hl-line "#000066"))
 
 ;; TIP Color the hex color code, useful for web development.
 (use-package colorful-mode
