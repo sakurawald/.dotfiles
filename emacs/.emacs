@@ -664,8 +664,10 @@
 (defun <file> () "Files for Emacs.")
 (defun --->file () "File related.")
 (use-package recentf
-    :config
-    (add-to-list 'recentf-exclude ".*pdf.*"))
+  :custom
+  (recentf-max-saved-items 100)
+  :config
+  (add-to-list 'recentf-exclude ".*pdf.*"))
 
 (use-package dired
     :config
@@ -1222,7 +1224,8 @@
   (setq highlight-thing-delay-seconds 0.5)
   (setq highlight-thing-case-sensitive-p nil)
   (set-face-attribute 'highlight nil
-		      :inverse-video t))
+		      :underline '(:color "#00FF00"
+					  :style line)))
 
 (defun --->comment () "Comment text.")
 (use-package newcomment
