@@ -428,7 +428,8 @@
   :config
   ;; Override the 'hl-line' face.
   (global-hl-line-mode t)
-  (set-face-background 'hl-line "#000066"))
+  ;; Other choice: "dark blue", "navy", "#000066",
+  (set-face-background 'hl-line "#00008b"))
 
 ;; TIP Color the hex color code, useful for web development.
 (use-package colorful-mode
@@ -900,11 +901,11 @@
   (projectile-mode +1))
 
 (use-package magit
-    :ensure t
-    :config
-    (set-face-attribute 'magit-diff-context-highlight nil
-	:background "#001847") ;; or #000066
-    )
+  :ensure t
+  :config
+  (set-face-attribute 'magit-diff-context-highlight nil
+		      :background "navy") ;; or #000066, #001847
+  )
 
 (defun <navigation> () "The navigation in Emacs.")
 (defun --->goto () "Goto commands for vi.")
@@ -1224,6 +1225,7 @@
   (setq highlight-thing-delay-seconds 0.5)
   (setq highlight-thing-case-sensitive-p nil)
   (set-face-attribute 'highlight nil
+		      :background nil
 		      :underline '(:color "#00FF00"
 					  :style line)))
 
