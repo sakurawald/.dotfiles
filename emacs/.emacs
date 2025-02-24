@@ -1324,7 +1324,11 @@
   ;; Toggle between `Emacs' and `Vim' mode.
   (evil-set-initial-state 'vterm-mode 'emacs)
   (define-key vterm-mode-map (kbd "C-c C-z") 'evil-exit-emacs-state)
-  (define-key vterm-mode-map (kbd "C-c M-x") 'helm-M-x))
+  (define-key vterm-mode-map (kbd "C-c M-x") 'helm-M-x)
+  (define-key vterm-mode-map (kbd "C-c h") 'evil-window-left)
+  (define-key vterm-mode-map (kbd "C-c j") 'evil-window-down)
+  (define-key vterm-mode-map (kbd "C-c k") 'evil-window-up)
+  (define-key vterm-mode-map (kbd "C-c l") 'evil-window-right))
 
 (use-package eww
   :config
