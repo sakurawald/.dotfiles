@@ -13,6 +13,7 @@
 ;; - https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node1.html
 ;; - http://www.sbcl.org/manual/index.html
 ;; - http://www.sbcl.org/sbcl-internals/
+;; - https://emacsredux.com/archive/
 ;;
 ;; Some interesting sentences collected:
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -1325,7 +1326,8 @@
   (setq vterm-timer-delay nil)
 
   ;; Disable hl-line mode for vterm.
-  ;; (add-hook 'vterm-mode-hook #'hl-line-mode)
+  ;; See https://emacsredux.com/blog/2020/11/21/disable-global-hl-line-mode-for-specific-modes/
+  (add-hook 'vterm-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
 
   ;; Bind key.
   (evil-define-key '(normal) 'global (kbd "SPC u s") 'vterm)
@@ -1341,16 +1343,16 @@
   (define-key vterm-mode-map (kbd "C-c j") 'evil-window-down)
   (define-key vterm-mode-map (kbd "C-c k") 'evil-window-up)
   (define-key vterm-mode-map (kbd "C-c l") 'evil-window-right)
-  (define-key vterm-mode-map (kbd "C-c 0") (lambda () (interactive) (tab-bar-switch-to-recent-tab)))
-  (define-key vterm-mode-map (kbd "C-c 1") (lambda () (interactive) (tab-select 1)))
-  (define-key vterm-mode-map (kbd "C-c 2") (lambda () (interactive) (tab-select 2)))
-  (define-key vterm-mode-map (kbd "C-c 3") (lambda () (interactive) (tab-select 3)))
-  (define-key vterm-mode-map (kbd "C-c 4") (lambda () (interactive) (tab-select 4)))
-  (define-key vterm-mode-map (kbd "C-c 5") (lambda () (interactive) (tab-select 5)))
-  (define-key vterm-mode-map (kbd "C-c 6") (lambda () (interactive) (tab-select 6)))
-  (define-key vterm-mode-map (kbd "C-c 7") (lambda () (interactive) (tab-select 7)))
-  (define-key vterm-mode-map (kbd "C-c 8") (lambda () (interactive) (tab-select 8)))
-  (define-key vterm-mode-map (kbd "C-c 9") (lambda () (interactive) (tab-select 9))))
+  (define-key global-map (kbd "C-c 0") (lambda () (interactive) (tab-bar-switch-to-recent-tab)))
+  (define-key global-map (kbd "C-c 1") (lambda () (interactive) (tab-select 1)))
+  (define-key global-map (kbd "C-c 2") (lambda () (interactive) (tab-select 2)))
+  (define-key global-map (kbd "C-c 3") (lambda () (interactive) (tab-select 3)))
+  (define-key global-map (kbd "C-c 4") (lambda () (interactive) (tab-select 4)))
+  (define-key global-map (kbd "C-c 5") (lambda () (interactive) (tab-select 5)))
+  (define-key global-map (kbd "C-c 6") (lambda () (interactive) (tab-select 6)))
+  (define-key global-map (kbd "C-c 7") (lambda () (interactive) (tab-select 7)))
+  (define-key global-map (kbd "C-c 8") (lambda () (interactive) (tab-select 8)))
+  (define-key global-map (kbd "C-c 9") (lambda () (interactive) (tab-select 9))))
 
 (use-package eww
   :config
