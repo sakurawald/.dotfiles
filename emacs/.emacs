@@ -80,75 +80,85 @@
 
 (defun --->vim-emulator () "Vim emulator.")
 (use-package evil
-    :ensure t
-    :custom
-    ;; keymap: integrate with evil-collection
-    (evil-want-integration t) ;; This is optional since it's already set to t by default.
-    (evil-want-keybinding nil)
+  :ensure t
+  :custom
+  ;; keymap: integrate with evil-collection
+  (evil-want-integration t) ;; This is optional since it's already set to t by default.
+  (evil-want-keybinding nil)
 
-    ;; keymap: vanilla vim
-    (evil-want-C-u-scroll t)
-    (evil-want-C-u-delete t)
-    (evil-undo-system 'undo-redo)
-    (evil-symbol-word-search t)
+  ;; keymap: vanilla vim
+  (evil-want-C-u-scroll t)
+  (evil-want-C-u-delete t)
+  (evil-undo-system 'undo-redo)
+  (evil-symbol-word-search t)
 
-    ;; scroll
-    (scroll-margin 5)
+  ;; scroll
+  (scroll-margin 5)
 
-    ;; search
-    (evil-flash-delay 5)
+  ;; search
+  (evil-flash-delay 5)
 
-    ;; macro
-    ;;(setq evil-kbd-macro-suppress-motion-error t)
+  ;; macro
+  ;;(setq evil-kbd-macro-suppress-motion-error t)
 
-    ;; Don't display the state in 'echo-area', it will conflicts with the 'slime-quickdoc'.
-    (evil-echo-state nil)
+  ;; Don't display the state in 'echo-area', it will conflicts with the 'slime-quickdoc'.
+  (evil-echo-state nil)
 
-    :config
-    ;; NOTE The manual of vim: https://neovim.io/
-    ;; NOTE The vim golf makes the text-editing interesting: https://www.vimgolf.com/
-    ;; TIP Use 'C-z' to toggle between 'vi-mode' and 'emacs-mode'.
-    ;; TIP To edit 'similar-text', use 'vi-visual-block-mode', 'vim-macro' or 'vim-repeat-command'.
 
-    ;; NOTE The kill-ring in Emacs can be replaced by evil registers.
-    ;; TIP To list registers ':reg'. Useful registers: 0 (last yank), " (unnamed register), * (x11 clipboard).
-    ;; TIP To access a register, use '"<register-name>{py}'.
+  :config
+  ;; NOTE The manual of vim: https://neovim.io/
+  ;; NOTE The vim golf makes the text-editing interesting: https://www.vimgolf.com/
+  ;; TIP Use 'C-z' to toggle between 'vi-mode' and 'emacs-mode'.
+  ;; TIP To edit 'similar-text', use 'vi-visual-block-mode', 'vim-macro' or 'vim-repeat-command'.
 
-    ;; TIP The 'v', 'c', 'y', 'd' are all 'vi-operator'.
-    ;; TIP The 'w', 'e' and 'b' itself is also a 'motion-command'.
-    ;; TIP Useful single-key command: 'C', 'D' and 'S' = 'cc'.
+  ;; NOTE The kill-ring in Emacs can be replaced by evil registers.
+  ;; TIP To list registers ':reg'. Useful registers: 0 (last yank), " (unnamed register), * (x11 clipboard).
+  ;; TIP To access a register, use '"<register-name>{py}'.
 
-    ;; TIP Use 'C-o' to use one command in 'vi-normal-state' and re-enter 'vi-insert-state'.
-    ;; TIP Use 'C-r' in 'vi-insert-state' to paste content from a register.
+  ;; TIP The 'v', 'c', 'y', 'd' are all 'vi-operator'.
+  ;; TIP The 'w', 'e' and 'b' itself is also a 'motion-command'.
+  ;; TIP Useful single-key command: 'C', 'D' and 'S' = 'cc'.
 
-    ;; mini-buffer history
-    (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-j") 'next-history-element)
-    (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-k") 'previous-history-element)
+  ;; TIP Use 'C-o' to use one command in 'vi-normal-state' and re-enter 'vi-insert-state'.
+  ;; TIP Use 'C-r' in 'vi-insert-state' to paste content from a register.
 
-    (evil-mode 1))
+  ;; mini-buffer history
+  (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-j") 'next-history-element)
+  (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-k") 'previous-history-element)
+
+
+  ;; Use `C-c' prefix to suit the `vterm' package.
+  ;; undefine `C-z' to avoid mis-typed.
+  (define-key global-map (kbd "C-z") nil)
+  (evil-set-toggle-key "C-c C-z")
+
+  (evil-mode 1))
 
 
 (use-package evil-collection
-    :ensure t
-    :after (evil)
-    :custom
-    ;; TIP The 'evil-collection' provides 'possible' and `sensible' bindings for all `evil-mode'.
+  :ensure t
+  :after (evil)
+  :custom
+  ;; TIP The 'evil-collection' provides 'possible' and `sensible' bindings for all `evil-mode'.
 
-    ;; The default umimpaired bindings is useless.
-    (evil-collection-want-unimpaired-p nil)
-    
-    ;; NOTE evil-collection will setup a mode naemd 't' for 'sldb' and 'slime-inspector'.
-    (evil-collection-setup-debugger-keys t)
-    (evil-collection-want-find-usages-bindings t)
-    (evil-collection-setup-minibuffer t)
+  ;; The default umimpaired bindings is useless.
+  (evil-collection-want-unimpaired-p nil)
+  
+  ;; NOTE evil-collection will setup a mode naemd 't' for 'sldb' and 'slime-inspector'.
+  (evil-collection-setup-debugger-keys t)
+  (evil-collection-want-find-usages-bindings t)
+  (evil-collection-setup-minibuffer t)
 
-    (evil-collection-term-sync-state-and-mode-p t)
+  (evil-collection-term-sync-state-and-mode-p t)
 
-    (evil-collection-calendar-want-org-bindings t)
-    (evil-collection-outline-bind-tab-p t)
+  (evil-collection-calendar-want-org-bindings t)
+  (evil-collection-outline-bind-tab-p t)
+  :config
+  ;; Disable evil-collection keymaps for following modes.
+  (delete 'vterm evil-collection--supported-modes)
 
-    :config
-    (evil-collection-init))
+  ;; TIP See the default list in evil-collection--supported-modes variable.
+  (evil-collection-init evil-collection--supported-modes))
 
 (use-package evil-escape
   :ensure t
@@ -1291,28 +1301,30 @@
 
 (use-package vterm
   :ensure t
+  :after (evil)
+  :custom
+  ;; TIP As a convention, the prefix key `C-c <key-to-send>' is used as `escape-sequence', to send next-key into libvterm directly.
+  (vterm-keymap-exceptions '("C-c"))
   :config
-  ;; TIP Use `C-z' to send invoking key to libvterm.
-  ;; TIP The libvterm supports interactive terminal programs like `Vim'. (The `input' and `render' is also handled by Emacs)
+  ;; TIP The libvterm supports interactive terminal programs like `Vim'. (The keys `input' and text `render' is also handled by Emacs)
+  ;; TIP The `vterm' package is a wrapper for `libvterm.so', so it's possible to execute elisp forms inside `vterm-mode'.
+
+  ;; Set default shell program.
+  (setq vterm-shell "/usr/bin/zsh")
+
+  ;; Close the vterm-buffer when the process is terminated.
+  (setq vterm-kill-buffer-on-exit t)
 
   ;; Refresh the content of terminal without latency.
   (setq vterm-timer-delay nil)
 
-  ;; Set default shell program.
-  (setq vterm-shell "/usr/bin/zsh")
-  
-  ;; Disable evil-mode for vterm-mode.
-  ;; TIP Use `C-z' to toggle between `Emacs' and `Vim'.
-  (evil-set-initial-state 'vterm-mode 'emacs)
-
-  ;; Keymap.
+  ;; Bind key.
   (evil-define-key '(normal) 'global (kbd "SPC u s") 'vterm)
 
-  ;; Send the following keys into vterm program directly.
-  (define-key vterm-mode-map (kbd "C-u") 'vterm--self-insert)
-  (define-key vterm-mode-map (kbd "C-g") 'vterm--self-insert)
-
-  )
+  ;; Toggle between `Emacs' and `Vim' mode.
+  (evil-set-initial-state 'vterm-mode 'emacs)
+  (define-key vterm-mode-map (kbd "C-c C-z") 'evil-exit-emacs-state)
+  (define-key vterm-mode-map (kbd "C-c M-x") 'helm-M-x))
 
 (use-package eww
   :config
