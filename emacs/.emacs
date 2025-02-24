@@ -130,7 +130,7 @@
   ;; Use `C-c' prefix to suit the `vterm' package.
   ;; undefine `C-z' to avoid mis-typed.
   (define-key global-map (kbd "C-z") nil)
-  (evil-set-toggle-key "C-c C-z")
+  (evil-set-toggle-key "C-c z")
 
   (evil-mode 1))
 
@@ -171,10 +171,10 @@
 
   ;; Exclude these modes, we use `q' key to quit in them.
   (evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode
-							treemacs-mode vterm-mode))
+							treemacs-mode))
 
   ;; Exclude the visual-state to make the visual selecting smooth.
-  (evil-escape-excluded-states '(visual))
+  (evil-escape-excluded-states '(visual emacs))
 
   :config
   (evil-escape-mode))
@@ -1323,8 +1323,9 @@
 
   ;; Toggle between `Emacs' and `Vim' mode.
   (evil-set-initial-state 'vterm-mode 'emacs)
-  (define-key vterm-mode-map (kbd "C-c C-z") 'evil-exit-emacs-state)
+  (define-key vterm-mode-map (kbd "C-c z") 'evil-exit-emacs-state)
   (define-key vterm-mode-map (kbd "C-c M-x") 'helm-M-x)
+  (define-key vterm-mode-map (kbd "C-c b") 'helm-mini)
   (define-key vterm-mode-map (kbd "C-c h") 'evil-window-left)
   (define-key vterm-mode-map (kbd "C-c j") 'evil-window-down)
   (define-key vterm-mode-map (kbd "C-c k") 'evil-window-up)
