@@ -1,4 +1,3 @@
-
 (defun <links> () "The interesting links.")
 ;; Useful link:
 ;; - https://emacsdocs.org/docs/emacs/The-Emacs-Editor
@@ -35,11 +34,14 @@
 ;; - Notation is nothing without denotation.
 ;; - Learning Emacs is painful in the beginning, and painful in the end.
 ;; - Deprecated means stable.
-;; - A fancy GUI application usually has less features.
+;; - A fancy GUI application usually has less features (configurations).
 ;; - A text editor is a video game.
 ;; - Programs must be written for people to read, and only incidentally for machines to execute. -- Harold Abelson (SICP)
 ;; - I want a map if i am in forest.
 ;; - Garbage in, garbage out.
+;; - Noise or book, that's a question.
+;; - To learn a language is to use it.
+;; - Some text are just hard to read, that's the problem of the author.
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
@@ -61,8 +63,7 @@
 (defun --->package-manager () "Add melpa-repo into the package.el.")
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; (package-initialize)
-;; (package-refresh-contents t)
+(package-refresh-contents t)
 
 (use-package package
   :config
@@ -311,35 +312,25 @@
 
 (defun --->chat () "Chat with AI.")
 (use-package ellama
-    :ensure t
-    :config
-    ;; NOTE It's recommemded to host an open-source chat-model locally.
-    ;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
-    ;; TIP Use `ollama run llama3.1' to download the model and use `ellama-provider-select' to select a model.
-    (evil-define-key '(normal visual) 'global (kbd "SPC g") 'ellama-transient-main-menu)
-    (add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
+  :ensure t
+  :config
+  ;; NOTE It's recommemded to host an open-source chat-model locally.
+  ;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
+  ;; TIP Use `ollama run llama3.1' to download the model and use `ellama-provider-select' to select a model.
+  (evil-define-key '(normal visual) 'global (kbd "SPC g") 'ellama-transient-main-menu)
+  (add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
 
-    ;; Customize the LLM model.
-    (setq ellama-provider (make-llm-ollama
-			      :chat-model "phi4"
-			      :embedding-model "phi4"))
-    (setq ellama--current-session-id nil)
+  ;; Customize the LLM model.
+  (setq ellama-provider (make-llm-ollama
+			 :chat-model "phi4"
+			 :embedding-model "phi4"))
 
-    ;; Disable the session.
-    (setq ellama-session-auto-save nil)
+  (setq ellama--current-session-id nil)
+  (setq ellama-session-auto-save nil)
 
-    ;; Customize chat-buffer.
-    (setq ellama-naming-scheme #'(lambda (_provider _action _prompt) "LLM Chat Buffer"))
-    (setq ellama-assistant-nick "Model")
-
-    ;; (keymap-set ellama-keymap "<remap> <keyboard-quit>" 'evil-next-line)
-
-    ;; Define session keymap.
-    ;; (add-hook 'ellama-session-mode-hook
-    ;; 	(lambda ()
-    ;; 	    (evil-local-set-key '(normal) (kbd "C-g") 'evil-next-line)))
-
-    )
+  ;; Customize chat-buffer.
+  (setq ellama-naming-scheme #'(lambda (_provider _action _prompt) "LLM Chat Buffer"))
+  (setq ellama-assistant-nick "Model"))
 
 (defun --->todo () "Keyword highlight.")
 
@@ -358,9 +349,8 @@
   ;; Bind.
   (evil-define-key '(normal) 'global (kbd "SPC u t") 'hl-todo-occur))
 
-
 (defun <view> () "The display for Emacs.")
-;; NOTE Exwm is still buggy, and easy to hang. I would try it again in the future.
+;; NOTE Exwm is still buggy, and easy to hang. I would try it again in the future. (The model used by exwm is buggy, due to the single-threaded event handling of Emacs)
 
 (defun --->display () "The appeareance of Emacs.")
 
@@ -537,7 +527,8 @@
   (display-time-default-load-average nil)
 
   :config
-  (display-time-mode))
+  ;; (display-time-mode)
+  )
 
 
 (use-package evil-anzu
@@ -851,12 +842,11 @@
 						       (projectile-switch-project)))
 
   (evil-define-key '(normal) 'global (kbd "SPC p b") 'projectile-switch-to-buffer)
+  (evil-define-key '(normal) 'global (kbd "SPC p f") 'helm-projectile-find-file)
 
   ;; NOTE For `gitignored files', the `treemacs' shows them, but `projectile' hides them.
   (evil-define-key '(normal) 'global (kbd "SPC p i") 'projectile-project-info)
   (evil-define-key '(normal) 'global (kbd "SPC p h") 'projectile-dired)
-  (evil-define-key '(normal) 'global (kbd "SPC p f") 'helm-projectile-find-file)
-  (evil-define-key '(normal) 'global (kbd "SPC SPC") 'helm-projectile-find-file)
   (evil-define-key '(normal) 'global (kbd "SPC p F") 'projectile-find-file-other-window)
   (evil-define-key '(normal) 'global (kbd "SPC p d") 'projectile-find-dir)
   (evil-define-key '(normal) 'global (kbd "SPC p r") 'projectile-recentf)
@@ -935,7 +925,7 @@
 
 ;; NOTE Vim use 'gt' and 'gT' to cycle 'tab', but we use it to goto a 'tag'.
 (evil-define-key '(normal) 'global (kbd "g t") 'helm-semantic-or-imenu)
-(evil-define-key '(normal) 'global (kbd "g T") 'helm-imenu-in-all-buffers)
+(evil-define-key '(normal) 'global (kbd "g T") 'helm-imenu-anywhere)
 
 ;; TIP Use `gf' and `gF' to find file at point.
 (evil-define-key '(normal) 'global (kbd "g x") 'browse-url-at-point)
@@ -943,26 +933,30 @@
 
 (defun --->jump-anywhere () "Jump to anywhere.")
 
-(use-package avy
-    :ensure t
-    :bind ("M-z" . avy-goto-word-0)
-    :config
-    ;; TIP Jump the cursor to anywhere, even in 'vi-visual-state' and 'vi-insert-state' mode.
-    ;; NOTE You don't need to use 'smooth-scroll', just use `avy' or `grep'.
+(use-package imenu-anywhere
+  :ensure t)
 
-    ;; Define the face to be clearer.
-    (set-face-attribute 'avy-lead-face nil
-	:foreground "white"
-	:background "#e52b50")
-    (set-face-attribute 'avy-lead-face-0 nil
-	:foreground "white"
-	:background "#4f5769")
-    (set-face-attribute 'avy-lead-face-1 nil
-	:foreground "white"
-	:background "#4f5769")
-    (set-face-attribute 'avy-lead-face-2 nil
-	:foreground "white"
-	:background "#4f5769"))
+(use-package avy
+  :ensure t
+  :config
+  ;; TIP Jump the cursor to anywhere, even in 'vi-visual-state' and 'vi-insert-state' mode.
+  ;; NOTE You don't need to use 'smooth-scroll', just use `avy' or `grep'.
+
+  (evil-define-key '(normal visual) 'global (kbd "SPC j") 'avy-goto-word-0)
+
+  ;; Define the face to be clearer.
+  (set-face-attribute 'avy-lead-face nil
+		      :foreground "white"
+		      :background "#e52b50")
+  (set-face-attribute 'avy-lead-face-0 nil
+		      :foreground "white"
+		      :background "#4f5769")
+  (set-face-attribute 'avy-lead-face-1 nil
+		      :foreground "white"
+		      :background "#4f5769")
+  (set-face-attribute 'avy-lead-face-2 nil
+		      :foreground "white"
+		      :background "#4f5769"))
 
 (defun --->jump-list () "The jump-list in vi.")
 ;; TIP To navigate the 'jump-list', use 'C-i' and 'C-o'. (Use double ' to 'jump-back-and-forth')
@@ -1207,6 +1201,7 @@
 (use-package evil-textobj-tree-sitter
   :ensure t
   :config
+  ;; NOTE The evil-textobj-tree-sitter doesn't provide parsers for lisp-family languages in tree-sitter parsers.
   (define-key evil-inner-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj "parameter.inner"))
   (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj "parameter.outer"))
 
