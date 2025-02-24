@@ -1329,7 +1329,17 @@
   (define-key vterm-mode-map (kbd "C-c h") 'evil-window-left)
   (define-key vterm-mode-map (kbd "C-c j") 'evil-window-down)
   (define-key vterm-mode-map (kbd "C-c k") 'evil-window-up)
-  (define-key vterm-mode-map (kbd "C-c l") 'evil-window-right))
+  (define-key vterm-mode-map (kbd "C-c l") 'evil-window-right)
+  (define-key vterm-mode-map (kbd "C-c 0") (lambda () (interactive) (tab-bar-switch-to-recent-tab)))
+  (define-key vterm-mode-map (kbd "C-c 1") (lambda () (interactive) (tab-select 1)))
+  (define-key vterm-mode-map (kbd "C-c 2") (lambda () (interactive) (tab-select 2)))
+  (define-key vterm-mode-map (kbd "C-c 3") (lambda () (interactive) (tab-select 3)))
+  (define-key vterm-mode-map (kbd "C-c 4") (lambda () (interactive) (tab-select 4)))
+  (define-key vterm-mode-map (kbd "C-c 5") (lambda () (interactive) (tab-select 5)))
+  (define-key vterm-mode-map (kbd "C-c 6") (lambda () (interactive) (tab-select 6)))
+  (define-key vterm-mode-map (kbd "C-c 7") (lambda () (interactive) (tab-select 7)))
+  (define-key vterm-mode-map (kbd "C-c 8") (lambda () (interactive) (tab-select 8)))
+  (define-key vterm-mode-map (kbd "C-c 9") (lambda () (interactive) (tab-select 9))))
 
 (use-package eww
   :config
