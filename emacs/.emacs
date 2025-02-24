@@ -122,6 +122,8 @@
   ;; TIP Use 'C-o' to use one command in 'vi-normal-state' and re-enter 'vi-insert-state'.
   ;; TIP Use 'C-r' in 'vi-insert-state' to paste content from a register.
 
+  ;; TIP Use `f/F/t/T' to find/till char in current line, and `;' and `,' to repeat.
+
   ;; mini-buffer history
   (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-j") 'next-history-element)
   (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-k") 'previous-history-element)
@@ -154,8 +156,6 @@
   (evil-collection-calendar-want-org-bindings t)
   (evil-collection-outline-bind-tab-p t)
   :config
-  ;; Disable evil-collection keymaps for following modes.
-  (delete 'vterm evil-collection--supported-modes)
 
   ;; TIP See the default list in evil-collection--supported-modes variable.
   (evil-collection-init evil-collection--supported-modes))
@@ -370,24 +370,27 @@
 (defun --->display () "The appeareance of Emacs.")
 
 ;; NOTE Use a mono-spaced-font like 'source code pro' or 'hack'. (Font is set by KDE)
-(setq inhibit-startup-screen t)
-(setq initial-major-mode 'lisp-mode)
 
-;; Hide uesless views.
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
+(use-package emacs
+  :config
+  (setq inhibit-startup-screen t)
+  (setq initial-major-mode 'lisp-mode)
 
-;; frame
-(toggle-frame-maximized)
+  ;; Hide uesless views.
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
 
-;; NOTE I have to ask the point of displaying line number of a file.
-;; (global-display-line-numbers-mode)
+  ;; frame
+  (toggle-frame-maximized)
 
-;; (toggle-word-wrap)
+  ;; NOTE I have to ask the point of displaying line number of a file.
+  ;; (global-display-line-numbers-mode)
 
-;; cursor
-(blink-cursor-mode 0)
+  ;; (toggle-word-wrap)
+
+  ;; cursor
+  (blink-cursor-mode 0))
 
 (defun --->dimmer () "Dim other windows.")
 
@@ -800,10 +803,7 @@
     ;; Override keymap
     (evil-define-key 'treemacs treemacs-mode-map (kbd "C-h")  'evil-window-left)
     (evil-define-key 'treemacs treemacs-mode-map (kbd "C-l")  'evil-window-right)
-    (evil-define-key 'treemacs treemacs-mode-map (kbd "SPC j") 'avy-goto-word-0)
-    )
-
-  )
+    (evil-define-key 'treemacs treemacs-mode-map (kbd "SPC j") 'avy-goto-word-0)))
 
 (use-package treemacs-evil
   :after (treemacs evil)
@@ -1301,7 +1301,7 @@
 
 (use-package vterm
   :ensure t
-  :after (evil)
+  :after (evil hl-line)
   :custom
   ;; TIP As a convention, the prefix key `C-c <key-to-send>' is used as `escape-sequence', to send next-key into libvterm directly.
   (vterm-keymap-exceptions '("C-c"))
@@ -1309,8 +1309,14 @@
   ;; TIP The libvterm supports interactive terminal programs like `Vim'. (The keys `input' and text `render' is also handled by Emacs)
   ;; TIP The `vterm' package is a wrapper for `libvterm.so', so it's possible to execute elisp forms inside `vterm-mode'.
 
+  ;; NOTE The `evil-collection-vterm-setup' defines a minimal vim-emulator layer over the vterm, used to interact with the libvterm in evil-mode.
+  ;; NOTE For some interactive terminal programs, like vim, you need to use emacs-state to input keys properly.
+
   ;; Set default shell program.
   (setq vterm-shell "/usr/bin/zsh")
+
+  ;; Increase max lines of history.
+  (setq vterm-max-scrollback 100000)
 
   ;; Close the vterm-buffer when the process is terminated.
   (setq vterm-kill-buffer-on-exit t)
@@ -1318,11 +1324,16 @@
   ;; Refresh the content of terminal without latency.
   (setq vterm-timer-delay nil)
 
+  ;; Disable hl-line mode for vterm.
+  ;; (add-hook 'vterm-mode-hook #'hl-line-mode)
+
   ;; Bind key.
   (evil-define-key '(normal) 'global (kbd "SPC u s") 'vterm)
 
   ;; Toggle between `Emacs' and `Vim' mode.
-  (evil-set-initial-state 'vterm-mode 'emacs)
+  ;; Set the default state to insert mode, since most of terminal programs are not interactive, so they work well in evil-insert-state.
+  ;; If you want to run an interactive terminal program in vterm-buffer, you should toggle into emacs-state.
+  (evil-set-initial-state 'vterm-mode 'insert)
   (define-key vterm-mode-map (kbd "C-c z") 'evil-exit-emacs-state)
   (define-key vterm-mode-map (kbd "C-c M-x") 'helm-M-x)
   (define-key vterm-mode-map (kbd "C-c b") 'helm-mini)
@@ -1376,8 +1387,7 @@
 	 (c-mode . lsp)
 	 (c++-mode . lsp)
 	 (java-mode . lsp)
-	 (yaml-ts-mode . lsp)
-	 )
+	 (yaml-ts-mode . lsp))
   :commands lsp
   :config
 
@@ -1695,8 +1705,17 @@
 
 (defun --->language:elisp () "Elisp language.")
 ;; Fix the xref backend function for elisp in ielm mode.
-(add-hook 'ielm-mode-hook (lambda ()
+(use-package ielm
+  :config
+  ;; Fix the xref backend functions for ielm mode.
+  (add-hook 'ielm-mode-hook (lambda ()
 			      (push 'elisp--xref-backend xref-backend-functions)))
+
+  (add-hook 'apropos-mode-hook (lambda ()
+				 (push 'elisp--xref-backend xref-backend-functions)))
+
+  ;; Key binding.
+  (evil-define-key '(normal) 'global (kbd "SPC u e") 'ielm))
 
 
 (provide '.emacs)
