@@ -11,6 +11,8 @@
 ;; - https://docs.doomemacs.org/
 ;; - https://godbolt.org/ (Compiler Explorer)
 ;; - https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node1.html
+;; - http://www.sbcl.org/manual/index.html
+;; - http://www.sbcl.org/sbcl-internals/
 ;;
 ;; Some interesting sentences collected:
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -42,6 +44,10 @@
 ;; - Noise or book, that's a question.
 ;; - To learn a language is to use it.
 ;; - Some text are just hard to read, that's the problem of the author.
+;; - Composition over inheritance. (We love atom/primitives)
+;; - Grep is powerful, since it works in string level, and always works.
+;; - Comment is one of the most important meta-data for a document.
+;; - 95% of tech problems can be solved via RTFM and STFW.
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
@@ -145,23 +151,23 @@
     (evil-collection-init))
 
 (use-package evil-escape
-    :ensure t
-    :after (evil)
-    :custom
-    ;; TIP Use 'key-convention': 'C-[' = 'Escape', 'C-i' = 'Tab' and 'C-m' = 'Return'. (Other convention: n/p -> j/k, BackSpace (insert-state) -> C-w/C-u)
-    ;; TIP The order to escape: 'jk' > 'C-g' > 'C-[' > 'Escape'
-    (evil-escape-key-sequence "jk")
-    (evil-escape-delay 0.1)
+  :ensure t
+  :after (evil)
+  :custom
+  ;; TIP Use 'key-convention': 'C-[' = 'Escape', 'C-i' = 'Tab' and 'C-m' = 'Return'. (Other convention: n/p -> j/k, BackSpace (insert-state) -> C-w/C-u)
+  ;; TIP The order to escape: 'jk' > 'C-g' > 'C-[' > 'Escape'
+  (evil-escape-key-sequence "jk")
+  (evil-escape-delay 0.1)
 
-    ;; Exclude these modes, we use `q' key to quit in them.
-    (evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode
-					   treemacs-mode))
+  ;; Exclude these modes, we use `q' key to quit in them.
+  (evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode
+							treemacs-mode vterm-mode))
 
-    ;; Exclude the visual-state to make the visual selecting smooth.
-    (evil-escape-excluded-states '(visual))
+  ;; Exclude the visual-state to make the visual selecting smooth.
+  (evil-escape-excluded-states '(visual))
 
-    :config
-    (evil-escape-mode))
+  :config
+  (evil-escape-mode))
 
 (use-package evil-surround
     :ensure t
@@ -227,7 +233,6 @@
 
 (evil-define-key '(normal) 'global (kbd "SPC h o") 'apropos-user-option)
 (evil-define-key '(normal) 'global (kbd "SPC h O") 'apropos-value)
-
 
 
 (defun --->key-cast () "Display the inputed key and executed command.")
@@ -499,6 +504,9 @@
   :hook (after-init . doom-modeline-mode)
   :config
   ;; NOTE Currently, the 'doom-modeline' is the only one that actively developed.
+
+  ;; Display the full buffer file name.
+  (setq doom-modeline-buffer-file-name-style 'truncate-nil)
 
   ;; Display the 'evil-state' as 'text'.
   (setq doom-modeline-modal-icon nil)
@@ -781,13 +789,15 @@
 
     ;; Override keymap
     (evil-define-key 'treemacs treemacs-mode-map (kbd "C-h")  'evil-window-left)
-    (evil-define-key 'treemacs treemacs-mode-map (kbd "C-l")  'evil-window-right))
+    (evil-define-key 'treemacs treemacs-mode-map (kbd "C-l")  'evil-window-right)
+    (evil-define-key 'treemacs treemacs-mode-map (kbd "SPC j") 'avy-goto-word-0)
+    )
 
   )
 
 (use-package treemacs-evil
-    :after (treemacs evil)
-    :ensure t)
+  :after (treemacs evil)
+  :ensure t)
 
 (use-package treemacs-projectile
     :after (treemacs projectile)
@@ -853,10 +863,7 @@
 
   (evil-define-key '(normal) 'global (kbd "SPC p w") 'projectile-save-project-buffers)
 
-  (evil-define-key '(normal) 'global (kbd "SPC p s") (lambda ()
-						       (interactive)
-						       (switch-to-buffer-other-window (current-buffer))
-						       (call-interactively 'projectile-run-shell)))
+  (evil-define-key '(normal) 'global (kbd "SPC p s") 'projectile-run-vterm-other-window)
   (evil-define-key '(normal) 'global (kbd "SPC p S") 'projectile-run-shell-command-in-root)
 
   ;; TIP The `tags' does make errors, but the `grep'.
@@ -1067,11 +1074,12 @@
   )
 
 (use-package company-quickhelp
-    :ensure t
-    :after (company)
-    :config
-    (company-quickhelp-mode))
+  :ensure t
+  :after (company)
+  :config
+  (company-quickhelp-mode))
 
+;; NOTE company-tabnine is the trash.
 
 (defun --->fold () "Fold text.")
 (use-package hideshow
@@ -1278,21 +1286,42 @@
 (defun <utility> () "Utility tools in Emacs.")
 
 (use-package dictionary
-    :init
-    (evil-define-key '(normal) 'global (kbd "SPC u d") 'dictionary-search))
+  :init
+  (evil-define-key '(normal) 'global (kbd "SPC u d") 'dictionary-search))
 
-(use-package shell
-    :init
-    (evil-define-key '(normal) 'global (kbd "SPC u s") 'shell))
+(use-package vterm
+  :ensure t
+  :config
+  ;; TIP Use `C-z' to send invoking key to libvterm.
+  ;; TIP The libvterm supports interactive terminal programs like `Vim'. (The `input' and `render' is also handled by Emacs)
+
+  ;; Refresh the content of terminal without latency.
+  (setq vterm-timer-delay nil)
+
+  ;; Set default shell program.
+  (setq vterm-shell "/usr/bin/zsh")
+  
+  ;; Disable evil-mode for vterm-mode.
+  ;; TIP Use `C-z' to toggle between `Emacs' and `Vim'.
+  (evil-set-initial-state 'vterm-mode 'emacs)
+
+  ;; Keymap.
+  (evil-define-key '(normal) 'global (kbd "SPC u s") 'vterm)
+
+  ;; Send the following keys into vterm program directly.
+  (define-key vterm-mode-map (kbd "C-u") 'vterm--self-insert)
+  (define-key vterm-mode-map (kbd "C-g") 'vterm--self-insert)
+
+  )
 
 (use-package eww
-    :config
-    ;; TIP To browse the firefox, use 'vimium' extension. (It's convenient to read manual online.)
-    (setq browse-url-browser-function 'eww-browse-url)
+  :config
+  ;; TIP To browse the firefox, use 'vimium' extension. (It's convenient to read manual online.)
+  (setq browse-url-browser-function 'eww-browse-url)
 
-    (evil-define-key '(normal) eww-mode-map (kbd "SPC") nil)
-    (evil-define-key '(normal) eww-mode-map (kbd "i") 'evil-insert-state)
-    )
+  (evil-define-key '(normal) eww-mode-map (kbd "SPC") nil)
+  (evil-define-key '(normal) eww-mode-map (kbd "i") 'evil-insert-state)
+  )
 
 (defun --->customize () "The customize in Emacs.")
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
@@ -1518,8 +1547,8 @@
 ;; TIP Use 'slime-toggle-profile-fdefinition' to profile a function, and 'slime-profile-package' to profile functions in a package.
 (evil-define-key '(normal) 'global (kbd "SPC e P") 'slime-profile-report)
 
-(evil-define-key '(normal) 'global (kbd "SPC e e") 'slime-macroexpand-1)
-(evil-define-key '(normal) 'global (kbd "SPC e E") 'slime-macroexpand-all)
+(evil-define-key '(normal) 'global (kbd "SPC e e") 'slime-macroexpand-all)
+(evil-define-key '(normal) 'global (kbd "SPC e E") 'slime-macroexpand-1)
 
 (defun --->inspect () "Lisp inspector.")
 ;; v ---> verbose
