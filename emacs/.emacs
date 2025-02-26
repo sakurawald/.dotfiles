@@ -14,6 +14,7 @@
 ;; - http://www.sbcl.org/manual/index.html
 ;; - http://www.sbcl.org/sbcl-internals/
 ;; - https://emacsredux.com/archive/
+;; - https://melpa.org/#/
 ;;
 ;; Some interesting sentences collected:
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -49,9 +50,12 @@
 ;; - Grep is powerful, since it works in string level, and always works.
 ;; - Comment is one of the most important meta-data for a document.
 ;; - 95% of tech problems can be solved via RTFM and STFW.
+;; - Function as a black-box.
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
+;; TODO lsp mode seems fail to initialize in scratch buffer.
+;; TODO compare hi-lock and hl-todo package.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -448,69 +452,79 @@
 
 (defun --->mini-buffer () "Customize mini-buffer.")
 (use-package helm
-    :after (evil)
-    :init
-    ;; TIP The 'which-key' extension is useless, just use 'mini-buffer' to search for a command.
-    ;; TIP The 'helm' package provides lots of 'decorated-commands': https://github.com/emacs-helm/helm/wiki/Fuzzy-matching.
-    ;; NOTE In the default 'mini-buffer' provided by 'emacs', it allows you to select one entry from 'single-source'. In the 'mini-window' provided by 'helm', you can select one entry from 'multiple-source'.
-    ;; TIP Use 'C-h m' to display the 'helm' manual.
-    ;; TIP To pass a 'universal-arg' to 'helm', just hold-on the 'C-u-9' or 'M-9' after execute 'helm-M-x' command.
-    ;; TIP Use `C-o' to execute `helm-next-source'.
+  :after (evil)
+  :init
+  ;; TIP The 'which-key' extension is useless, just use 'mini-buffer' to search for a command.
+  ;; TIP The 'helm' package provides lots of 'decorated-commands': https://github.com/emacs-helm/helm/wiki/Fuzzy-matching.
+  ;; NOTE In the default 'mini-buffer' provided by 'emacs', it allows you to select one entry from 'single-source'. In the 'mini-window' provided by 'helm', you can select one entry from 'multiple-source'.
+  ;; TIP Use 'C-h m' to display the 'helm' manual.
+  ;; TIP To pass a 'universal-arg' to 'helm', just hold-on the 'C-u-9' or 'M-9' after execute 'helm-M-x' command.
+  ;; TIP Use `C-o' to execute `helm-next-source'.
+  ;; TIP Read `helm-easymenu.el' to see the outline of functions provided by helm.
 
-    ;; Override the default emacs implementation.
-    (evil-define-key '(normal) 'global (kbd "SPC a") 'helm-M-x)
-    (global-set-key (kbd "M-x") #'helm-M-x)
-    (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
-    (global-set-key (kbd "C-x C-f") #'helm-find-files)
+  ;; Override the default emacs implementation.
+  (evil-define-key '(normal) 'global (kbd "SPC a") 'helm-M-x)
+  (global-set-key (kbd "M-x") #'helm-M-x)
+  (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+  (global-set-key (kbd "C-x C-f") #'helm-find-files)
 
-    ;; Short doc
-    (setq helm-M-x-show-short-doc t)
+  ;; Short doc
+  (setq helm-M-x-show-short-doc t)
 
-    ;; Enable globally.
-    (helm-mode 1)
+  ;; Enable globally.
+  (helm-mode 1)
 
-    :config
+  :config
 
-    ;; NOTE It's impossible to re-map bindinds in 'helm-M-x-mode' using 'evil'.
+  ;; NOTE It's impossible to re-map bindinds in 'helm-M-x-mode' using 'evil'.
 
-    ;; Bind the navigation keys.
-    (evil-define-key '(normal insert) helm-map (kbd "C-j") 'helm-next-line)
-    (evil-define-key '(normal insert) helm-map (kbd "C-k") 'helm-previous-line)
+  ;; Bind the navigation keys.
+  (evil-define-key '(normal insert) helm-map (kbd "C-j") 'helm-next-line)
+  (evil-define-key '(normal insert) helm-map (kbd "C-k") 'helm-previous-line)
 
-    (evil-define-key '(normal insert) helm-map (kbd "C-d") 'helm-next-page)
-    (evil-define-key '(normal insert) helm-map (kbd "C-u") 'helm-previous-page)
+  (evil-define-key '(normal insert) helm-map (kbd "C-d") 'helm-next-page)
+  (evil-define-key '(normal insert) helm-map (kbd "C-u") 'helm-previous-page)
 
-    ;; Used to overwrite the `TIP' message.
-    (define-key helm-map (kbd "C-j") 'helm-next-line)
+  ;; Used to overwrite the `TIP' message.
+  (define-key helm-map (kbd "C-j") 'helm-next-line)
 
-    ;; Ignore helm-buffers in buffer switcher.
-    (push "\*helm.*" switch-to-prev-buffer-skip-regexp)
+  ;; Ignore helm-buffers in buffer switcher.
+  (push "\*helm.*" switch-to-prev-buffer-skip-regexp)
 
-    ;; Ignore Ibuffer in buffer switcher.
-    (push "\*Ibuffer.*" switch-to-prev-buffer-skip-regexp)
+  ;; Ignore Ibuffer in buffer switcher.
+  (push "\*Ibuffer.*" switch-to-prev-buffer-skip-regexp)
 
-    ;; Set fuzzy matching.
-    (setq helm-M-x-fuzzy-match t)
-    (setq helm-apropos-fuzzy-match t)
+  ;; Set fuzzy matching.
+  (setq helm-M-x-fuzzy-match t)
+  (setq helm-apropos-fuzzy-match t)
 
-    (setq helm-buffers-fuzzy-matching t)
-    (setq helm-recentf-fuzzy-match t)
+  (setq helm-buffers-fuzzy-matching t)
+  (setq helm-recentf-fuzzy-match t)
 
-    (setq helm-ff-fuzzy-matching t)
-    (setq helm-file-cache-fuzzy-match t)
-    (setq helm-locate-fuzzy-match t)
-    (setq helm-session-fuzzy-match t)
-    (setq helm-etags-fuzzy-match t)
+  (setq helm-ff-fuzzy-matching t)
+  (setq helm-file-cache-fuzzy-match t)
+  (setq helm-locate-fuzzy-match t)
+  (setq helm-session-fuzzy-match t)
+  (setq helm-etags-fuzzy-match t)
+  ;; (setq helm-completion-style 'helm-fuzzy)
 
-    ;; (setq helm-completion-style 'helm-fuzzy)
-    )
+  ;; CUstomize helm-semantic module.
+  (setq helm-semantic-fuzzy-match t)
+
+  ;; Customize helm-menu module.
+  ;; TIP Use `helm-imenu' module provided by `helm' pakcage instead of `imenu-anywhere' package.
+  (setq helm-imenu-all-buffer-assoc '((emacs-lisp-mode . lisp-mode)
+				      (lisp-mode . c-mode)
+				      (c-mode . c++-mode)))
+  (setq helm-imenu-fuzzy-match t)
+  (setq helm-imenu-use-icon t))
 
 (use-package helm-projectile
-    :ensure t
-    :after (helm projectile)
-    :config
-    ;; NOTE The `projectile-find-file' does not support fuzzy-matching, so install this package for `helm-projectile-find-file' command.
-    )
+  :ensure t
+  :after (helm projectile)
+  :config
+  ;; NOTE The `projectile-find-file' does not support fuzzy-matching, so install this package for `helm-projectile-find-file' command.
+  )
 
 (defun --->mode-line () "Customize mode-line.")
 (use-package doom-modeline
@@ -561,7 +575,7 @@
 
 (defun --->buffer () "Buffer related.")
 ;; NOTE buffer < window < tab < frame
-;; TIP You should not use 'bookmark' facility at all, if there is 'recentf'.
+;; TIP You should not use 'bookmark' facility at all, if there is 'recentf'. (Try increasing the `recentf-max-history')
 ;; TIP To filter the result with '.lisp', using the pattern '*lisp'.
 ;; TIP The 'helm-mini' combines 'list-buffers' and 'recentf' as multiple sources.
 (evil-define-key '(normal) 'global (kbd "SPC b b") 'helm-mini)
@@ -585,6 +599,7 @@
 (evil-define-key '(normal) 'global (kbd "SPC s v") 'split-window-vertically)
 
 ;; TIP The 'window-swap-states' can 'transpose' current-window and next-window.
+;; NOTE To write window layout rules, use a window manager -> https://depp.brause.cc/shackle/
 (evil-define-key '(normal) 'global (kbd "SPC w t") 'window-swap-states)
 (evil-define-key '(normal) 'global (kbd "SPC w h") 'windmove-swap-states-left)
 (evil-define-key '(normal) 'global (kbd "SPC w j") 'windmove-swap-states-down)
@@ -940,19 +955,22 @@
 
 (evil-define-key '(normal) 'global (kbd "g b") 'beginning-of-defun)
 
+;; Find files.
+(evil-define-key '(normal) 'global (kbd "g f") 'helm-for-files)
+
 
 ;; NOTE Vim use 'gt' and 'gT' to cycle 'tab', but we use it to goto a 'tag'.
-(evil-define-key '(normal) 'global (kbd "g t") 'helm-semantic-or-imenu)
-(evil-define-key '(normal) 'global (kbd "g T") 'helm-imenu-anywhere)
+(evil-define-key '(normal) 'global (kbd "g t") 'helm-imenu-in-all-buffers)
+(evil-define-key '(normal) 'global (kbd "g T") 'helm-semantic-or-imenu)
+
+(evil-define-key '(normal) 'global (kbd "g o") 'helm-occur)
+
 
 ;; TIP Use `gf' and `gF' to find file at point.
 (evil-define-key '(normal) 'global (kbd "g x") 'browse-url-at-point)
 (evil-define-key '(normal) 'global (kbd "g X") 'browse-url-xdg-open)
 
 (defun --->jump-anywhere () "Jump to anywhere.")
-
-(use-package imenu-anywhere
-  :ensure t)
 
 (use-package avy
   :ensure t
