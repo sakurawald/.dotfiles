@@ -47,7 +47,7 @@
 ;; - To learn a language is to use it.
 ;; - Some text are just hard to read, that's the problem of the author.
 ;; - Composition over inheritance. (We love atom/primitives)
-;; - Grep is powerful, since it works in string level, and always works.
+;; - Grep is powerful, since it works in string level (escaped from the semantics), and always works.
 ;; - Comment is one of the most important meta-data for a document.
 ;; - 95% of tech problems can be solved via RTFM and STFW.
 ;; - Function as a black-box.
@@ -66,9 +66,6 @@
 ;; TIP Get some good ideas from https://github.com/t3chnoboy/awesome-awesome-awesome
 
 (defun <top-level> () "Top-level init form.")
-(setq eval-expression-print-length nil)
-(setq find-function-C-source-directory (expand-file-name "~/Workspace/github/emacs/src"))
-(setq shell-file-name "/bin/bash")
 
 (defun <package> () "Emacs package manage.")
 (defun --->package-manager () "Add melpa-repo into the package.el.")
@@ -195,13 +192,10 @@
 
 (defun <help> () "The help for Emacs.")
 (defun --->help () "The help commands.")
-;; Shadow bindings.
-(evil-define-key '(normal) help-mode-map (kbd "SPC") nil)
-(evil-define-key '(normal) help-mode-map (kbd "S-SPC") nil)
 
 (use-package view
-    :config
-    (evil-define-key '(normal) view-mode-map (kbd "SPC") nil))
+  :config
+  (evil-define-key '(normal) view-mode-map (kbd "SPC") nil))
 
 (use-package woman
   :config
@@ -210,45 +204,50 @@
   (evil-define-key '(normal) 'global (kbd "SPC u k") 'hl-todo-occur)
   )
 
-;; TIP To list the 'built-in' packages in 'Emacs'.
-(evil-define-key '(normal) 'global (kbd "SPC h e") 'finder-by-keyword)
+(use-package emacs
+  :config
+  ;; Shadow bindings.
+  (evil-define-key '(normal) help-mode-map (kbd "SPC") nil)
+  (evil-define-key '(normal) help-mode-map (kbd "S-SPC") nil)
 
-;; NOTE The 'helm' package will define lots of 'helm-info-{package-name}' command for all packages.
-;; TIP Use 'info' to read 'the manual of emacs', and 'info-display-manual' to read 'the manual of a package'.
-(evil-define-key '(normal) 'global (kbd "SPC h h") 'info)
-(evil-define-key '(normal) 'global (kbd "SPC h H") 'info-display-manual)
+  ;; TIP To list the 'built-in' packages in 'Emacs'.
+  (evil-define-key '(normal) 'global (kbd "SPC h e") 'finder-by-keyword)
 
-(evil-define-key '(normal) 'global (kbd "SPC h d") 'apropos-documentation)
-(evil-define-key '(normal) 'global (kbd "SPC h D") 'shortdoc)
+  ;; NOTE The 'helm' package will define lots of 'helm-info-{package-name}' command for all packages.
+  ;; TIP Use 'info' to read 'the manual of emacs', and 'info-display-manual' to read 'the manual of a package'.
+  (evil-define-key '(normal) 'global (kbd "SPC h h") 'info)
+  (evil-define-key '(normal) 'global (kbd "SPC h H") 'info-display-manual)
 
-(evil-define-key '(normal) 'global (kbd "SPC h b") 'describe-bindings)
-(evil-define-key '(normal) 'global (kbd "SPC h B") 'view-lossage)
+  (evil-define-key '(normal) 'global (kbd "SPC h d") 'apropos-documentation)
+  (evil-define-key '(normal) 'global (kbd "SPC h D") 'shortdoc)
 
-;; TIP To read the `global-map' first.
-(evil-define-key '(normal) 'global (kbd "SPC h k") 'describe-key)
-(evil-define-key '(normal) 'global (kbd "SPC h K") 'describe-keymap)
+  (evil-define-key '(normal) 'global (kbd "SPC h b") 'describe-bindings)
+  (evil-define-key '(normal) 'global (kbd "SPC h B") 'view-lossage)
 
-(evil-define-key '(normal) 'global (kbd "SPC h m") 'describe-mode)
-(evil-define-key '(normal) 'global (kbd "SPC h M") 'man)
+  ;; TIP To read the `global-map' first.
+  (evil-define-key '(normal) 'global (kbd "SPC h k") 'describe-key)
+  (evil-define-key '(normal) 'global (kbd "SPC h K") 'describe-keymap)
 
-(evil-define-key '(normal) 'global (kbd "SPC h s") 'describe-symbol)
-(evil-define-key '(normal) 'global (kbd "SPC h S") 'apropos)
+  (evil-define-key '(normal) 'global (kbd "SPC h m") 'describe-mode)
+  (evil-define-key '(normal) 'global (kbd "SPC h M") 'man)
 
-(evil-define-key '(normal) 'global (kbd "SPC h f") 'describe-function)
-(evil-define-key '(normal) 'global (kbd "SPC h F") 'apropos-function)
+  (evil-define-key '(normal) 'global (kbd "SPC h s") 'describe-symbol)
+  (evil-define-key '(normal) 'global (kbd "SPC h S") 'apropos)
 
-(evil-define-key '(normal) 'global (kbd "SPC h v") 'describe-variable)
-(evil-define-key '(normal) 'global (kbd "SPC h V") 'apropos-variable)
+  (evil-define-key '(normal) 'global (kbd "SPC h f") 'describe-function)
+  (evil-define-key '(normal) 'global (kbd "SPC h F") 'apropos-function)
 
-(evil-define-key '(normal) 'global (kbd "SPC h c") 'describe-command)
-(evil-define-key '(normal) 'global (kbd "SPC h C") 'apropos-command)
+  (evil-define-key '(normal) 'global (kbd "SPC h v") 'describe-variable)
+  (evil-define-key '(normal) 'global (kbd "SPC h V") 'apropos-variable)
 
-(evil-define-key '(normal) 'global (kbd "SPC h p") 'describe-package)
-(evil-define-key '(normal) 'global (kbd "SPC h P") 'apropos-library)
+  (evil-define-key '(normal) 'global (kbd "SPC h c") 'describe-command)
+  (evil-define-key '(normal) 'global (kbd "SPC h C") 'apropos-command)
 
-(evil-define-key '(normal) 'global (kbd "SPC h o") 'apropos-user-option)
-(evil-define-key '(normal) 'global (kbd "SPC h O") 'apropos-value)
+  (evil-define-key '(normal) 'global (kbd "SPC h p") 'describe-package)
+  (evil-define-key '(normal) 'global (kbd "SPC h P") 'apropos-library)
 
+  (evil-define-key '(normal) 'global (kbd "SPC h o") 'apropos-user-option)
+  (evil-define-key '(normal) 'global (kbd "SPC h O") 'apropos-value))
 
 (defun --->key-cast () "Display the inputed key and executed command.")
 (use-package keycast
@@ -375,7 +374,6 @@
 (defun --->display () "The appeareance of Emacs.")
 
 ;; NOTE Use a mono-spaced-font like 'source code pro' or 'hack'. (Font is set by KDE)
-
 (use-package emacs
   :config
   (setq inhibit-startup-screen t)
@@ -563,9 +561,9 @@
   (display-time-default-load-average nil)
 
   :config
+  ;; Display date and time in Emacs.
   ;; (display-time-mode)
   )
-
 
 (use-package evil-anzu
   :ensure t
@@ -574,57 +572,63 @@
   (global-anzu-mode +1))
 
 (defun --->buffer () "Buffer related.")
-;; NOTE buffer < window < tab < frame
-;; TIP You should not use 'bookmark' facility at all, if there is 'recentf'. (Try increasing the `recentf-max-history')
-;; TIP To filter the result with '.lisp', using the pattern '*lisp'.
-;; TIP The 'helm-mini' combines 'list-buffers' and 'recentf' as multiple sources.
-(evil-define-key '(normal) 'global (kbd "SPC b b") 'helm-mini)
-(evil-define-key '(normal) 'global (kbd "SPC b B") (lambda ()
-						     (interactive)
-						     (call-interactively 'tab-bar-new-tab)
-						     (call-interactively 'helm-mini)))
 
-(evil-define-key '(normal) 'global (kbd "SPC b l") 'list-buffers)
+(use-package emacs
+  :config
+  ;; NOTE buffer < window < tab < frame
+  ;; TIP You should not use 'bookmark' facility at all, if there is 'recentf'. (Try increasing the `recentf-max-history')
+  ;; TIP To filter the result with '.lisp', using the pattern '*lisp'.
+  ;; TIP The 'helm-mini' combines 'list-buffers' and 'recentf' as multiple sources.
+  (evil-define-key '(normal) 'global (kbd "SPC b b") 'helm-mini)
+  (evil-define-key '(normal) 'global (kbd "SPC b B") (lambda ()
+						       (interactive)
+						       (call-interactively 'tab-bar-new-tab)
+						       (call-interactively 'helm-mini)))
 
-(evil-define-key '(normal) 'global (kbd "SPC b n") 'switch-to-next-buffer)
-(evil-define-key '(normal) 'global (kbd "SPC b p") 'switch-to-prev-buffer)
+  (evil-define-key '(normal) 'global (kbd "SPC b l") 'list-buffers)
 
-(evil-define-key '(normal) 'global (kbd "SPC b d") 'kill-buffer)
+  (evil-define-key '(normal) 'global (kbd "SPC b n") 'switch-to-next-buffer)
+  (evil-define-key '(normal) 'global (kbd "SPC b p") 'switch-to-prev-buffer)
 
-(evil-define-key '(normal) 'global (kbd "SPC b s") 'scratch-buffer)
+  (evil-define-key '(normal) 'global (kbd "SPC b d") 'kill-buffer)
+
+  (evil-define-key '(normal) 'global (kbd "SPC b s") 'scratch-buffer))
 
 (defun --->window () "Window related.")
-;; TIP It's okay to use vim window related bindings: 'C-w-{s/v}', 'C-w-{hjklw}', 'C-w{qx}'
-(evil-define-key '(normal) 'global (kbd "SPC s h") 'split-window-horizontally)
-(evil-define-key '(normal) 'global (kbd "SPC s v") 'split-window-vertically)
 
-;; TIP The 'window-swap-states' can 'transpose' current-window and next-window.
-;; NOTE To write window layout rules, use a window manager -> https://depp.brause.cc/shackle/
-(evil-define-key '(normal) 'global (kbd "SPC w t") 'window-swap-states)
-(evil-define-key '(normal) 'global (kbd "SPC w h") 'windmove-swap-states-left)
-(evil-define-key '(normal) 'global (kbd "SPC w j") 'windmove-swap-states-down)
-(evil-define-key '(normal) 'global (kbd "SPC w k") 'windmove-swap-states-up)
-(evil-define-key '(normal) 'global (kbd "SPC w l") 'windmove-swap-states-right)
+(use-package emacs
+  :config
+  ;; TIP It's okay to use vim window related bindings: 'C-w-{s/v}', 'C-w-{hjklw}', 'C-w{qx}'
+  (evil-define-key '(normal) 'global (kbd "SPC s h") 'split-window-horizontally)
+  (evil-define-key '(normal) 'global (kbd "SPC s v") 'split-window-vertically)
 
-(evil-define-key '(normal) 'global (kbd "SPC w m") 'maximize-window)
-(evil-define-key '(normal) 'global (kbd "SPC w M") 'minimize-window)
-(evil-define-key '(normal) 'global (kbd "SPC w b") 'balance-windows)
+  ;; TIP The 'window-swap-states' can 'transpose' current-window and next-window.
+  ;; NOTE To write window layout rules, use a window manager -> https://depp.brause.cc/shackle/
+  (evil-define-key '(normal) 'global (kbd "SPC w t") 'window-swap-states)
+  (evil-define-key '(normal) 'global (kbd "SPC w h") 'windmove-swap-states-left)
+  (evil-define-key '(normal) 'global (kbd "SPC w j") 'windmove-swap-states-down)
+  (evil-define-key '(normal) 'global (kbd "SPC w k") 'windmove-swap-states-up)
+  (evil-define-key '(normal) 'global (kbd "SPC w l") 'windmove-swap-states-right)
 
-;; TIP If the key-bindings conflicts with the major-mode, fallback to 'C-w-{whjkl}'.
-(evil-define-key '(normal) 'global (kbd "C-h") 'evil-window-left)
-(evil-define-key '(normal) 'global (kbd "C-j") 'evil-window-down)
-(evil-define-key '(normal) 'global (kbd "C-k") 'evil-window-up)
-(evil-define-key '(normal) 'global (kbd "C-l") 'evil-window-right)
+  (evil-define-key '(normal) 'global (kbd "SPC w m") 'maximize-window)
+  (evil-define-key '(normal) 'global (kbd "SPC w M") 'minimize-window)
+  (evil-define-key '(normal) 'global (kbd "SPC w b") 'balance-windows)
 
-(evil-define-key '(normal) 'global (kbd "SPC w d") 'delete-window)
-(evil-define-key '(normal) 'global (kbd "SPC w D") 'delete-other-windows)
+  ;; TIP If the key-bindings conflicts with the major-mode, fallback to 'C-w-{whjkl}'.
+  (evil-define-key '(normal) 'global (kbd "C-h") 'evil-window-left)
+  (evil-define-key '(normal) 'global (kbd "C-j") 'evil-window-down)
+  (evil-define-key '(normal) 'global (kbd "C-k") 'evil-window-up)
+  (evil-define-key '(normal) 'global (kbd "C-l") 'evil-window-right)
+
+  (evil-define-key '(normal) 'global (kbd "SPC w d") 'delete-window)
+  (evil-define-key '(normal) 'global (kbd "SPC w D") 'delete-other-windows))
 
 (use-package winner
-    :config
-    ;; TIP Undo the window that deleted accidently.
-    (winner-mode)
-    (evil-define-key '(normal) 'global (kbd "SPC w u") 'winner-undo)
-    (evil-define-key '(normal) 'global (kbd "SPC w U") 'winner-redo))
+  :config
+  ;; TIP Undo the window that deleted accidently.
+  (winner-mode)
+  (evil-define-key '(normal) 'global (kbd "SPC w u") 'winner-undo)
+  (evil-define-key '(normal) 'global (kbd "SPC w U") 'winner-redo))
 
 (defun --->tab () "Tab related.")
 (use-package tab-bar
@@ -664,7 +668,7 @@
 
   (evil-define-key '(normal) 'global (kbd "SPC t u") 'tab-bar-undo-close-tab)
 
-  ;; Macros.
+  ;; Macros. (Deprecated)
   (defmacro with-new-tab-bar (&rest body)
     "Create a new tab and execute BODY in the new tab context."
     `(progn
@@ -674,21 +678,23 @@
 
 
 (defun --->frame () "Frame related.")
-;; TIP Use 'Super+{alpha}' to switch to a useful program. (wmctrl -a "gnu emacs" || emacs): terminal, emacs, browser.
-;; NOTE `super-q' to jump to Emacs, `super-w' to jump to web browser.
-;; TIP Use 'Super+{num}' to switch to a window in KDE.
-(evil-define-key '(normal) 'global (kbd "SPC z z") 'toggle-frame-fullscreen)
-(evil-define-key '(normal) 'global (kbd "SPC z m") 'toggle-frame-maximized)
+(use-package emacs
+  :config
+  ;; TIP Use 'Super+{alpha}' to switch to a useful program. (wmctrl -a "gnu emacs" || emacs): terminal, emacs, browser.
+  ;; NOTE `super-q' to jump to Emacs, `super-w' to jump to web browser.
+  ;; TIP Use 'Super+{num}' to switch to a window in KDE.
+  (evil-define-key '(normal) 'global (kbd "SPC z z") 'toggle-frame-fullscreen)
+  (evil-define-key '(normal) 'global (kbd "SPC z m") 'toggle-frame-maximized)
 
-;; TIP To quit in vi, use 'ZQ'.
-(evil-define-key '(normal) 'global (kbd "Z R") 'restart-emacs)
+  ;; TIP To quit in vi, use 'ZQ'.
+  (evil-define-key '(normal) 'global (kbd "Z R") 'restart-emacs)
 
-;; TIP Use 'ZM' to escape from a 'dead-window'.
-(evil-define-key '(normal) 'global (kbd "Z M") 'helm-mini)
+  ;; TIP Use 'ZM' to escape from a 'dead-window'.
+  (evil-define-key '(normal) 'global (kbd "Z M") 'helm-mini))
 
 (defun --->session () "Session related.")
-;; desktop save mode seems buggy.
-;; (desktop-save-mode 1)
+;; NOTE The desktop-save-mode saves the whole state of Emacs, making it hard to debug and test new functions.
+;; (desktop-save-mode)
 
 (defun <file> () "Files for Emacs.")
 (defun --->file () "File related.")
@@ -826,20 +832,19 @@
   :ensure t)
 
 (use-package treemacs-projectile
-    :after (treemacs projectile)
-    :ensure t)
+  :after (treemacs projectile)
+  :ensure t)
 
 (use-package treemacs-magit
-    :after (treemacs magit)
-    :ensure t)
+  :after (treemacs magit)
+  :ensure t)
 
 (use-package treemacs-icons-dired
-    :ensure t
-    :after (treemacs dired)
-    :config
-    ;; Decorate the `dired' command with `icons' version.
-    (treemacs-icons-dired-mode)
-    )
+  :ensure t
+  :after (treemacs dired)
+  :config
+  ;; Decorate the `dired' command with `icons' version.
+  (treemacs-icons-dired-mode))
 
 (defun --->project () "Project related.")
 (use-package rg
@@ -926,49 +931,50 @@
 (use-package magit
   :ensure t
   :config
+  ;; or #000066, #001847
   (set-face-attribute 'magit-diff-context-highlight nil
-		      :background "navy") ;; or #000066, #001847
-  )
+		      :background "navy"))
 
 (defun <navigation> () "The navigation in Emacs.")
 (defun --->goto () "Goto commands for vi.")
-;; TIP The 'g' and 'z' are prefix-key left for user.
-;; gj / gk ---> logical line
-;; ge / GE ---> backward word end / backward broad word end
-;; GJ ---> join line (without one space) ('J' = join line with one space)
-;; Gu / GU ---> downcase / upcase operator (e.g. 'guiw'). (Or you can just press 'u/U' in vi-visual-state)
-;; gz -> goto 'emacs-lisp-repl' provided by 'ielm'.
 
-;; gd / gr ---> find definition / find references.
-;; TIP Use 'C-j' and 'C-k' to show the details in 'xref-window'.
-(evil-define-key '(normal) 'global (kbd "g s") 'helm-lsp-workspace-symbol)
-(evil-define-key '(normal) 'global (kbd "g S") 'helm-lsp-global-workspace-symbol)
+(use-package emacs
+  :config
+  ;; TIP The 'g' and 'z' are prefix-key left for user.
+  ;; gj / gk ---> logical line
+  ;; ge / GE ---> backward word end / backward broad word end
+  ;; GJ ---> join line (without one space) ('J' = join line with one space)
+  ;; Gu / GU ---> downcase / upcase operator (e.g. 'guiw'). (Or you can just press 'u/U' in vi-visual-state)
+  ;; gz -> goto 'emacs-lisp-repl' provided by 'ielm'.
 
-(evil-define-key '(normal) 'global (kbd "g h") 'lsp-treemacs-call-hierarchy)
-(evil-define-key '(normal) 'global (kbd "g H") 'lsp-treemacs-type-hierarchy)
+  ;; gd / gr ---> find definition / find references.
+  ;; TIP Use 'C-j' and 'C-k' to show the details in 'xref-window'.
+  (evil-define-key '(normal) 'global (kbd "g s") 'helm-lsp-workspace-symbol)
+  (evil-define-key '(normal) 'global (kbd "g S") 'helm-lsp-global-workspace-symbol)
 
-(evil-define-key '(normal) 'global (kbd "g c") 'flycheck-list-errors)
-(evil-define-key '(normal) 'global (kbd "g C") 'lsp-treemacs-errors-list)
+  (evil-define-key '(normal) 'global (kbd "g h") 'lsp-treemacs-call-hierarchy)
+  (evil-define-key '(normal) 'global (kbd "g H") 'lsp-treemacs-type-hierarchy)
 
-;; gm -> as a shortcut of '%'.
-(evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
+  (evil-define-key '(normal) 'global (kbd "g c") 'flycheck-list-errors)
+  (evil-define-key '(normal) 'global (kbd "g C") 'lsp-treemacs-errors-list)
 
-(evil-define-key '(normal) 'global (kbd "g b") 'beginning-of-defun)
+  ;; gm -> as a shortcut of '%'.
+  (evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
 
-;; Find files.
-(evil-define-key '(normal) 'global (kbd "g f") 'helm-for-files)
+  (evil-define-key '(normal) 'global (kbd "g b") 'beginning-of-defun)
 
+  ;; Find files.
+  (evil-define-key '(normal) 'global (kbd "g f") 'helm-for-files)
 
-;; NOTE Vim use 'gt' and 'gT' to cycle 'tab', but we use it to goto a 'tag'.
-(evil-define-key '(normal) 'global (kbd "g t") 'helm-imenu-in-all-buffers)
-(evil-define-key '(normal) 'global (kbd "g T") 'helm-semantic-or-imenu)
+  ;; NOTE Vim use 'gt' and 'gT' to cycle 'tab', but we use it to goto a 'tag'.
+  (evil-define-key '(normal) 'global (kbd "g t") 'helm-imenu-in-all-buffers)
+  (evil-define-key '(normal) 'global (kbd "g T") 'helm-semantic-or-imenu)
 
-(evil-define-key '(normal) 'global (kbd "g o") 'helm-occur)
+  (evil-define-key '(normal) 'global (kbd "g o") 'helm-occur)
 
-
-;; TIP Use `gf' and `gF' to find file at point.
-(evil-define-key '(normal) 'global (kbd "g x") 'browse-url-at-point)
-(evil-define-key '(normal) 'global (kbd "g X") 'browse-url-xdg-open)
+  ;; TIP Use `gf' and `gF' to find file at point.
+  (evil-define-key '(normal) 'global (kbd "g x") 'browse-url-at-point)
+  (evil-define-key '(normal) 'global (kbd "g X") 'browse-url-xdg-open))
 
 (defun --->jump-anywhere () "Jump to anywhere.")
 
@@ -1005,52 +1011,53 @@
 (evil-define-key '(normal visual) 'global (kbd "] c") 'evil-goto-last-change-reverse)
 
 (defun --->better-HL () "Easy way to press & and $.")
-;; NOTE The 'J' is used to join following lines to current-line, and 'K' is used for manual.
-;; TIP use 'zz' to center current line.
-;; TIP use 'M' to center current window. (Use 'C-e' and 'C-y' to move-screen one-line down/up)
-(evil-define-key '(normal visual) 'global "H" 'evil-beginning-of-line)
-(evil-define-key '(normal visual) 'global "L" 'evil-end-of-line)
-
-;; TIP Use '{' and '}' to forward/backward a paragraph.
+(use-package evil
+  :config
+  ;; NOTE The 'J' is used to join following lines to current-line, and 'K' is used for manual.
+  ;; TIP use 'zz' to center current line.
+  ;; TIP use 'M' to center current window. (Use 'C-e' and 'C-y' to move-screen one-line down/up)
+  ;; TIP Use '{' and '}' to forward/backward a paragraph.
+  (evil-define-key '(normal visual) 'global "H" 'evil-beginning-of-line)
+  (evil-define-key '(normal visual) 'global "L" 'evil-end-of-line))
 
 (defun <edit> () "The edit in Emacs.")
 (defun --->saver () "Auto save files.")
 (progn
-    (setq auto-save-interval 20)
-    (setq auto-save-timeout 1)
-    (setq auto-save-no-message nil)
+  (setq auto-save-interval 20)
+  (setq auto-save-timeout 1)
+  (setq auto-save-no-message nil)
 
-    ;; Suppress the `Wrote file...' message.
-    (setq save-silently t)
+  ;; Suppress the `Wrote file...' message.
+  (setq save-silently t)
 
-    ;; The instant method, performance may be poor.
-    ;; (defun save-buffer-instantly (begin end prev-text)
-    ;;	 (when (and (buffer-file-name)
-    ;;	     (file-writable-p (buffer-file-name))
-    ;;	     (buffer-modified-p))
-    ;;	   (save-buffer)))
-    ;; (add-hook 'after-change-functions 'save-buffer-instantly)
+  ;; The instant method, performance may be poor.
+  ;; (defun save-buffer-instantly (begin end prev-text)
+  ;;	 (when (and (buffer-file-name)
+  ;;	     (file-writable-p (buffer-file-name))
+  ;;	     (buffer-modified-p))
+  ;;	   (save-buffer)))
+  ;; (add-hook 'after-change-functions 'save-buffer-instantly)
 
-    (defun save-buffer* ()
-	(when (and (buffer-file-name) (buffer-modified-p) (evil-normal-state-p))
-	    (save-buffer)))
+  (defun save-buffer* ()
+    (when (and (buffer-file-name) (buffer-modified-p) (evil-normal-state-p))
+      (save-buffer)))
 
-    ;; Save buffer when Emacs lose the focus.
-    (add-hook 'focus-out-hook 'save-buffer*)
+  ;; Save buffer when Emacs lose the focus.
+  (add-hook 'focus-out-hook 'save-buffer*)
 
-    ;; Save buffer when Vi enters the normal-state.
-    (add-hook 'evil-normal-state-entry-hook 'save-buffer*)
+  ;; Save buffer when Vi enters the normal-state.
+  (add-hook 'evil-normal-state-entry-hook 'save-buffer*)
 
-    ;; Save buffer after execution of some commands.
-    (add-hook 'post-command-hook (lambda ()
-				     (when (or (eq this-command 'evil-delete)
-					       (eq this-command 'evil-delete-char)
-					       (eq this-command 'evil-join))
-					 (save-buffer*))))
+  ;; Save buffer after execution of some commands.
+  (add-hook 'post-command-hook (lambda ()
+				 (when (or (eq this-command 'evil-delete)
+					   (eq this-command 'evil-delete-char)
+					   (eq this-command 'evil-join))
+				   (save-buffer*))))
 
-    ;; Save buffer when window state changed.
-    (add-hook 'window-state-change-hook 'save-buffer*)
-    )
+  ;; Save buffer when window state changed.
+  (add-hook 'window-state-change-hook 'save-buffer*)
+  )
 
 (defun --->read-only () "Read-only files.")
 (use-package hardhat
@@ -1378,8 +1385,7 @@
   (setq browse-url-browser-function 'eww-browse-url)
 
   (evil-define-key '(normal) eww-mode-map (kbd "SPC") nil)
-  (evil-define-key '(normal) eww-mode-map (kbd "i") 'evil-insert-state)
-  )
+  (evil-define-key '(normal) eww-mode-map (kbd "i") 'evil-insert-state))
 
 (defun --->customize () "The customize in Emacs.")
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
@@ -1443,8 +1449,7 @@
   (evil-define-key '(normal) 'global (kbd "SPC l f r") 'lsp-format-region)
 
   (evil-define-key '(normal) 'global (kbd "SPC l r o") 'lsp-organize-imports)
-  (evil-define-key '(normal) 'global (kbd "SPC l r n") 'lsp-rename)
-  )
+  (evil-define-key '(normal) 'global (kbd "SPC l r n") 'lsp-rename))
 
 (use-package lsp-ui
   :ensure t
@@ -1725,8 +1730,17 @@
 
 (defun --->language:elisp () "Elisp language.")
 ;; Fix the xref backend function for elisp in ielm mode.
+(use-package emacs
+  :config
+  ;; Disable output truncate.
+  (setq eval-expression-print-length nil)
+
+  ;; Set emacs source dir.
+  (setq find-function-C-source-directory (expand-file-name "~/Workspace/github/emacs/src")))
+
 (use-package ielm
   :config
+
   ;; Fix the xref backend functions for ielm mode.
   (add-hook 'ielm-mode-hook (lambda ()
 			      (push 'elisp--xref-backend xref-backend-functions)))
@@ -1736,7 +1750,6 @@
 
   ;; Key binding.
   (evil-define-key '(normal) 'global (kbd "SPC u e") 'ielm))
-
 
 (provide '.emacs)
 ;;; .emacs ends here
