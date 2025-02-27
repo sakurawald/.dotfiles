@@ -172,7 +172,7 @@
   (evil-escape-delay 0.1)
 
   ;; Exclude these modes, we use `q' key to quit in them.
-  (evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode
+  (evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode magit-log-mode
 							treemacs-mode))
 
   ;; Exclude the visual-state to make the visual selecting smooth.
