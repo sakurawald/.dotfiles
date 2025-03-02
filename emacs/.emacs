@@ -15,6 +15,7 @@
 ;; - http://www.sbcl.org/sbcl-internals/
 ;; - https://emacsredux.com/archive/
 ;; - https://melpa.org/#/
+;; - https://alexschroeder.ch/geocities/kensanata/emacs-defense.html
 ;;
 ;; Some interesting sentences collected:
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -51,11 +52,14 @@
 ;; - Comment is one of the most important meta-data for a document.
 ;; - 95% of tech problems can be solved via RTFM and STFW.
 ;; - Function as a black-box.
+;; - You can learn Emacs everyday.
+;; - Operating systems, GUI toolkits and competing editors come and go, but Emacs is forever!
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
 ;; TODO lsp mode seems fail to initialize in scratch buffer.
 ;; TODO compare hi-lock and hl-todo package.
+;; TODO discover some ideas from jetbrain platform.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -78,6 +82,8 @@
    (package-initialize)
    (package-refresh-contents)
    (package-install 'use-package)
+
+   ;; NOTE A built-in package doesn't care the value of `use-package-always-ensure'.
    (setq use-package-always-ensure t)
    (require 'use-package)))
 
@@ -133,17 +139,20 @@
   ;; TIP Use 'C-r' in 'vi-insert-state' to paste content from a register.
 
   ;; TIP Use `f/F/t/T' to find/till char in current line, and `;' and `,' to repeat.
+  ;; TIP Use `Tab' and `Shift-Tab' to jump to next/previous `semantic-unit' (token).
 
   ;; mini-buffer history
   (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-j") 'next-history-element)
   (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-k") 'previous-history-element)
 
-
-  ;; Use `C-c' prefix to suit the `vterm' package.
-  ;; undefine `C-z' to avoid mis-typed.
-  (define-key global-map (kbd "C-z") nil)
+  ;; TIP Use `C-c' prefix to be compatible with the `vterm' package.
   (evil-set-toggle-key "C-c z")
 
+  ;; TIP undefine `C-z' to avoid mis-typed. (https://emacsredux.com/blog/2023/03/14/avoid-accidentally-minimizing-emacs/)
+  (define-key global-map (kbd "C-z") nil)
+  (define-key global-map (kbd "M-z") nil)
+
+  ;; Enable evil-mode.
   (evil-mode 1))
 
 
@@ -391,8 +400,8 @@
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
 
-  ;; frame
-  (toggle-frame-maximized)
+  ;; Maximize the frame on startup: https://emacsredux.com/blog/2020/12/04/maximize-the-emacs-frame-on-startup/
+  (add-hook 'window-setup-hook 'toggle-frame-maximized t)
 
   ;; NOTE I have to ask the point of displaying line number of a file.
   ;; (global-display-line-numbers-mode)
@@ -421,7 +430,7 @@
   (setq base16-sakura-theme-colors
 	'(:base00 "#000000" ;; default background: window
 		  :base01 "#1C1C1C" ;; status bar, line numbers and folding marks
-		  :base02 "#383838" ;; selection
+		  :base02 "#383838" ;; modeline, selection
 		  :base03 "#545454" ;; comment
 		  :base04 "#A2A2A2" ;; dark-theme foreground: doc-string
 		  :base05 "#FFFFFF" ;; default foreground: text
@@ -438,7 +447,10 @@
 		  ))
   (load-theme 'base16-sakura t)
 
-  (set-face-foreground 'tab-bar-tab "#00FF00"))
+  (set-face-foreground 'tab-bar-tab "#00FF00")
+  (set-face-background 'region "#006280")
+
+  )
 
 (use-package hl-line
   :ensure t
@@ -459,7 +471,7 @@
 (use-package helm
   :after (evil)
   :init
-  ;; TIP The 'which-key' extension is useless, just use 'mini-buffer' to search for a command.
+  ;; TIP The 'which-key' extension is useless, just use 'mini-buffer' to search for a command, or the `describe-bindings' command to list the bindings in current buffer.
   ;; TIP The 'helm' package provides lots of 'decorated-commands': https://github.com/emacs-helm/helm/wiki/Fuzzy-matching.
   ;; NOTE In the default 'mini-buffer' provided by 'emacs', it allows you to select one entry from 'single-source'. In the 'mini-window' provided by 'helm', you can select one entry from 'multiple-source'.
   ;; TIP Use 'C-h m' to display the 'helm' manual.
@@ -467,22 +479,24 @@
   ;; TIP Use `C-o' to execute `helm-next-source'.
   ;; TIP Read `helm-easymenu.el' to see the outline of functions provided by helm.
 
-  ;; Override the default emacs implementation.
+  ;; Override the default emacs bindings.
   (evil-define-key '(normal) 'global (kbd "SPC a") 'helm-M-x)
   (global-set-key (kbd "M-x") #'helm-M-x)
   (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
   (global-set-key (kbd "C-x C-f") #'helm-find-files)
 
-  ;; Short doc
+  ;; Display short-doc for commands.
   (setq helm-M-x-show-short-doc t)
 
-  ;; Enable globally.
+  ;; Enable mode.
   (helm-mode 1)
 
   :config
 
-  ;; NOTE It's impossible to re-map bindinds in 'helm-M-x-mode' using 'evil'.
+  ;; Faces.
+  (set-face-background 'helm-selection "#000066")
 
+  ;; NOTE It's impossible to re-map bindinds in 'helm-M-x-mode' using 'evil'.
   ;; Bind the navigation keys.
   (evil-define-key '(normal insert) helm-map (kbd "C-j") 'helm-next-line)
   (evil-define-key '(normal insert) helm-map (kbd "C-k") 'helm-previous-line)
@@ -938,9 +952,20 @@
 (use-package magit
   :ensure t
   :config
+  ;; Set a high-contrast color for hunk high-light.
   ;; or #000066, #001847
   (set-face-attribute 'magit-diff-context-highlight nil
 		      :background "navy"))
+
+(use-package diff-hl
+  :ensure t
+  :after (magit)
+  :config
+  ;; Integrate with magit package.
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+
+  ;; Enable mode.
+  (global-diff-hl-mode))
 
 (defun <navigation> () "The navigation in Emacs.")
 (defun --->goto () "Goto commands for vi.")
@@ -1334,7 +1359,16 @@
 
 (use-package dictionary
   :init
-  (evil-define-key '(normal) 'global (kbd "SPC u d") 'dictionary-search))
+  ;; TIP It's a convenient way to query the definition of a word.
+  ;; TIP The `dictionary-search' will lookup the `symbol' at point.
+  (evil-define-key '(normal) 'global (kbd "SPC u d") 'dictionary-search)
+  :config
+  ;; NOTE Always use a online dict server, instead of the offline server named `dictd'.
+  (setq dictionary-server "dict.org"))
+
+(use-package calendar
+  :config
+  (evil-define-key '(normal) 'global (kbd "SPC u c") 'calendar))
 
 (use-package vterm
   :ensure t
@@ -1410,6 +1444,7 @@
 ;; NOTE A LSP server provides: completion, snippet, index, documentation, cheker, refactor, code-action, formatter.
 ;; NOTE A good LSP server should provide the correct AST.
 ;; NOTE For IDE users, use this equation: IDE = Editor + LSP + DAP.
+
 (use-package lsp-mode
   :ensure t
   :after (evil)
@@ -1467,38 +1502,36 @@
   :commands lsp-ui-mode)
 
 (use-package helm-lsp
-    :ensure t
-    :commands helm-lsp-workspace-symbol)
+  :ensure t
+  :commands helm-lsp-workspace-symbol)
 
 (use-package lsp-treemacs
-    :ensure t
-    :commands lsp-treemacs-errors-list
-    :config
+  :ensure t
+  :commands lsp-treemacs-errors-list
+  :config
 
-    (setq lsp-treemacs-call-hierarchy-expand-depth 32)
-    (setq lsp-treemacs-type-hierarchy-expand-depth 5)
+  (setq lsp-treemacs-call-hierarchy-expand-depth 32)
+  (setq lsp-treemacs-type-hierarchy-expand-depth 5)
 
-    (setq lsp-treemacs-error-list-expand-depth 2))
+  (setq lsp-treemacs-error-list-expand-depth 2))
 
 (use-package dap-mode
-    :ensure t
-    :config
-    ;; TIP To configure the debugger: https://sourceware.org/gdb/current/onlinedocs/gdb.html/Debugger-Adapter-Protocol.html
+  :ensure t
+  :config
+  ;; TIP To configure the debugger: https://sourceware.org/gdb/current/onlinedocs/gdb.html/Debugger-Adapter-Protocol.html
 
-    ;; Enable mode.
-    (dap-mode 1)
-    (setq dap-auto-configure-features '(sessions locals brekapoints expressions tooltip))
+  ;; Enable mode.
+  (dap-mode 1)
+  (setq dap-auto-configure-features '(sessions locals brekapoints expressions tooltip))
 
-    ;; Add lldb debugger.
-    (require 'dap-lldb)
-    ;; NOTE Use (setq) instead of (push), or it will not work.
-    (setq dap-lldb-debug-program '("/usr/bin/codelldb"))
+  ;; Add lldb debugger.
+  (require 'dap-lldb)
+  ;; NOTE Use (setq) instead of (push), or it will not work.
+  (setq dap-lldb-debug-program '("/usr/bin/codelldb"))
 
-    ;; Open hydra if breakpoint hit.
-    (add-hook 'dap-stopped-hook
-	(lambda (arg) (call-interactively #'dap-hydra)))
-
-    )
+  ;; Open hydra if breakpoint hit.
+  (add-hook 'dap-stopped-hook
+	    (lambda (arg) (call-interactively #'dap-hydra))))
 
 (defun --->language:lisp () "Lisp Language.")
 
@@ -1740,6 +1773,11 @@
   ;; Download a newer version jdtls server, to support Java 21.
   (setq lsp-java-jdt-download-url "https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.45.0/jdt-language-server-1.45.0-202502271238.tar.gz")
 
+
+  ;; Choose a better decompiler. (FernFlower sucks)
+  ;; TIP Use `cfr' decompiler saves your life: https://www.benf.org/other/cfr/
+  (setq lsp-java-content-provider-preferred "cfr")
+
   ;; Set vmargs for jdtls server. (Attach lombok java-agent.)
   (push "-javaagent:/home/sakurawald/Programs/lombok/lombok.jar" lsp-java-vmargs)
 
@@ -1771,9 +1809,7 @@
 
 (use-package pdf-tools
   :ensure t
-  :config 
-
-  )
+  :config)
 
 (provide '.emacs)
 ;;; .emacs ends here
