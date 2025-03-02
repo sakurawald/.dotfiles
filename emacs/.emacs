@@ -69,9 +69,17 @@
 
 (defun <package> () "Emacs package manage.")
 (defun --->package-manager () "Add melpa-repo into the package.el.")
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-refresh-contents t)
+;; Load `package'
+(condition-case nil
+    (require 'use-package)
+  (file-error
+   (require 'package)
+   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+   (package-initialize)
+   (package-refresh-contents)
+   (package-install 'use-package)
+   (setq use-package-always-ensure t)
+   (require 'use-package)))
 
 (use-package package
   :config
@@ -201,8 +209,7 @@
   :config
   (evil-define-key '(normal) woman-mode-map (kbd "SPC") nil)
 
-  (evil-define-key '(normal) 'global (kbd "SPC u k") 'hl-todo-occur)
-  )
+  (evil-define-key '(normal) 'global (kbd "SPC u k") 'hl-todo-occur))
 
 (use-package emacs
   :config
@@ -1190,7 +1197,7 @@
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'lisp-data-mode #'aggressive-indent-mode)
   ;; (add-hook 'c-mode-hook #'aggressive-indent-mode)
-  (add-hook 'java-mode-hook #'aggressive-indent-mode)
+  ;; (add-hook 'java-mode-hook #'aggressive-indent-mode)
   (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
   (add-hook 'tex-mode-hook #'aggressive-indent-mode)
 
@@ -1260,6 +1267,10 @@
   :config
   ;; TIP Auto highlight the thing at point.
   (global-highlight-thing-mode)
+
+  ;; Set excluded modes.
+  (setq highlight-thing-excluded-major-modes '(pdf-view-mode))
+  
 
   (setq highlight-thing-delay-seconds 0.5)
   (setq highlight-thing-case-sensitive-p nil)
@@ -1724,9 +1735,16 @@
 
 (defun --->language:java () "Java language.")
 (use-package lsp-java
-    :ensure t
-    :config
-    (add-hook 'java-mode-hook #'lsp))
+  :ensure t
+  :config
+  ;; Download a newer version jdtls server, to support Java 21.
+  (setq lsp-java-jdt-download-url "https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.45.0/jdt-language-server-1.45.0-202502271238.tar.gz")
+
+  ;; Set vmargs for jdtls server. (Attach lombok java-agent.)
+  (push "-javaagent:/home/sakurawald/Programs/lombok/lombok.jar" lsp-java-vmargs)
+
+  ;; Bind hook.
+  (add-hook 'java-mode-hook #'lsp))
 
 (defun --->language:elisp () "Elisp language.")
 ;; Fix the xref backend function for elisp in ielm mode.
@@ -1750,6 +1768,12 @@
 
   ;; Key binding.
   (evil-define-key '(normal) 'global (kbd "SPC u e") 'ielm))
+
+(use-package pdf-tools
+  :ensure t
+  :config 
+
+  )
 
 (provide '.emacs)
 ;;; .emacs ends here
