@@ -54,6 +54,8 @@
 ;; - Function as a black-box.
 ;; - You can learn Emacs everyday.
 ;; - Operating systems, GUI toolkits and competing editors come and go, but Emacs is forever!
+;; - Figure out the problems solves half of the problem.
+;; - The most useful part of a function is its name.
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
@@ -448,9 +450,12 @@
   (load-theme 'base16-sakura t)
 
   (set-face-foreground 'tab-bar-tab "#00FF00")
+
+  ;; Set the mark-region color.
   (set-face-background 'region "#006280")
 
-  )
+  ;; Set the background of `fringe' the same as `base00', making it looks thin.
+  (set-face-background 'fringe "#000000"))
 
 (use-package hl-line
   :ensure t
