@@ -899,7 +899,6 @@
   ;; Auto-discovery projects.
   (setq projectile-auto-discover t)
   (setq projectile-project-search-path '("~/Workspace/github"))
-  
 
   ;; Bind
   (evil-define-key '(normal) 'global (kbd "SPC p p") 'projectile-switch-project)
@@ -909,6 +908,7 @@
 						       (projectile-switch-project)))
 
   (evil-define-key '(normal) 'global (kbd "SPC p b") 'projectile-switch-to-buffer)
+  (evil-define-key '(normal) 'global (kbd "SPC SPC") 'helm-projectile-find-file)
   (evil-define-key '(normal) 'global (kbd "SPC p f") 'helm-projectile-find-file)
 
   ;; NOTE For `gitignored files', the `treemacs' shows them, but `projectile' hides them.
@@ -957,8 +957,7 @@
 (use-package magit
   :ensure t
   :config
-  ;; Set a high-contrast color for hunk high-light.
-  ;; or #000066, #001847
+  ;; Set a high-contrast color for hunk high-light. Or #000066, #001847.
   (set-face-attribute 'magit-diff-context-highlight nil
 		      :background "navy"))
 
@@ -966,10 +965,13 @@
   :ensure t
   :after (magit)
   :config
-  ;; Integrate with magit package.
+  ;; Integrate with magit vc-backend package.
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
 
-  ;; Enable mode.
+  ;; Left click the diff-hl indicator to show the hunk.
+  (global-diff-hl-show-hunk-mouse-mode)
+
+  ;; Display the diff region in all buffers.
   (global-diff-hl-mode))
 
 (defun <navigation> () "The navigation in Emacs.")
@@ -1580,6 +1582,34 @@
 
   ;; Set instantly slime-autodoc in echo-area.
   (setq eldoc-idle-delay 0)
+
+  ;; Add font-lock in slime-repl mode.
+  ;; https://stackoverflow.com/questions/25809493/how-can-i-get-syntax-highlighting-for-common-lisp-in-slimes-repl
+  ;; https://comp.emacs.narkive.com/AWoywbFs/tweaking-slime
+  (defun enable-slime-repl-font-lock ()
+    (defvar slime-repl-font-lock-keywords lisp-font-lock-keywords-2)
+    (defun slime-repl-font-lock-setup ()
+      (setq font-lock-defaults
+            '(slime-repl-font-lock-keywords
+              ;; From lisp-mode.el
+              nil nil (("+-*/.<>=!?$%_&~^:@" . "w")) nil
+              (font-lock-syntactic-face-function
+               . lisp-font-lock-syntactic-face-function))))
+
+    (add-hook 'slime-repl-mode-hook 'slime-repl-font-lock-setup)
+
+    (defadvice slime-repl-insert-prompt (after font-lock-face activate)
+      (let ((inhibit-read-only t))
+	(add-text-properties
+	 slime-repl-prompt-start-mark (1- (point))
+	 '(font-lock-face
+	   slime-repl-prompt-face
+	   rear-nonsticky
+	   (slime-repl-prompt read-only font-lock-face intangible))))))
+
+  ;; Enable this may modify the behaviour of `cc' command in repl.
+  (enable-slime-repl-font-lock)
+
 
   ;; Fix bindings.
   (evil-define-key 'normal slime-mode-map "gr" 'slime-edit-uses))
