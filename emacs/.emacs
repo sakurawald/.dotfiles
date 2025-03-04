@@ -16,6 +16,8 @@
 ;; - https://emacsredux.com/archive/
 ;; - https://melpa.org/#/
 ;; - https://alexschroeder.ch/geocities/kensanata/emacs-defense.html
+;; - https://github.com/emacs-tw/awesome-elisp
+;; - https://github.com/emacs-tw/awesome-emacs
 ;;
 ;; Some interesting sentences collected:
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -33,7 +35,7 @@
 ;; - Object is a lie, use function instead.
 ;; - Function as the abstract machine.
 ;; - Declarative language is like intention language.
-;; - The only difficulty is the lack of information.
+;; - The only difficulty is the lack of information (bits).
 ;; - I hope symobls from Emacs packages all have a good name, with intuitive prefix and suffix.
 ;; - Programming = Modeling + Translating
 ;; - Notation is nothing without denotation.
@@ -56,12 +58,15 @@
 ;; - Operating systems, GUI toolkits and competing editors come and go, but Emacs is forever!
 ;; - Figure out the problems solves half of the problem.
 ;; - The most useful part of a function is its name.
+;; - When in doubt, try brute-force.
+;; - No reality, only interpretation.
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
 ;; TODO lsp mode seems fail to initialize in scratch buffer.
 ;; TODO compare hi-lock and hl-todo package.
 ;; TODO discover some ideas from jetbrain platform.
+;; TODO a spell checker.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -69,9 +74,16 @@
 ;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script.
 ;; TIP Reduce the following inputs, to stay in the home row: `F1-F12', `Caps_Lock', `Escape', `Tab', `Return', `Backspace', `ArrowKeys', `NumberKeys', `MouseInput'.
 ;; TIP All the modifier keys are your friend: `Ctrl', `Shift', `Meta', `Super'.
+;; TIP What I learned from Vim is to remap `CapsLock' into `Ctrl'. CapsLock is useless, since it's not a modifier-key, and you can replace it with Shift+{a-z}. (https://emacsredux.com/blog/2017/12/31/a-crazy-productivity-boost-remapping-return-to-control-2017-edition/)
 ;; TIP Get some good ideas from https://github.com/t3chnoboy/awesome-awesome-awesome
 
 (defun <top-level> () "Top-level init form.")
+;; Performance tweak.
+(setq gc-cons-threshold (* 100
+			   1024
+			   1024)) ;; 100MB
+(setq read-process-output-max (* 32 1024 1024)) ;; 32MB
+
 
 (defun <package> () "Emacs package manage.")
 (defun --->package-manager () "Add melpa-repo into the package.el.")
@@ -86,6 +98,7 @@
    (package-install 'use-package)
 
    ;; NOTE A built-in package doesn't care the value of `use-package-always-ensure'.
+   ;; https://emacsredux.com/blog/2025/01/12/ensure-all-packages-are-installed-by-default-with-use-package/
    (setq use-package-always-ensure t)
    (require 'use-package)))
 
@@ -255,6 +268,9 @@
   (evil-define-key '(normal) 'global (kbd "SPC h f") 'describe-function)
   (evil-define-key '(normal) 'global (kbd "SPC h F") 'apropos-function)
 
+  (evil-define-key '(normal) 'global (kbd "SPC h t") 'describe-text-properties)
+  (evil-define-key '(normal) 'global (kbd "SPC h T") 'describe-face)
+
   (evil-define-key '(normal) 'global (kbd "SPC h v") 'describe-variable)
   (evil-define-key '(normal) 'global (kbd "SPC h V") 'apropos-variable)
 
@@ -384,7 +400,8 @@
   (global-hl-todo-mode)
 
   ;; Bind.
-  (evil-define-key '(normal) 'global (kbd "SPC u t") 'hl-todo-occur))
+  ;; (evil-define-key '(normal) 'global (kbd "SPC u t") 'hl-todo-occur)
+  )
 
 (defun <view> () "The display for Emacs.")
 ;; NOTE Exwm is still buggy, and easy to hang. I would try it again in the future. (The model used by exwm is buggy, due to the single-threaded event handling of Emacs)
@@ -575,6 +592,11 @@
   ;; Display match counts in visual-replace.
   (setq visual-replace-display-total t))
 
+(use-package which-func
+  :config
+  ;; TIP Display the function name at point in mode-line.
+  (which-function-mode))
+
 (use-package time
   :custom
   ;; Use 24hrs.
@@ -726,15 +748,16 @@
 (defun --->file () "File related.")
 (use-package recentf
   :custom
-  (recentf-max-saved-items 100)
+  (recentf-max-saved-items 200)
   :config
   (add-to-list 'recentf-exclude ".*pdf.*"))
 
 (use-package dired
-    :config
-    (evil-define-key '(normal) dired-mode-map (kbd "SPC") nil)
-    (evil-define-key '(normal) dired-mode-map (kbd "h") 'dired-up-directory)
-    (evil-define-key '(normal) dired-mode-map (kbd "l") 'dired-find-file))
+  :config
+  ;; Keymap.
+  (evil-define-key '(normal) dired-mode-map (kbd "SPC") nil)
+  (evil-define-key '(normal) dired-mode-map (kbd "h") 'dired-up-directory)
+  (evil-define-key '(normal) dired-mode-map (kbd "l") 'dired-find-file))
 
 (use-package treemacs
   :ensure t
@@ -818,7 +841,7 @@
 	  treemacs-user-mode-line-format	     nil
 	  treemacs-user-header-line-format	     nil
 	  treemacs-wide-toggle-width		     70
-	  treemacs-width			     40
+	  treemacs-width			     30
 	  treemacs-width-increment		     1
 	  treemacs-width-is-initially-locked	     t
 	  treemacs-workspace-switch-cleanup	     nil)
@@ -1111,23 +1134,27 @@
 
 
 (defun --->complete () "Complete text.")
-;; NOTE The 'company' package has better integration than 'auto-complete' package.
 ;; NOTE A good 'complete' package only requires you to press 'return' key, and never let you press 'tab' key.
 ;; NOTE If you need the same number of key-stroke, why use fuzzy?
 (use-package company
   :ensure t
   :config
+  ;; NOTE The 'company' package has better integration than 'auto-complete' package.
+
+  ;; Trigger the completion with only 1 prefix character.
   (setq company-minimum-prefix-length 1)
   (setq company-idle-delay
 	(lambda () (if (company-in-string-or-comment) nil 0)))
 
+  ;; Inhibit the completion inside symbol.
+  (setq company-inhibit-inside-symbols t)
+
+  ;; Keymap.
   ;; TIP Use 'C-n' and 'C-p' to in 'vi-insert-state' to trigger/select the entry in completion-window.
   ;; TIP Use 'key-conversion' to translate 'C-m' to 'RET'.
   ;; TIP Use 'C-h' to open the 'quick-doc', use 'C-w' to show the 'source'.
   ;; TIP Use 'M-{digit}' to quick select the completion entry in popup window.
   ;; TIP To see advanced usage, list the `company-active-map'.
-
-  ;; Bind keys.
   (define-key company-active-map (kbd "C-w") nil)
   (define-key company-active-map (kbd "C-l") 'company-show-location)
 
@@ -1303,8 +1330,10 @@
   ;; Set excluded modes.
   (setq highlight-thing-excluded-major-modes '(pdf-view-mode))
   
+  ;; Highlight the thing at point instantly. (It's more responsive.)
+  (setq highlight-thing-delay-seconds 0) ;; Or 0.5
 
-  (setq highlight-thing-delay-seconds 0.5)
+  ;; Ignore the case.
   (setq highlight-thing-case-sensitive-p nil)
   (set-face-attribute 'highlight nil
 		      :background nil
@@ -1377,6 +1406,21 @@
   :config
   (evil-define-key '(normal) 'global (kbd "SPC u c") 'calendar))
 
+(use-package time
+  :config
+  ;; Set the world clocks.
+  (setq world-clock-list
+	'(("Asia/Tokyo" "Tokyo")
+	  ("Asia/Shanghai" "Beijing")
+	  ("America/Los_Angeles" "Seattle")
+          ("America/New_York" "New York")
+          ("Europe/London" "London")
+          ("Europe/Paris" "Paris")
+          ("Europe/Sofia" "Sofia")
+          ("Asia/Calcutta" "Bangalore")))
+
+  (evil-define-key '(normal) 'global (kbd "SPC u t") 'world-clock))
+
 (use-package vterm
   :ensure t
   :after (evil hl-line)
@@ -1407,6 +1451,7 @@
   (add-hook 'vterm-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
 
   ;; Bind key.
+  ;; TIP The function to set window layout https://emacsredux.com/blog/2013/03/29/terminal-at-your-fingertips/
   (evil-define-key '(normal) 'global (kbd "SPC u s") 'vterm)
 
   ;; Toggle between `Emacs' and `Vim' mode.
@@ -1472,10 +1517,6 @@
 
   ;; Options
   ;; (push "--compile-commands-dir=./build" lsp-clients-clangd-args)
-
-  ;; Performance tweak.
-  (setq gc-cons-threshold 100000000) ;; 100mb
-  (setq read-process-output-max (* 8 1024 1024)) ;; 8mb
 
   ;; Bind find-references function.
   ;; TODO need to re-enter normal mode to apply the keymap.
@@ -1589,12 +1630,11 @@
   (defun enable-slime-repl-font-lock ()
     (defvar slime-repl-font-lock-keywords lisp-font-lock-keywords-2)
     (defun slime-repl-font-lock-setup ()
-      (setq font-lock-defaults
-            '(slime-repl-font-lock-keywords
-              ;; From lisp-mode.el
-              nil nil (("+-*/.<>=!?$%_&~^:@" . "w")) nil
-              (font-lock-syntactic-face-function
-               . lisp-font-lock-syntactic-face-function))))
+      (setq font-lock-defaults '(slime-repl-font-lock-keywords
+				 ;; From lisp-mode.el
+				 nil nil (("+-*/.<>=!?$%_&~^:@" . "w")) nil
+				 (font-lock-syntactic-face-function
+				  . lisp-font-lock-syntactic-face-function))))
 
     (add-hook 'slime-repl-mode-hook 'slime-repl-font-lock-setup)
 
@@ -1607,8 +1647,8 @@
 	   rear-nonsticky
 	   (slime-repl-prompt read-only font-lock-face intangible))))))
 
-  ;; Enable this may modify the behaviour of `cc' command in repl.
-  (enable-slime-repl-font-lock)
+  ;; Enable will remove the font-face of loggers.
+  ;; (enable-slime-repl-font-lock)
 
 
   ;; Fix bindings.
@@ -1647,49 +1687,72 @@
 (defun --->evaluate () "Lisp evaluate.")
 
 ;; TIP See slime logs in 'slime-event-buffer'.
+
+(defun emacs-lisp-mode-p ()
+  "Is current buffer for emacs-lisp?"
+  (or (eq 'emacs-lisp-mode major-mode)
+      (eq 'inferior-emacs-lisp-mode major-mode)))
+
+(defun switch-to-lisp-repl-buffer ()
+  (interactive)
+  "Switch to common-lisp or other lisp dialet repl buffer."
+  (slime-repl)
+  (evil-insert-state))
+
+(defun switch-to-emacs-lisp-repl-buffer ()
+  (interactive)
+  "Switch to emacs lisp repl buffer."
+  (pop-to-buffer (ielm))
+
+  (window-swap-states)
+  ;; (goto-char (point-max))
+  )
+
 (evil-define-key '(normal) 'global (kbd "SPC e w") (lambda ()
 						     (interactive)
-						     (call-interactively 'slime-repl)
-						     (call-interactively 'evil-insert-state)))
-(evil-define-key '(normal) 'global (kbd "SPC e c") 'slime-handle-repl-shortcut)
-
+						     (if (emacs-lisp-mode-p)
+							 (switch-to-emacs-lisp-repl-buffer)
+						       (switch-to-lisp-repl-buffer))))
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e c") 'slime-handle-repl-shortcut)
 
 ;; TIP Don't use `slime-repl-region`, use `eval-defun` to treat the `defun-like-form` as minimal unit.
-(evil-define-key '(normal) 'global (kbd "SPC e d") 'slime-eval-defun)
-(evil-define-key '(normal) 'global (kbd "SPC e b") 'slime-eval-buffer)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e d") 'slime-eval-defun)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e b") 'slime-eval-buffer)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e s") 'slime-interactive-eval)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e e") 'slime-eval-last-expression)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e E") 'slime-eval-last-expression-in-repl)
+(evil-define-key '(visual) lisp-mode-map (kbd "SPC e r") 'slime-eval-region)
 ;; TIP Use repl to 'resend' the last form to repl.
-(evil-define-key '(normal) 'global (kbd "SPC e R") (lambda ()
-						     (interactive)
-						     ;; The slime-repl-resend only works in slime-repl window.
-						     (call-interactively 'slime-repl)
-						     (call-interactively 'slime-repl-resend)))
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e R") (lambda ()
+							   (interactive)
+							   ;; The slime-repl-resend only works in slime-repl window.
+							   (call-interactively 'slime-repl)
+							   (call-interactively 'slime-repl-resend)))
 
-(evil-define-key '(visual) 'global (kbd "SPC e r") 'slime-eval-region)
-(evil-define-key '(normal) 'global (kbd "SPC e s") 'slime-interactive-eval)
 
-(evil-define-key '(normal) 'global (kbd "SPC e q") 'slime-repl-quicklisp-quickload)
-(evil-define-key '(normal) 'global (kbd "SPC e S") 'slime-load-system)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e q") 'slime-repl-quicklisp-quickload)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e S") 'slime-load-system)
 
-(evil-define-key '(normal) 'global (kbd "SPC e D") 'slime-disassemble-symbol)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e D") 'slime-disassemble-symbol)
 
-(evil-define-key '(normal) 'global (kbd "SPC e p") (lambda ()
-						     (interactive)
-						     (call-interactively 'slime-sync-package-and-default-directory)
-						     (call-interactively 'slime-repl)
-						     (call-interactively 'evil-insert-state)))
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e p") (lambda ()
+							   (interactive)
+							   (call-interactively 'slime-sync-package-and-default-directory)
+							   (call-interactively 'slime-repl)
+							   (call-interactively 'evil-insert-state)))
 
-(evil-define-key '(normal) 'global (kbd "SPC e t") 'slime-toggle-trace-fdefinition)
-(evil-define-key '(normal) 'global (kbd "SPC e T") 'slime-trace-dialog)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e t") 'slime-toggle-trace-fdefinition)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e T") 'slime-trace-dialog)
 
 ;; NOTE Only the 'slime-compile-...' commands will add compiler notes. (The 'slime-eval-...' will not.)
-(evil-define-key '(normal) 'global (kbd "SPC e l") 'slime-list-compiler-notes)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e l") 'slime-list-compiler-notes)
 
 ;; NOTE The 'profile' should be done by automatical scripts.
 ;; TIP Use 'slime-toggle-profile-fdefinition' to profile a function, and 'slime-profile-package' to profile functions in a package.
-(evil-define-key '(normal) 'global (kbd "SPC e P") 'slime-profile-report)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e P") 'slime-profile-report)
 
-(evil-define-key '(normal) 'global (kbd "SPC e e") 'slime-macroexpand-all)
-(evil-define-key '(normal) 'global (kbd "SPC e E") 'slime-macroexpand-1)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e m m") 'slime-macroexpand-all)
+(evil-define-key '(normal) lisp-mode-map (kbd "SPC e m M") 'slime-macroexpand-1)
 
 (defun --->inspect () "Lisp inspector.")
 ;; v ---> verbose
@@ -1808,7 +1871,6 @@
   ;; Download a newer version jdtls server, to support Java 21.
   (setq lsp-java-jdt-download-url "https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.45.0/jdt-language-server-1.45.0-202502271238.tar.gz")
 
-
   ;; Choose a better decompiler. (FernFlower sucks)
   ;; TIP Use `cfr' decompiler saves your life: https://www.benf.org/other/cfr/
   (setq lsp-java-content-provider-preferred "cfr")
@@ -1838,6 +1900,14 @@
 
   (add-hook 'apropos-mode-hook (lambda ()
 				 (push 'elisp--xref-backend xref-backend-functions)))
+
+  ;; Evaluate.
+  (evil-define-key '(normal) emacs-lisp-mode-map (kbd "SPC e d") 'eval-defun)
+  (evil-define-key '(normal) emacs-lisp-mode-map (kbd "SPC e b") 'eval-buffer)
+  (evil-define-key '(normal) emacs-lisp-mode-map (kbd "SPC e s") 'eval-expression)
+  (evil-define-key '(normal) emacs-lisp-mode-map (kbd "SPC e e") 'eval-last-sexp)
+  (evil-define-key '(normal) emacs-lisp-mode-map (kbd "SPC e E") 'eval-print-last-sexp)
+  (evil-define-key '(visual) emacs-lisp-mode-map (kbd "SPC e r") 'eval-region)
 
   ;; Key binding.
   (evil-define-key '(normal) 'global (kbd "SPC u e") 'ielm))
