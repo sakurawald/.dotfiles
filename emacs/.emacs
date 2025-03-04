@@ -1713,46 +1713,47 @@
 						     (if (emacs-lisp-mode-p)
 							 (switch-to-emacs-lisp-repl-buffer)
 						       (switch-to-lisp-repl-buffer))))
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e c") 'slime-handle-repl-shortcut)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e c") 'slime-handle-repl-shortcut)
 
+;; NOTE We bind keys into `slime-autodoc-mode' minor mode, since this mode will be enabled in both `lisp-mode' and `slime-repl-mode'.
 ;; TIP Don't use `slime-repl-region`, use `eval-defun` to treat the `defun-like-form` as minimal unit.
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e d") 'slime-eval-defun)
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e b") 'slime-eval-buffer)
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e s") 'slime-interactive-eval)
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e e") 'slime-eval-last-expression)
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e E") 'slime-eval-last-expression-in-repl)
-(evil-define-key '(visual) lisp-mode-map (kbd "SPC e r") 'slime-eval-region)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e d") 'slime-eval-defun)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e b") 'slime-eval-buffer)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e s") 'slime-interactive-eval)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e e") 'slime-eval-last-expression)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e E") 'slime-eval-last-expression-in-repl)
+(evil-define-key '(visual) 'slime-autodoc-mode (kbd "SPC e r") 'slime-eval-region)
 ;; TIP Use repl to 'resend' the last form to repl.
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e R") (lambda ()
-							   (interactive)
-							   ;; The slime-repl-resend only works in slime-repl window.
-							   (call-interactively 'slime-repl)
-							   (call-interactively 'slime-repl-resend)))
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e R") (lambda ()
+								 (interactive)
+								 ;; The slime-repl-resend only works in slime-repl window.
+								 (call-interactively 'slime-repl)
+								 (call-interactively 'slime-repl-resend)))
 
 
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e q") 'slime-repl-quicklisp-quickload)
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e S") 'slime-load-system)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e q") 'slime-repl-quicklisp-quickload)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e S") 'slime-load-system)
 
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e D") 'slime-disassemble-symbol)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e D") 'slime-disassemble-symbol)
 
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e p") (lambda ()
-							   (interactive)
-							   (call-interactively 'slime-sync-package-and-default-directory)
-							   (call-interactively 'slime-repl)
-							   (call-interactively 'evil-insert-state)))
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e p") (lambda ()
+								 (interactive)
+								 (call-interactively 'slime-sync-package-and-default-directory)
+								 (call-interactively 'slime-repl)
+								 (call-interactively 'evil-insert-state)))
 
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e t") 'slime-toggle-trace-fdefinition)
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e T") 'slime-trace-dialog)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e t") 'slime-toggle-trace-fdefinition)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e T") 'slime-trace-dialog)
 
 ;; NOTE Only the 'slime-compile-...' commands will add compiler notes. (The 'slime-eval-...' will not.)
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e l") 'slime-list-compiler-notes)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e l") 'slime-list-compiler-notes)
 
 ;; NOTE The 'profile' should be done by automatical scripts.
 ;; TIP Use 'slime-toggle-profile-fdefinition' to profile a function, and 'slime-profile-package' to profile functions in a package.
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e P") 'slime-profile-report)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e P") 'slime-profile-report)
 
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e m m") 'slime-macroexpand-all)
-(evil-define-key '(normal) lisp-mode-map (kbd "SPC e m M") 'slime-macroexpand-1)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e m m") 'slime-macroexpand-all)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e m M") 'slime-macroexpand-1)
 
 (defun --->inspect () "Lisp inspector.")
 ;; v ---> verbose
