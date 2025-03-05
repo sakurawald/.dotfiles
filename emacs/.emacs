@@ -47,6 +47,7 @@
 ;; - I want a map if i am in forest.
 ;; - Garbage in, garbage out.
 ;; - Noise or book, that's a question.
+;; - Entertainment is not teaching.
 ;; - To learn a language is to use it.
 ;; - Some text are just hard to read, that's the problem of the author.
 ;; - Composition over inheritance. (We love atom/primitives)
@@ -66,7 +67,8 @@
 ;; TODO lsp mode seems fail to initialize in scratch buffer.
 ;; TODO compare hi-lock and hl-todo package.
 ;; TODO discover some ideas from jetbrain platform.
-;; TODO a spell checker.
+;; TODO better debugger in emacs. (a gdb front-end)
+;; TODO explore tree-sitter related packages.
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -83,6 +85,7 @@
 			   1024
 			   1024)) ;; 100MB
 (setq read-process-output-max (* 32 1024 1024)) ;; 32MB
+;; (setq current-locale-environment "en_US.UTF-8")
 
 
 (defun <package> () "Emacs package manage.")
@@ -318,8 +321,7 @@
    'org-babel-load-languages
    '((emacs-lisp . nil)
      (lisp . t)
-     (python . t)
-     ))
+     (python . t)))
   (setq org-confirm-babel-evaluate nil))
 
 (use-package org-modern
@@ -466,7 +468,7 @@
 		  ))
   (load-theme 'base16-sakura t)
 
-  (set-face-foreground 'tab-bar-tab "#00FF00")
+  (set-face-foreground 'tab-bar-tab "dodger blue")
 
   ;; Set the mark-region color.
   (set-face-background 'region "#006280")
@@ -575,7 +577,7 @@
   ;; NOTE Currently, the 'doom-modeline' is the only one that actively developed.
 
   ;; Display the full buffer file name.
-  (setq doom-modeline-buffer-file-name-style 'truncate-nil)
+  (setq doom-modeline-buffer-file-name-style 'truncate-except-project)
 
   ;; Display the 'evil-state' as 'text'.
   (setq doom-modeline-modal-icon nil)
@@ -647,8 +649,15 @@
 (use-package emacs
   :config
   ;; TIP It's okay to use vim window related bindings: 'C-w-{s/v}', 'C-w-{hjklw}', 'C-w{qx}'
-  (evil-define-key '(normal) 'global (kbd "SPC s h") 'split-window-horizontally)
-  (evil-define-key '(normal) 'global (kbd "SPC s v") 'split-window-vertically)
+  (evil-define-key '(normal) 'global (kbd "SPC s h") (lambda ()
+						       (interactive)
+						       (call-interactively 'split-window-horizontally)
+						       (call-interactively 'evil-window-next)))
+
+  (evil-define-key '(normal) 'global (kbd "SPC s v") (lambda ()
+						       (interactive)
+						       (call-interactively 'split-window-vertically)
+						       (call-interactively 'evil-window-next)))
 
   ;; TIP The 'window-swap-states' can 'transpose' current-window and next-window.
   ;; NOTE To write window layout rules, use a window manager -> https://depp.brause.cc/shackle/
@@ -1185,18 +1194,15 @@
 
 (defun --->fold () "Fold text.")
 (use-package hideshow
-    :config
-    ;; TIP Use 'zc' (fold-close) and 'zo' (fold-open).
-    ;; TIP Use 'zm' (fold-more) and 'zr' (fold-reduce).
-    ;; TIP Use 'zR' (fold-remove).
-    ;; TIP Use 'za' (fold-toggle).
+  :config
+  ;; TIP Use 'zc' (fold-close) and 'zo' (fold-open).
+  ;; TIP Use 'zm' (fold-more) and 'zr' (fold-reduce).
+  ;; TIP Use 'zR' (fold-remove).
+  ;; TIP Use 'za' (fold-toggle).
 
-    ;; TIP You don't need the 'index-menu' if you have 'text-fold' function.
-    (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
-    (add-hook 'lisp-mode-hook 'hs-minor-mode)
-    (add-hook 'c-mode-hook 'hs-minor-mode)
-    (add-hook 'java-mode-hook 'hs-minor-mode)
-    )
+  ;; TIP You don't need the 'index-menu' if you have 'text-fold' function.
+  (add-hook 'prog-mode 'hs-minor-mode)
+  )
 
 (defun --->snippet () "Snippet text.")
 (use-package yasnippet
@@ -1221,27 +1227,32 @@
 (defun --->checker () "Check text.")
 ;; NOTE The 'correctness' of 'flycheck' extension is much better than 'flymake'.
 (use-package flycheck
-    :ensure t
-    :config
-    ;; NOTE flycheck = the external executable 'checker' + the abstraction for 'error' object.
+  :ensure t
+  :config
+  ;; NOTE flycheck = the external executable 'checker' + the abstraction for 'error' object.
 
-    ;; The fringe indicator is too tiny in hi-res mode:
-    ;; - https://github.com/flycheck/flycheck/pull/1744/files
-    ;; - https://emacs.stackexchange.com/questions/52829/fringe-indicators-very-tiny
-    (setq-default left-fringe-width 16 right-fringe-width 16
-	left-margin-width 0 right-margin-width 0)
+  ;; The fringe indicator is too tiny in hi-res mode:
+  ;; - https://github.com/flycheck/flycheck/pull/1744/files
+  ;; - https://emacs.stackexchange.com/questions/52829/fringe-indicators-very-tiny
+  (setq-default left-fringe-width 16 right-fringe-width 16
+		left-margin-width 0 right-margin-width 0)
 
-    ;; User options.
-    (setq flycheck-display-errors-delay 0.5)
+  ;; User options.
+  (setq flycheck-display-errors-delay 0.5)
 
 
-    ;; Enable it.
-    (global-flycheck-mode)
+  ;; Enable it.
+  (global-flycheck-mode)
 
-    ;; Bind keys.
-    (evil-global-set-key 'normal (kbd "[ e") 'previous-error)
-    (evil-global-set-key 'normal (kbd "] e") 'next-error)
-    )
+  ;; Bind keys.
+  (evil-global-set-key 'normal (kbd "[ e") 'previous-error)
+  (evil-global-set-key 'normal (kbd "] e") 'next-error))
+
+;; Spell checker.
+;; (use-package jinx
+;;   :ensure t
+;;   :config
+;;   (jinx-mode))
 
 (defun --->formatter () "Format text.")
 ;; See https://www.gnu.org/software/emacs/manual/html_node/efaq/Changing-the-length-of-a-Tab.html
@@ -1341,10 +1352,13 @@
 					  :style line)))
 
 (defun --->comment () "Comment text.")
-(use-package newcomment
+(use-package evil-nerd-commenter
+  :ensure t
   :config
-  (evil-define-key '(normal visual) 'global (kbd "SPC c") 'comment-line)
-  (evil-define-key '(normal visual) 'global (kbd "SPC C") 'comment-region))
+  ;; NOTE The `newcomment' package has bugs in evil-mode: it will also comment the next line.
+  ;; TIP Only use the `line-comment' in all languages, the semantics of line-comment is better than `region-comment'.
+  ;; TIP You can execute the commadn in `evil-visual-state', it worsk efficiently.
+  (evil-define-key '(normal visual) 'global (kbd "SPC c") 'evilnc-comment-or-uncomment-lines))
 
 (defun --->parenthesis () "Parenthesis related.")
 (use-package smartparens
@@ -1696,14 +1710,13 @@
 (defun switch-to-lisp-repl-buffer ()
   (interactive)
   "Switch to common-lisp or other lisp dialet repl buffer."
-  (slime-repl)
-  (evil-insert-state))
+  (call-interactively 'slime-repl)
+  (call-interactively 'evil-insert-state))
 
 (defun switch-to-emacs-lisp-repl-buffer ()
   (interactive)
   "Switch to emacs lisp repl buffer."
   (pop-to-buffer (ielm))
-
   (window-swap-states)
   ;; (goto-char (point-max))
   )
@@ -1794,6 +1807,7 @@
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC d") 'slime-inspector-describe)
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC g") 'slime-inspector-reinspect)
 
+;; TIP Current inspected object is bound to `*' variable.
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC e") 'slime-inspector-eval)
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC p") 'slime-inspector-pprint)
 
