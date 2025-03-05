@@ -725,6 +725,10 @@
 
   (evil-define-key '(normal) 'global (kbd "SPC t u") 'tab-bar-undo-close-tab)
 
+  ;; Fix: the lsp-mode buffer wil trigger <tab-bar> <mouse-movement> is undefined
+  (define-key tab-bar-map (kbd "<mouse-movement>") #'ignore)
+
+
   ;; Macros. (Deprecated)
   (defmacro with-new-tab-bar (&rest body)
     "Create a new tab and execute BODY in the new tab context."
