@@ -1,27 +1,28 @@
 (defun <links> () "The interesting links.")
-;; Useful link:
+;; Emacs resources:
 ;; - https://emacsdocs.org/docs/emacs/The-Emacs-Editor
 ;; - https://www.emacswiki.org/emacs/SiteMap
 ;; - https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
 ;; - https://www.gnu.org/software/emacs/
 ;; - https://www.gnu.org/fun/
 ;; - https://emacsconf.org/
-;; - https://funcall.blogspot.com/
 ;; - https://sourceware.org/
 ;; - https://docs.doomemacs.org/
 ;; - https://godbolt.org/ (Compiler Explorer)
-;; - https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node1.html
-;; - http://www.sbcl.org/manual/index.html
-;; - http://www.sbcl.org/sbcl-internals/
 ;; - https://emacsredux.com/archive/
 ;; - https://melpa.org/#/
 ;; - https://alexschroeder.ch/geocities/kensanata/emacs-defense.html
 ;; - https://github.com/emacs-tw/awesome-elisp
 ;; - https://github.com/emacs-tw/awesome-emacs
+;; - https://www.gutenberg.org/about/
 ;;
+;; Lisp resources:
+;; - https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node1.html
+;; - http://www.sbcl.org/sbcl-internals/
+;; - https://funcall.blogspot.com/
+;; - http://www.sbcl.org/manual/index.html
 ;;
-;;
-;; Configuration Reference:
+;; Configuration resources:
 ;; - https://github.com/sergeyklay/.emacs.d
 ;; - https://github.com/hrs/dotfiles
 ;; - https://github.com/protesilaos/dotfiles
@@ -69,6 +70,7 @@
 ;; - When in doubt, try brute-force.
 ;; - No reality, only interpretation.
 ;; - Emacs as a general solution compared to specialized programs.
+;; - Only do optimizatoin after a profiler report.
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
@@ -78,10 +80,10 @@
 ;; TODO better debugger in emacs. (a gdb front-end)
 ;; TODO explore tree-sitter related packages.
 ;; TODO explore rss-feed package.
-;; TODO use-package and :ensure-system-package sbcl
 ;; TODO explore calc command
 ;; TODO style change (add-hook 'calc-trail-mode-hook 'evil-insert-state)
 
+;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
 ;; NOTE It's also okay to steal some ideas from others' dotfiles.
@@ -117,13 +119,19 @@
 ;; Initialize packages.
 (setq package-quickstart t)
 (package-initialize)
-(package-refresh-contents t)
+;; (package-refresh-contents t)
 
 ;; NOTE A built-in package doesn't care the value of `use-package-always-ensure'.
 ;; https://emacsredux.com/blog/2025/01/12/ensure-all-packages-are-installed-by-default-with-use-package/
 ;; (setq use-package-always-ensure t)
 
 ;; NOTE Use `use-package' package for its defer loading.
+;; (require 'use-package)
+
+;; NOTE The `benchmark-init' package gives the wrong sample time.
+;; NOTE A shorten startup-time doesn't means a better user-experience. (You will get stutter when loading packages while using commands.)
+;; TIP Enable use-package statistics, to sample the loading time of all packages. (Use `use-package-report' command to read it.)
+(setq use-package-compute-statistics t)
 
 (use-package package
   :config
@@ -131,13 +139,6 @@
   ;; TIP See https://zenodo.org/records/3736363
   ;; Native compile a package when installing it.
   (setq package-native-compile t))
-
-(use-package benchmark-init
-  :disabled t
-  :ensure t
-  :config
-  ;; To disable collection of benchmark data after init is done.
-  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 ;;(require 'benchmark-init)
 ;; To disable collection of benchmark data after init is done.
@@ -333,6 +334,7 @@
 (defun <assistant> () "The assist for life.")
 (defun --->org () "Org-mode related.")
 (use-package org
+  :mode ("\\.org\\'" . org-mode)
   :config
   ;; TIP Use 'S-{arrow}' to control the 'priority' and 'status'. (Or 'SPC o {hjkl}')
   ;; TIP Use 'M-{arrow}' to control 'order' and 'level'.
@@ -403,6 +405,7 @@
 (defun --->chat () "Chat with AI.")
 (use-package ellama
   :ensure t
+  :commands (ellama-transient-main-menu)
   :config
   ;; NOTE It's recommemded to host an open-source chat-model locally.
   ;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
@@ -956,10 +959,10 @@
 
 (defun --->project () "Project related.")
 (use-package rg
-    :ensure t
-    :config
-    (evil-define-key '(normal) rg-mode-map (kbd "M-j") 'rg-next-file)
-    (evil-define-key '(normal) rg-mode-map (kbd "M-k") 'rg-prev-file))
+  :ensure t
+  :config
+  (evil-define-key '(normal) rg-mode-map (kbd "M-j") 'rg-next-file)
+  (evil-define-key '(normal) rg-mode-map (kbd "M-k") 'rg-prev-file))
 
 ;; NOTE Use 'projectile' as a project interface layer, to 'discovery' and 'indexing' projects.
 (use-package projectile
@@ -1038,6 +1041,7 @@
 
 (use-package magit
   :ensure t
+  :commands (magit)
   :config
   ;; Set a high-contrast color for hunk high-light. Or #000066, #001847.
   (set-face-attribute 'magit-diff-context-highlight nil
@@ -1292,7 +1296,9 @@ buffers to include `company-capf' (with optional yasnippet) and
   )
 
 (use-package yasnippet-snippets
-  :ensure t)
+  :ensure t
+  :after (yasnippet)
+  )
 
 (defun --->checker () "Check text.")
 ;; NOTE The 'correctness' of 'flycheck' extension is much better than 'flymake'.
@@ -1466,7 +1472,6 @@ buffers to include `company-capf' (with optional yasnippet) and
 
   ;; (evil-define-key '(normal insert visual) lisp-mode-map (kbd ")") 'sp-forward-sexp)
   ;; (evil-define-key '(normal insert visual) lisp-mode-map (kbd "(") 'sp-backward-sexp)
-  
   :config
   ;; Load default config.
   (require 'smartparens-config)
@@ -1486,6 +1491,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 (defun <utility> () "Utility tools in Emacs.")
 
+(defun --->utility () "Minor utility tools.")
 (use-package dictionary
   :init
   ;; TIP It's a convenient way to query the definition of a word.
@@ -1578,11 +1584,21 @@ buffers to include `company-capf' (with optional yasnippet) and
   (evil-define-key '(normal) eww-mode-map (kbd "SPC") nil)
   (evil-define-key '(normal) eww-mode-map (kbd "i") 'evil-insert-state))
 
+;; TIP Alternatives: monkeytype, typit
+(use-package speed-type
+  :ensure t
+  :config
+  ;; TIP Typing-game is the most useful game.
+  (evil-define-key '(normal) 'global (kbd "SPC u g") 'speed-type-text)
+  )
+
 (defun --->customize () "The customize in Emacs.")
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (when (file-exists-p custom-file)
-    (load custom-file))
+  (load custom-file))
+
+
 
 (defun <language> () "Language related.")
 
@@ -1659,6 +1675,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 (use-package dap-mode
   :ensure t
+  :commands (dap-hydra)
   :config
   ;; TIP To configure the debugger: https://sourceware.org/gdb/current/onlinedocs/gdb.html/Debugger-Adapter-Protocol.html
 

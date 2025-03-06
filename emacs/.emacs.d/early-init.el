@@ -7,7 +7,7 @@
             (setq gc-cons-threshold (* 100 1024 1024)
                   gc-cons-percentage 0.1)))
 
-;; Increase the external IO chunk size. 
+;; Increase the external IO chunk size.
 (setq read-process-output-max (* 32 1024 1024))
 
 ;; Hide un-used views.
