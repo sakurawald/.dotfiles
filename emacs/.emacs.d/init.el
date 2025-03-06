@@ -69,6 +69,7 @@
 ;; TODO discover some ideas from jetbrain platform.
 ;; TODO better debugger in emacs. (a gdb front-end)
 ;; TODO explore tree-sitter related packages.
+;; TODO try .emacs.d/ and early-init.el and init.el
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html

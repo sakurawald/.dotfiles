@@ -2,7 +2,8 @@
 cp ~/.lem/init.lisp ./lem/.lem/ 
 
 # emacs
-cp ~/.emacs ./emacs/
+cp ~/.emacs.d/init.el ./emacs/.emacs.d/
+cp ~/.emacs.d/early-init.el ./emacs/.emacs.d/
 
 # jetbrains: ideavim plugin
 cp ~/.ideavimrc ./ideavim/
