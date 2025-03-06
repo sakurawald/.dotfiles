@@ -18,6 +18,7 @@
 ;; - https://alexschroeder.ch/geocities/kensanata/emacs-defense.html
 ;; - https://github.com/emacs-tw/awesome-elisp
 ;; - https://github.com/emacs-tw/awesome-emacs
+;; - https://github.com/sergeyklay/.emacs.d
 ;;
 ;; Some interesting sentences collected:
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -69,7 +70,6 @@
 ;; TODO discover some ideas from jetbrain platform.
 ;; TODO better debugger in emacs. (a gdb front-end)
 ;; TODO explore tree-sitter related packages.
-;; TODO try .emacs.d/ and early-init.el and init.el
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -81,30 +81,30 @@
 ;; TIP Get some good ideas from https://github.com/t3chnoboy/awesome-awesome-awesome
 
 (defun <top-level> () "Top-level init form.")
-;; Performance tweak.
-(setq gc-cons-threshold (* 100
-			   1024
-			   1024)) ;; 100MB
-(setq read-process-output-max (* 32 1024 1024)) ;; 32MB
-;; (setq current-locale-environment "en_US.UTF-8")
-
+;; Measure the current start up time.
+(add-hook
+ 'emacs-startup-hook
+ (lambda ()
+   (message "Emacs ready in %s with %d garbage collections."
+            (format "%.2f seconds"
+                    (float-time
+                     (time-subtract after-init-time before-init-time)))
+            gcs-done)))
 
 (defun <package> () "Emacs package manage.")
 (defun --->package-manager () "Add melpa-repo into the package.el.")
-;; Load `package'
-(condition-case nil
-    (require 'use-package)
-  (file-error
-   (require 'package)
-   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-   (package-initialize)
-   (package-refresh-contents)
-   (package-install 'use-package)
 
-   ;; NOTE A built-in package doesn't care the value of `use-package-always-ensure'.
-   ;; https://emacsredux.com/blog/2025/01/12/ensure-all-packages-are-installed-by-default-with-use-package/
-   (setq use-package-always-ensure t)
-   (require 'use-package)))
+;; Load `package'
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(package-initialize)
+(package-refresh-contents t)
+
+;; NOTE A built-in package doesn't care the value of `use-package-always-ensure'.
+;; https://emacsredux.com/blog/2025/01/12/ensure-all-packages-are-installed-by-default-with-use-package/
+;; (setq use-package-always-ensure t)
+
+;; NOTE Use `use-package' package for its defer loading.
 
 (use-package package
   :config
@@ -112,6 +112,17 @@
   ;; TIP See https://zenodo.org/records/3736363
   ;; Native compile a package when installing it.
   (setq package-native-compile t))
+
+(use-package benchmark-init
+  :disabled t
+  :ensure t
+  :config
+  ;; To disable collection of benchmark data after init is done.
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
+;;(require 'benchmark-init)
+;; To disable collection of benchmark data after init is done.
+;;(add-hook 'after-init-hook 'benchmark-init/deactivate)
 
 (defun --->vim-emulator () "Vim emulator.")
 (use-package evil
@@ -414,23 +425,28 @@
 ;; NOTE Use a mono-spaced-font like 'source code pro' or 'hack'. (Font is set by KDE)
 (use-package emacs
   :config
-  (setq inhibit-startup-screen t)
-  (setq initial-major-mode 'lisp-mode)
-
-  ;; Hide uesless views.
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-
-  ;; Maximize the frame on startup: https://emacsredux.com/blog/2020/12/04/maximize-the-emacs-frame-on-startup/
-  (add-hook 'window-setup-hook 'toggle-frame-maximized t)
+  ;;; Customize scratch-buffer.
+  ;; The default mode for scratch buffer is lisp-interaction-mode.
+  (setq initial-major-mode 'emacs-lisp-mode)
+  (defun switch-to-scratch ()
+    "Get a scratch buffer."
+    (interactive)
+    (let* ((name "*scratch*")
+           (buf (get-buffer name)))
+      (pop-to-buffer
+       (if (bufferp buf)
+           buf  ; Existing scratch buffer
+	 ;; New scratch buffer
+	 (with-current-buffer (get-buffer-create name)
+           (current-buffer))))))
 
   ;; NOTE I have to ask the point of displaying line number of a file.
   ;; (global-display-line-numbers-mode)
 
   ;; (toggle-word-wrap)
+  (setq-default inhibit-startup-screen t)
 
-  ;; cursor
+  ;; Don't blank the cursor.
   (blink-cursor-mode 0))
 
 (defun --->dimmer () "Dim other windows.")
@@ -643,7 +659,7 @@
 
   (evil-define-key '(normal) 'global (kbd "SPC b d") 'kill-buffer)
 
-  (evil-define-key '(normal) 'global (kbd "SPC b s") 'scratch-buffer))
+  (evil-define-key '(normal) 'global (kbd "SPC b s") 'switch-to-scratch))
 
 (defun --->window () "Window related.")
 
@@ -761,12 +777,18 @@
 (defun <file> () "Files for Emacs.")
 (defun --->file () "File related.")
 (use-package recentf
+  :ensure nil
   :custom
   (recentf-max-saved-items 200)
   :config
-  (add-to-list 'recentf-exclude ".*pdf.*"))
+  ;; Exclude files.
+  (add-to-list 'recentf-exclude ".*pdf.*")
+  (add-to-list 'recentf-exclude (temporary-file-directory))
+  (add-to-list 'recentf-exclude (concat (file-name-as-directory package-user-dir)
+					".*-autoloads\\.el\\'")))
 
 (use-package dired
+  :ensure nil
   :config
   ;; Keymap.
   (evil-define-key '(normal) dired-mode-map (kbd "SPC") nil)
@@ -1161,9 +1183,10 @@
 	(lambda () (if (company-in-string-or-comment) nil 0)))
 
   ;; Inhibit the completion inside symbol.
+  ;; TODO The company completion will not replace the behind characters, making it hard to use inside symbol.
   (setq company-inhibit-inside-symbols t)
 
-  ;; Keymap.
+  ;;; Keymap.
   ;; TIP Use 'C-n' and 'C-p' to in 'vi-insert-state' to trigger/select the entry in completion-window.
   ;; TIP Use 'key-conversion' to translate 'C-m' to 'RET'.
   ;; TIP Use 'C-h' to open the 'quick-doc', use 'C-w' to show the 'source'.
@@ -1171,6 +1194,9 @@
   ;; TIP To see advanced usage, list the `company-active-map'.
   (define-key company-active-map (kbd "C-w") nil)
   (define-key company-active-map (kbd "C-l") 'company-show-location)
+
+  (define-key company-active-map (kbd "C-j") 'company-select-next-or-abort)
+  (define-key company-active-map (kbd "C-k") 'company-select-previous-or-abort)
 
   ;; (add-hook 'c-mode-hook (lambda ()
 
@@ -1184,10 +1210,28 @@
   ;; 			     (push '(company-capf :with company-yasnippet) company-backends))
   ;; 			   ))
 
-  
+  (defmacro company-backend-for-hook (hook backends)
+    "Add a HOOK to set `company-backends' dynamically.
+
+HOOK is the name of the hook to which the configuration function
+is added. BACKENDS is the list of backends to set for
+`company-backends' in the local buffer when the hook is run.
+
+Example usage:
+
+  (company-backend-for-hook 'prog-mode-hook
+                            '((company-capf :with company-yasnippet)
+                              company-dabbrev-code))
+
+This will configure `company-backends' for all `prog-mode'
+buffers to include `company-capf' (with optional yasnippet) and
+`company-dabbrev-code'."
+    `(add-hook ,hook (lambda()
+                       (set (make-local-variable 'company-backends)
+                            ,backends))))
+
   ;; Enable global mode.
-  (add-hook 'after-init-hook 'global-company-mode)
-  )
+  (add-hook 'after-init-hook 'global-company-mode))
 
 (use-package company-quickhelp
   :ensure t
@@ -1206,28 +1250,26 @@
   ;; TIP Use 'za' (fold-toggle).
 
   ;; TIP You don't need the 'index-menu' if you have 'text-fold' function.
-  (add-hook 'prog-mode 'hs-minor-mode)
-  )
+  (add-hook 'prog-mode 'hs-minor-mode))
 
 (defun --->snippet () "Snippet text.")
 (use-package yasnippet
   :ensure t
   ;; :after (company)
+  :hook (prog-mode . yas-minor-mode)
   :config
   ;; TIP Good to have a 'template' system to avoid stupid codes in some stupid languages. (I am not saying about Java).
   ;; TIP Use 'Tab' in `vi-insert-mode' to expand the key into snippet. e.g. 'cls<Tab>' in common-lisp mode.
-  (yas-global-mode 1)
 
   ;; Add company backend
   ;; (push 'company-yasnippet company-backends)
 
   ;;TriggerKey
   ;; (evil-define-key 'insert yas-minor-mode-map (kbd "SPC") 'yas-expand)
-
   )
 
 (use-package yasnippet-snippets
-    :ensure t)
+  :ensure t)
 
 (defun --->checker () "Check text.")
 ;; NOTE The 'correctness' of 'flycheck' extension is much better than 'flymake'.
@@ -1243,7 +1285,7 @@
 		left-margin-width 0 right-margin-width 0)
 
   ;; User options.
-  (setq flycheck-display-errors-delay 0.5)
+  (setq flycheck-display-errors-delay 2.0)
 
 
   ;; Enable it.
@@ -1258,6 +1300,12 @@
 ;;   :ensure t
 ;;   :config
 ;;   (jinx-mode))
+
+(use-package emacs
+  :config
+  ;; TIP Highlight the trailing whitespace.
+  (add-hook 'text-mode-hook (lambda () (setq show-trailing-whitespace t)))
+  (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t))))
 
 (defun --->formatter () "Format text.")
 ;; See https://www.gnu.org/software/emacs/manual/html_node/efaq/Changing-the-length-of-a-Tab.html
@@ -1320,12 +1368,15 @@
 ;; TIP It's very useful to use `vio' and `vib' in lisp family language.
 
 (use-package tree-sitter
+  :hook (prog-mode . tree-sitter-mode)
   :init
   ;; NOTE Enable 'tree-sitter-mode' provided by 'tree-sitter.el' in Emacs v29.0. (Not use the 'treesit.el')
-  (global-tree-sitter-mode))
+  ;; (global-tree-sitter-mode)
+  )
 
 (use-package evil-textobj-tree-sitter
   :ensure t
+  :after (tree-sitter)
   :config
   ;; NOTE The evil-textobj-tree-sitter doesn't provide parsers for lisp-family languages in tree-sitter parsers.
   (define-key evil-inner-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj "parameter.inner"))
@@ -1419,6 +1470,7 @@
   (evil-define-key '(normal) 'global (kbd "SPC u d") 'dictionary-search)
   :config
   ;; NOTE Always use a online dict server, instead of the offline server named `dictd'.
+  ;; NOTE Other dict service https://www.collinsdictionary.com/jp/dictionary/english/
   (setq dictionary-server "dict.org"))
 
 (use-package calendar
@@ -1878,15 +1930,17 @@
 
 (defun --->language:latex () "LaTeX language.")
 ;; NOTE For latex language, use the built-in 'reftex' package.
-
 (use-package company-auctex
-    :ensure t
-    :config
-    (company-auctex-init))
+  :ensure t
+  :hook (tex-mode . nil)
+  :config
+  (company-auctex-init))
 
 (defun --->language:java () "Java language.")
 (use-package lsp-java
   :ensure t
+  :hook (java-mode . lsp)
+  :after (lsp-mode)
   :config
   ;; Download a newer version jdtls server, to support Java 21.
   (setq lsp-java-jdt-download-url "https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.45.0/jdt-language-server-1.45.0-202502271238.tar.gz")
@@ -1934,6 +1988,7 @@
 
 (use-package pdf-tools
   :ensure t
+  :hook (pdf-view-mode . nil)
   :config)
 
 (provide '.emacs)
