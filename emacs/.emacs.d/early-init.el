@@ -22,6 +22,5 @@
 (set-language-environment "UTF-8")
 (setq default-input-method nil)
 
-
-;; Inhabit the resize of frame in startup.
+;; Don't try to resize the frame to contains enough characters each line.
 (setq frame-inhibit-implied-resize t)

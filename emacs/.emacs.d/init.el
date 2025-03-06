@@ -18,7 +18,13 @@
 ;; - https://alexschroeder.ch/geocities/kensanata/emacs-defense.html
 ;; - https://github.com/emacs-tw/awesome-elisp
 ;; - https://github.com/emacs-tw/awesome-emacs
+;;
+;;
+;;
+;; Configuration Reference:
 ;; - https://github.com/sergeyklay/.emacs.d
+;; - https://github.com/hrs/dotfiles
+;; - https://github.com/protesilaos/dotfiles
 ;;
 ;; Some interesting sentences collected:
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -62,6 +68,7 @@
 ;; - The most useful part of a function is its name.
 ;; - When in doubt, try brute-force.
 ;; - No reality, only interpretation.
+;; - Emacs as a general solution compared to specialized programs.
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
@@ -70,6 +77,10 @@
 ;; TODO discover some ideas from jetbrain platform.
 ;; TODO better debugger in emacs. (a gdb front-end)
 ;; TODO explore tree-sitter related packages.
+;; TODO explore rss-feed package.
+;; TODO use-package and :ensure-system-package sbcl
+;; TODO explore calc command
+;; TODO style change (add-hook 'calc-trail-mode-hook 'evil-insert-state)
 
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -96,7 +107,15 @@
 
 ;; Load `package'
 (require 'package)
+;; Set package archive.
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(setq package-archive-priorities
+      '(("gnu"      . 100)
+        ("nongnu"   . 50)
+        ("melpa"    . 10)))
+
+;; Initialize packages.
+(setq package-quickstart t)
 (package-initialize)
 (package-refresh-contents t)
 
@@ -150,7 +169,6 @@
   ;; Don't display the state in 'echo-area', it will conflicts with the 'slime-quickdoc'.
   (evil-echo-state nil)
 
-
   :config
   ;; NOTE The manual of vim: https://neovim.io/
   ;; NOTE The vim golf makes the text-editing interesting: https://www.vimgolf.com/
@@ -171,9 +189,14 @@
   ;; TIP Use `f/F/t/T' to find/till char in current line, and `;' and `,' to repeat.
   ;; TIP Use `Tab' and `Shift-Tab' to jump to next/previous `semantic-unit' (token).
 
-  ;; mini-buffer history
+  ;; Navigate mini-buffer history entries.
   (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-j") 'next-history-element)
   (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-k") 'previous-history-element)
+
+  ;; Deletion in insert-state.
+  (define-key evil-insert-state-map (kbd "C-x C-n") nil)
+  (define-key evil-insert-state-map (kbd "C-x C-p") nil)
+  (define-key evil-insert-state-map (kbd "C-x") 'evil-delete-backward-char-and-join)
 
   ;; TIP Use `C-c' prefix to be compatible with the `vterm' package.
   (evil-set-toggle-key "C-c z")
@@ -213,7 +236,7 @@
   :ensure t
   :after (evil)
   :custom
-  ;; TIP Use 'key-convention': 'C-[' = 'Escape', 'C-i' = 'Tab' and 'C-m' = 'Return'. (Other convention: n/p -> j/k, BackSpace (insert-state) -> C-w/C-u)
+  ;; TIP Use 'key-convention': 'C-[' = 'Escape', 'C-i' = 'Tab' and 'C-m' = 'Return'. (Other convention: n/p -> j/k, BackSpace (insert-state) -> C-w/C-u/C-x)
   ;; TIP The order to escape: 'jk' > 'C-g' > 'C-[' > 'Escape'
   (evil-escape-key-sequence "jk")
   (evil-escape-delay 0.1)
@@ -1771,12 +1794,20 @@ buffers to include `company-capf' (with optional yasnippet) and
   (call-interactively 'evil-insert-state))
 
 (defun switch-to-emacs-lisp-repl-buffer ()
-  (interactive)
   "Switch to emacs lisp repl buffer."
-  (pop-to-buffer (ielm))
-  (window-swap-states)
-  ;; (goto-char (point-max))
-  )
+  (interactive)
+  (let* ((name "*ielm*")
+         (buf (get-buffer name)))
+    (pop-to-buffer
+     (if (bufferp buf)
+         buf  ; Existing scratch buffer
+       ;; New scratch buffer
+       (with-current-buffer (ielm)
+         (current-buffer))))
+
+    ;; Goto the point-max position.
+    (goto-char (point-max))
+    (call-interactively 'evil-insert-state)))
 
 (evil-define-key '(normal) 'global (kbd "SPC e w") (lambda ()
 						     (interactive)
@@ -1984,6 +2015,7 @@ buffers to include `company-capf' (with optional yasnippet) and
   (evil-define-key '(visual) emacs-lisp-mode-map (kbd "SPC e r") 'eval-region)
 
   ;; Key binding.
+  
   (evil-define-key '(normal) 'global (kbd "SPC u e") 'ielm))
 
 (use-package pdf-tools
