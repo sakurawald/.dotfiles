@@ -1,6 +1,7 @@
 (defun <links> () "The interesting links.")
 ;; Emacs resources:
 ;; - https://emacsdocs.org/docs/emacs/The-Emacs-Editor
+;; - https://magit.vc/
 ;; - https://www.emacswiki.org/emacs/SiteMap
 ;; - https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
 ;; - https://www.gnu.org/software/emacs/
@@ -76,18 +77,21 @@
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
-;; TODO lsp mode seems fail to initialize in scratch buffer.
+
 ;; TODO compare hi-lock and hl-todo package.
 ;; TODO better debugger in emacs. (a gdb front-end)
-;; TODO explore `helpful' package.
+
 ;; TODO explore rss-feed package.
 ;; TODO explore calc command
+
+;; TODO use bind-map in use-package to modify evil-normal-state-map.
 
 ;; TODO explore tree-sitter related packages.
 
 ;; TODO explore tools on grep. {file-project}-wide. visualize, visual replace, visual regexp.
 ;; TODO kill ring improved. (integrated with evil)
 ;; TODO undo, redo package.
+
 
 ;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -213,6 +217,7 @@
   (define-key evil-insert-state-map (kbd "C-x C-n") nil)
   (define-key evil-insert-state-map (kbd "C-x C-p") nil)
   (define-key evil-insert-state-map (kbd "C-x") 'evil-delete-backward-char-and-join)
+  (define-key evil-insert-state-map (kbd "C-y") 'yank-from-kill-ring)
 
   ;; TIP Use `C-c' prefix to be compatible with the `vterm' package.
   (evil-set-toggle-key "C-c z")
@@ -1155,6 +1160,10 @@
 
   (evil-define-key '(normal) 'global (kbd "g o") 'helm-occur)
 
+  ;; Yank and kill-ring.
+  (evil-define-key '(normal) 'global (kbd "g y") 'yank-from-kill-ring)
+
+
   ;; TIP Use `gf' and `gF' to find file at point.
   (evil-define-key '(normal) 'global (kbd "g x") 'browse-url-at-point)
   (evil-define-key '(normal) 'global (kbd "g X") 'browse-url-xdg-open))
@@ -1464,12 +1473,19 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;; TIP To select cuurent function and jump between beginning and end: 'vifoo'
 ;; TIP It's very useful to use `vio' and `vib' in lisp family language.
 
+;; TIP The built-in package is named `treesit' package, use `{language}-ts-mode' to enable tree-sitter for the buffer.
 (use-package tree-sitter
-  :hook (prog-mode . tree-sitter-mode)
+  ;; :disabled t
+  :hook (lsp-mode . tree-sitter-mode)
   :init
   ;; NOTE Enable 'tree-sitter-mode' provided by 'tree-sitter.el' in Emacs v29.0. (Not use the 'treesit.el')
   ;; (global-tree-sitter-mode)
   )
+
+;; (use-package treesit-auto
+;;   :ensure t
+;;   :config
+;;   (global-treesit-auto-mode))
 
 (use-package evil-textobj-tree-sitter
   :ensure t
