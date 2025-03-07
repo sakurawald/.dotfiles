@@ -89,9 +89,6 @@
 ;; TODO explore tree-sitter related packages.
 
 ;; TODO explore tools on grep. {file-project}-wide. visualize, visual replace, visual regexp.
-;; TODO kill ring improved. (integrated with evil)
-;; TODO undo, redo package.
-
 
 ;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -217,7 +214,9 @@
   (define-key evil-insert-state-map (kbd "C-x C-n") nil)
   (define-key evil-insert-state-map (kbd "C-x C-p") nil)
   (define-key evil-insert-state-map (kbd "C-x") 'evil-delete-backward-char-and-join)
-  (define-key evil-insert-state-map (kbd "C-y") 'yank-from-kill-ring)
+
+  ;; Yank and kill-ring.
+  (define-key evil-normal-state-map (kbd "C-p") 'yank-from-kill-ring)
 
   ;; TIP Use `C-c' prefix to be compatible with the `vterm' package.
   (evil-set-toggle-key "C-c z")
@@ -1161,8 +1160,7 @@
   (evil-define-key '(normal) 'global (kbd "g o") 'helm-occur)
 
   ;; Yank and kill-ring.
-  (evil-define-key '(normal) 'global (kbd "g y") 'yank-from-kill-ring)
-
+  (evil-define-key '(normal) 'global (kbd "g p") 'yank-from-kill-ring)
 
   ;; TIP Use `gf' and `gF' to find file at point.
   (evil-define-key '(normal) 'global (kbd "g x") 'browse-url-at-point)
