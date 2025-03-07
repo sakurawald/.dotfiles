@@ -23,11 +23,12 @@
 ;; - http://www.sbcl.org/manual/index.html
 ;;
 ;; Configuration resources:
+;; - https://github.com/caisah/emacs.dz
 ;; - https://github.com/sergeyklay/.emacs.d
 ;; - https://github.com/hrs/dotfiles
 ;; - https://github.com/protesilaos/dotfiles
 ;;
-;; Some interesting sentences collected:
+;; Some interesting sentences:
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
 ;; - While Vim is a text editor, the Emacs has a text editor.
@@ -76,12 +77,16 @@
 ;; TODO get super-key prefix bindings by using a better window manager.
 ;; TODO lsp mode seems fail to initialize in scratch buffer.
 ;; TODO compare hi-lock and hl-todo package.
-;; TODO discover some ideas from jetbrain platform.
 ;; TODO better debugger in emacs. (a gdb front-end)
 ;; TODO explore tree-sitter related packages.
 ;; TODO explore rss-feed package.
 ;; TODO explore calc command
 ;; TODO style change (add-hook 'calc-trail-mode-hook 'evil-insert-state)
+;; TODO explore `helpful' package.
+;; TODO explore tools on grep. {file-project}-wide. visualize, visual replace, visual regexp.
+;; TODO kill ring improved. (integrated with evil)
+;; TODO fuzzy for helm
+;; TODO undo, redo package.
 
 ;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -137,6 +142,7 @@
   :config
   ;; TIP Install the native-compilation version of Emacs -> pacman -S emacs-nativecomp
   ;; TIP See https://zenodo.org/records/3736363
+  ;; NOTE Performance comparing: https://www.gnu.org/software/emacs/manual/html_node/elisp/Native-Compilation.html
   ;; Native compile a package when installing it.
   (setq package-native-compile t))
 
@@ -209,6 +215,11 @@
   ;; Enable evil-mode.
   (evil-mode 1))
 
+(use-package evil-visualstar
+  :ensure t
+  :config
+  ;; TIP Press `*' or `#' key in visual-state to start a search.
+  (global-evil-visualstar-mode))
 
 (use-package evil-collection
   :ensure t
@@ -218,7 +229,7 @@
 
   ;; The default umimpaired bindings is useless.
   (evil-collection-want-unimpaired-p nil)
-  
+
   ;; NOTE evil-collection will setup a mode naemd 't' for 'sldb' and 'slime-inspector'.
   (evil-collection-setup-debugger-keys t)
   (evil-collection-want-find-usages-bindings t)
@@ -239,7 +250,12 @@
   :custom
   ;; TIP Use 'key-convention': 'C-[' = 'Escape', 'C-i' = 'Tab' and 'C-m' = 'Return'. (Other convention: n/p -> j/k, BackSpace (insert-state) -> C-w/C-u/C-x)
   ;; TIP The order to escape: 'jk' > 'C-g' > 'C-[' > 'Escape'
+
+  ;; Ignore the case for escape-key-sequence.
   (evil-escape-key-sequence "jk")
+  (evil-escape-case-insensitive-key-sequence t)
+
+  ;; Use a shorten delay, so that the `j' key is more responsive.
   (evil-escape-delay 0.1)
 
   ;; Exclude these modes, we use `q' key to quit in them.
@@ -523,6 +539,8 @@
   :ensure t
   :after (base16-theme)
   :config
+  ;; TIP You don't need `beacon' package if you line is high-lighted.
+
   ;; Override the 'hl-line' face.
   (global-hl-line-mode t)
   ;; Other choice: "dark blue", "navy", "#000066",
@@ -545,6 +563,7 @@
   ;; TIP To pass a 'universal-arg' to 'helm', just hold-on the 'C-u-9' or 'M-9' after execute 'helm-M-x' command.
   ;; TIP Use `C-o' to execute `helm-next-source'.
   ;; TIP Read `helm-easymenu.el' to see the outline of functions provided by helm.
+  ;; TIP If you are using `helm' as the completion-ui, you don't need the `orderless' package. Helm is `multi-pattern-matching' separated by `space' key by default.
 
   ;; Override the default emacs bindings.
   (evil-define-key '(normal) 'global (kbd "SPC a") 'helm-M-x)
@@ -592,7 +611,9 @@
   (setq helm-locate-fuzzy-match t)
   (setq helm-session-fuzzy-match t)
   (setq helm-etags-fuzzy-match t)
-  ;; (setq helm-completion-style 'helm-fuzzy)
+
+  (setq helm-completion-style 'helm)
+
 
   ;; CUstomize helm-semantic module.
   (setq helm-semantic-fuzzy-match t)
@@ -604,6 +625,7 @@
 				      (c-mode . c++-mode)))
   (setq helm-imenu-fuzzy-match t)
   (setq helm-imenu-use-icon t))
+
 
 (use-package helm-projectile
   :ensure t
@@ -799,6 +821,7 @@
 (defun --->session () "Session related.")
 ;; NOTE The desktop-save-mode saves the whole state of Emacs, making it hard to debug and test new functions.
 ;; (desktop-save-mode)
+;; (setq desktop-restore-eager nil)
 
 (defun <file> () "Files for Emacs.")
 (defun --->file () "File related.")
@@ -820,6 +843,17 @@
   (evil-define-key '(normal) dired-mode-map (kbd "SPC") nil)
   (evil-define-key '(normal) dired-mode-map (kbd "h") 'dired-up-directory)
   (evil-define-key '(normal) dired-mode-map (kbd "l") 'dired-find-file))
+
+(use-package visual-replace
+  :disabled t
+  :ensure t
+  ;; :bind (("C-c r" . visual-replace)
+  ;;        :map isearch-mode-map
+  ;;        ("C-c r" . visual-replace-from-isearch))
+
+  :config
+  (visual-replace-global-mode 1)
+  )
 
 (use-package treemacs
   :ensure t
@@ -1146,6 +1180,7 @@
   (evil-define-key '(normal visual) 'global "L" 'evil-end-of-line))
 
 (defun <edit> () "The edit in Emacs.")
+
 (defun --->saver () "Auto save files.")
 (progn
   (setq auto-save-interval 20)
@@ -1163,8 +1198,17 @@
   ;;	   (save-buffer)))
   ;; (add-hook 'after-change-functions 'save-buffer-instantly)
 
+  ;; (add-hook 'before-save-hook 'delete-trailing-whitespace*)
+  ;; (defun delete-trailing-whitespace* ()
+  ;;   (when (derived-mode-p 'prog-mode)
+  ;;     (delete-trailing-whitespace)))
+
+  ;; Delete trailing whitespace on save.
   (defun save-buffer* ()
-    (when (and (buffer-file-name) (buffer-modified-p) (evil-normal-state-p))
+    (interactive)
+    (when (and (buffer-file-name)
+	       (buffer-modified-p)
+	       (evil-normal-state-p))
       (save-buffer)))
 
   ;; Save buffer when Emacs lose the focus.
@@ -1186,14 +1230,14 @@
 
 (defun --->read-only () "Read-only files.")
 (use-package hardhat
-    :ensure t
-    :config
-    (global-hardhat-mode 1)
+  :ensure t
+  :config
+  (global-hardhat-mode 1)
 
-    (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps)
-    (push ".*/github/emacs/.*" hardhat-fullpath-protected-regexps)
-    ;; (push ".*/github/raylib/.*" hardhat-fullpath-protected-regexps)
-    )
+  (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps)
+  (push ".*/github/emacs/.*" hardhat-fullpath-protected-regexps)
+  ;; (push ".*/github/raylib/.*" hardhat-fullpath-protected-regexps)
+  )
 
 
 (defun --->complete () "Complete text.")
@@ -1425,7 +1469,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 
   ;; Set excluded modes.
   (setq highlight-thing-excluded-major-modes '(pdf-view-mode))
-  
+
   ;; Highlight the thing at point instantly. (It's more responsive.)
   (setq highlight-thing-delay-seconds 0) ;; Or 0.5
 
@@ -1609,11 +1653,10 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 (use-package lsp-mode
   :ensure t
-  :after (evil)
+  :after (evil dap-mode)
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
-
   :hook (
 	 ;; NOTE To let clangd indexing the project (or includes the proper header files.), you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 (or set the flag in CMakeList.txt file)
 	 ;; NOTE Since the AST is generated via compiling, so the pre-processor works for source file, be careful with the #ifdef macro!
@@ -1675,7 +1718,6 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 (use-package dap-mode
   :ensure t
-  :commands (dap-hydra)
   :config
   ;; TIP To configure the debugger: https://sourceware.org/gdb/current/onlinedocs/gdb.html/Debugger-Adapter-Protocol.html
 
@@ -2032,7 +2074,6 @@ buffers to include `company-capf' (with optional yasnippet) and
   (evil-define-key '(visual) emacs-lisp-mode-map (kbd "SPC e r") 'eval-region)
 
   ;; Key binding.
-  
   (evil-define-key '(normal) 'global (kbd "SPC u e") 'ielm))
 
 (use-package pdf-tools
