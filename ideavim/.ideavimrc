@@ -129,7 +129,7 @@ nmap <leader>gt <Action>(GoToTest)
 
 " run
 nmap <leader>rc <Action>(ContextRun)
-nmap <leader>rx<Action>(chooseRunConfiguration)
+nmap <leader>rx<Action>(ChooseRunConfiguration)
 nmap <leader>rr <Action>(Rerun)
 nmap <leader>rt <Action>(RunTests)
 nmap <leader>rs <Action>(Stop)
