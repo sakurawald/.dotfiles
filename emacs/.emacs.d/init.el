@@ -73,19 +73,20 @@
 ;; - Emacs as a general solution compared to specialized programs.
 ;; - Only do optimizatoin after a profiler report.
 
+
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
 ;; TODO get super-key prefix bindings by using a better window manager.
 ;; TODO lsp mode seems fail to initialize in scratch buffer.
 ;; TODO compare hi-lock and hl-todo package.
 ;; TODO better debugger in emacs. (a gdb front-end)
-;; TODO explore tree-sitter related packages.
+;; TODO explore `helpful' package.
 ;; TODO explore rss-feed package.
 ;; TODO explore calc command
-;; TODO style change (add-hook 'calc-trail-mode-hook 'evil-insert-state)
-;; TODO explore `helpful' package.
+
+;; TODO explore tree-sitter related packages.
+
 ;; TODO explore tools on grep. {file-project}-wide. visualize, visual replace, visual regexp.
 ;; TODO kill ring improved. (integrated with evil)
-;; TODO fuzzy for helm
 ;; TODO undo, redo package.
 
 ;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
@@ -140,11 +141,19 @@
 
 (use-package package
   :config
-  ;; TIP Install the native-compilation version of Emacs -> pacman -S emacs-nativecomp
+  ;; TIP Emacs 30.1 is shipped with native-compiler and native-json processing.
   ;; TIP See https://zenodo.org/records/3736363
   ;; NOTE Performance comparing: https://www.gnu.org/software/emacs/manual/html_node/elisp/Native-Compilation.html
   ;; Native compile a package when installing it.
   (setq package-native-compile t))
+
+(use-package emacs
+  :ensure nil
+  :config
+  ;; TIP Use (native-compile-directory package-user-dir) to compile the installed packages.
+  (setq native-comp-async-jobs-number 8)
+  ;; (setq native-comp-bootstrap-deny-list '("dap.*"))
+  )
 
 ;;(require 'benchmark-init)
 ;; To disable collection of benchmark data after init is done.
@@ -281,14 +290,24 @@
 (defun --->help () "The help commands.")
 
 (use-package view
+  :ensure nil
   :config
   (evil-define-key '(normal) view-mode-map (kbd "SPC") nil))
 
 (use-package woman
+  :ensure nil
+  :commands (woman)
   :config
   (evil-define-key '(normal) woman-mode-map (kbd "SPC") nil)
 
   (evil-define-key '(normal) 'global (kbd "SPC u k") 'hl-todo-occur))
+
+(use-package helpful
+  :ensure t
+  :commands (helpful-symbol helpful-function helpful-variable helpful-command helpful-key)
+  :config
+  ;; TIP Replace `describe-{object}' with `helpful-{object}' to get better *help* buffer.
+  )
 
 (use-package emacs
   :config
@@ -297,6 +316,7 @@
   (evil-define-key '(normal) help-mode-map (kbd "S-SPC") nil)
 
   ;; TIP To list the 'built-in' packages in 'Emacs'.
+  ;; TIP You can use `zm' to `fold' the help-buffer.
   (evil-define-key '(normal) 'global (kbd "SPC h e") 'finder-by-keyword)
 
   ;; NOTE The 'helm' package will define lots of 'helm-info-{package-name}' command for all packages.
@@ -311,25 +331,25 @@
   (evil-define-key '(normal) 'global (kbd "SPC h B") 'view-lossage)
 
   ;; TIP To read the `global-map' first.
-  (evil-define-key '(normal) 'global (kbd "SPC h k") 'describe-key)
+  (evil-define-key '(normal) 'global (kbd "SPC h k") 'helpful-key)
   (evil-define-key '(normal) 'global (kbd "SPC h K") 'describe-keymap)
 
   (evil-define-key '(normal) 'global (kbd "SPC h m") 'describe-mode)
   (evil-define-key '(normal) 'global (kbd "SPC h M") 'man)
 
-  (evil-define-key '(normal) 'global (kbd "SPC h s") 'describe-symbol)
+  (evil-define-key '(normal) 'global (kbd "SPC h s") 'helpful-symbol)
   (evil-define-key '(normal) 'global (kbd "SPC h S") 'apropos)
 
-  (evil-define-key '(normal) 'global (kbd "SPC h f") 'describe-function)
+  (evil-define-key '(normal) 'global (kbd "SPC h f") 'helpful-function)
   (evil-define-key '(normal) 'global (kbd "SPC h F") 'apropos-function)
 
   (evil-define-key '(normal) 'global (kbd "SPC h t") 'describe-text-properties)
   (evil-define-key '(normal) 'global (kbd "SPC h T") 'describe-face)
 
-  (evil-define-key '(normal) 'global (kbd "SPC h v") 'describe-variable)
+  (evil-define-key '(normal) 'global (kbd "SPC h v") 'helpful-variable)
   (evil-define-key '(normal) 'global (kbd "SPC h V") 'apropos-variable)
 
-  (evil-define-key '(normal) 'global (kbd "SPC h c") 'describe-command)
+  (evil-define-key '(normal) 'global (kbd "SPC h c") 'helpful-command)
   (evil-define-key '(normal) 'global (kbd "SPC h C") 'apropos-command)
 
   (evil-define-key '(normal) 'global (kbd "SPC h p") 'describe-package)
@@ -765,6 +785,9 @@
   (setq tab-bar-new-button-show nil)
   (setq tab-bar-tab-hints t)
 
+  ;; Disable the auto-width function.
+  (setq tab-bar-auto-width nil)
+
   (evil-define-key '(normal) 'global (kbd "SPC t t") 'tab-switch)
   (evil-define-key '(normal) 'global (kbd "SPC t c") 'tab-bar-new-tab)
 
@@ -994,6 +1017,7 @@
 (defun --->project () "Project related.")
 (use-package rg
   :ensure t
+  :hook (projectile-mode . ignore)
   :config
   (evil-define-key '(normal) rg-mode-map (kbd "M-j") 'rg-next-file)
   (evil-define-key '(normal) rg-mode-map (kbd "M-k") 'rg-prev-file))
@@ -1568,6 +1592,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 (use-package vterm
   :ensure t
   :after (evil hl-line)
+  :commands (vterm)
   :custom
   ;; TIP As a convention, the prefix key `C-c <key-to-send>' is used as `escape-sequence', to send next-key into libvterm directly.
   (vterm-keymap-exceptions '("C-c"))
@@ -1594,14 +1619,16 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; See https://emacsredux.com/blog/2020/11/21/disable-global-hl-line-mode-for-specific-modes/
   (add-hook 'vterm-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
 
-  ;; Bind key.
+  ;; Start with insert-state.
+  (evil-set-initial-state 'vterm-mode 'insert)
+
+  ;;; Keymap.
   ;; TIP The function to set window layout https://emacsredux.com/blog/2013/03/29/terminal-at-your-fingertips/
   (evil-define-key '(normal) 'global (kbd "SPC u s") 'vterm)
 
   ;; Toggle between `Emacs' and `Vim' mode.
   ;; Set the default state to insert mode, since most of terminal programs are not interactive, so they work well in evil-insert-state.
   ;; If you want to run an interactive terminal program in vterm-buffer, you should toggle into emacs-state.
-  (evil-set-initial-state 'vterm-mode 'insert)
   (define-key vterm-mode-map (kbd "C-c z") 'evil-exit-emacs-state)
   (define-key vterm-mode-map (kbd "C-c M-x") 'helm-M-x)
   (define-key vterm-mode-map (kbd "C-c b") 'helm-mini)
@@ -1621,6 +1648,7 @@ buffers to include `company-capf' (with optional yasnippet) and
   (define-key global-map (kbd "C-c 9") (lambda () (interactive) (tab-select 9))))
 
 (use-package eww
+  :commands (eww-browse eww-browse-url-new-window-is-tab)
   :config
   ;; TIP To browse the firefox, use 'vimium' extension. (It's convenient to read manual online.)
   (setq browse-url-browser-function 'eww-browse-url)
@@ -1631,10 +1659,10 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;; TIP Alternatives: monkeytype, typit
 (use-package speed-type
   :ensure t
+  :commands (speed-type-text)
   :config
   ;; TIP Typing-game is the most useful game.
-  (evil-define-key '(normal) 'global (kbd "SPC u g") 'speed-type-text)
-  )
+  (evil-define-key '(normal) 'global (kbd "SPC u g") 'speed-type-text))
 
 (defun --->customize () "The customize in Emacs.")
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
@@ -1653,7 +1681,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 (use-package lsp-mode
   :ensure t
-  :after (evil dap-mode)
+  :after (evil)
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
@@ -1718,6 +1746,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 (use-package dap-mode
   :ensure t
+  :hook (lsp-mode . ignore)
   :config
   ;; TIP To configure the debugger: https://sourceware.org/gdb/current/onlinedocs/gdb.html/Debugger-Adapter-Protocol.html
 
@@ -1738,6 +1767,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 (use-package slime
   :ensure t
+  :hook (lisp-mode . ignore)
   :config
   ;; NOTE The 'slime' env is composed by 'emacs' as the 'client-side', and 'swank' as the 'server-side'.
   ;; NOTE The 'slime-who-references', 'slime-who-binds' and 'slime-who-sets' only works for 'global-variable'.
@@ -2022,7 +2052,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;; NOTE For latex language, use the built-in 'reftex' package.
 (use-package company-auctex
   :ensure t
-  :hook (tex-mode . nil)
+  :hook (tex-mode . ignore)
   :config
   (company-auctex-init))
 
@@ -2078,7 +2108,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 (use-package pdf-tools
   :ensure t
-  :hook (pdf-view-mode . nil)
+  :hook (pdf-view-mode . ignore)
   :config)
 
 (provide '.emacs)
