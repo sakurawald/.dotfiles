@@ -73,22 +73,22 @@
 ;; - No reality, only interpretation.
 ;; - Emacs as a general solution compared to specialized programs.
 ;; - Only do optimizatoin after a profiler report.
+;; - Read log before debug.
+;; - Information Quality: text (book > article) > image > audio > video.
+;; stupid sentences ends here.
 
 
 ;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
-;; TODO get super-key prefix bindings by using a better window manager.
 
-;; TODO compare hi-lock and hl-todo package.
 ;; TODO better debugger in emacs. (a gdb front-end)
-
-;; TODO explore rss-feed package.
 ;; TODO explore calc command
 
-;; TODO use bind-map in use-package to modify evil-normal-state-map.
+;; TODO buffer alist to configure buffer layout.
 
-;; TODO explore tree-sitter related packages.
-
-;; TODO explore tools on grep. {file-project}-wide. visualize, visual replace, visual regexp.
+;; TODO grep on file/project scope.
+;; TODO learn some vim phrase.
+;; TODO the evil layer: v% is not equals to vgm
+;; TODO on the fly git status in treemacs.
 
 ;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -99,6 +99,7 @@
 ;; TIP All the modifier keys are your friend: `Ctrl', `Shift', `Meta', `Super'.
 ;; TIP What I learned from Vim is to remap `CapsLock' into `Ctrl'. CapsLock is useless, since it's not a modifier-key, and you can replace it with Shift+{a-z}. (https://emacsredux.com/blog/2017/12/31/a-crazy-productivity-boost-remapping-return-to-control-2017-edition/)
 ;; TIP Get some good ideas from https://github.com/t3chnoboy/awesome-awesome-awesome
+;; TIP Daily computing programs: Terminal (Interact with the OS), Emacs (As application platform), Firefox (As application platform).
 
 (defun <top-level> () "Top-level init form.")
 ;; Measure the current start up time.
@@ -216,7 +217,8 @@
   (define-key evil-insert-state-map (kbd "C-x") 'evil-delete-backward-char-and-join)
 
   ;; Yank and kill-ring.
-  (define-key evil-normal-state-map (kbd "C-p") 'yank-from-kill-ring)
+  (define-key evil-normal-state-map (kbd "C-p") 'helm-show-kill-ring)
+  (define-key evil-insert-state-map (kbd "C-p") 'helm-show-kill-ring)
 
   ;; TIP Use `C-c' prefix to be compatible with the `vterm' package.
   (evil-set-toggle-key "C-c z")
@@ -273,7 +275,7 @@
 
   ;; Exclude these modes, we use `q' key to quit in them.
   (evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode magit-log-mode
-							treemacs-mode))
+                                                        treemacs-mode))
 
   ;; Exclude the visual-state to make the visual selecting smooth.
   (evil-escape-excluded-states '(visual emacs))
@@ -282,13 +284,13 @@
   (evil-escape-mode))
 
 (use-package evil-surround
-    :ensure t
-    :after (evil)
-    :config
-    ;; TIP To 'add' a 'surrounding', use 'S' in 'vi-visual-state' or use 'ys<textobject><surrounding>' in 'vi-normal-state' (The 'ys' is a new vi-operator.).
-    ;; TIP to 'change' a 'surrounding', use 'cs<old-textobject><new-textobject>'.
-    ;; TIP to 'delete' a 'surrounding', use 'ds<text-object>'.
-    (global-evil-surround-mode 1))
+  :ensure t
+  :after (evil)
+  :config
+  ;; TIP To 'add' a 'surrounding', use 'S' in 'vi-visual-state' or use 'ys<textobject><surrounding>' in 'vi-normal-state' (The 'ys' is a new vi-operator.).
+  ;; TIP to 'change' a 'surrounding', use 'cs<old-textobject><new-textobject>'.
+  ;; TIP to 'delete' a 'surrounding', use 'ds<text-object>'.
+  (global-evil-surround-mode 1))
 
 (defun <help> () "The help for Emacs.")
 (defun --->help () "The help commands.")
@@ -398,65 +400,86 @@
    'org-babel-load-languages
    '((emacs-lisp . nil)
      (lisp . t)
-     (python . t)))
+     (python . t)
+     (plantuml . t)))
+
+  ;; (setq org-plantuml-jar-path (expand-file-name "~/.emacs.d/plantuml.jar"))
+  ;; (setq org-plantuml-exec-mode 'jar)
+
+  ;; TIP Insert `scale 1800*900' in plantuml source to control the output image resolution.
+  (setq org-plantuml-exec-mode 'plantuml)
+  (setq org-plantuml-executable-path "plantuml")
+  (setq org-plantuml-args (list "-headless" "-DPLANTUML_LIMIT_SIZE=65536"))
+
   (setq org-confirm-babel-evaluate nil))
 
 (use-package org-modern
-    :ensure t
-    :after (org)
-    :hook (org-mode . org-modern-mode)
-    :config
-    (setq
-	;; Edit settings
-	org-auto-align-tags nil
-	org-tags-column 0
-	org-catch-invisible-edits 'show-and-error
-	org-special-ctrl-a/e t
-	org-insert-heading-respect-content t
+  :ensure t
+  :after (org)
+  :hook (org-mode . org-modern-mode)
+  :config
+  (setq
+   ;; Edit settings
+   org-auto-align-tags nil
+   org-tags-column 0
+   org-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
 
-	;; Org styling, hide markup etc.
-	org-hide-emphasis-markers t
-	org-pretty-entities t
+   ;; Org styling, hide markup etc.
+   org-hide-emphasis-markers t
+   org-pretty-entities t
 
-	;; Agenda styling
-	org-agenda-tags-column 0
-	org-agenda-block-separator ?─
-	org-agenda-time-grid
-	'((daily today require-timed)
-	     (800 1000 1200 1400 1600 1800 2000)
-	     " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
-	org-agenda-current-time-string
-	"◀── now ─────────────────────────────────────────────────")
+   ;; Agenda styling
+   org-agenda-tags-column 0
+   org-agenda-block-separator ?─
+   org-agenda-time-grid
+   '((daily today require-timed)
+     (800 1000 1200 1400 1600 1800 2000)
+     " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+   org-agenda-current-time-string
+   "◀── now ─────────────────────────────────────────────────")
 
-    ;; Ellipsis styling
-    (setq org-ellipsis "…")
-    (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
+  ;; Ellipsis styling
+  (setq org-ellipsis "…")
+  (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
 
-    ;; Customize star style.
-    (setq org-modern-star 'replace)
-    (setq org-modern-hide-stars 'nil))
+  ;; Customize star style.
+  (setq org-modern-star 'replace)
+  (setq org-modern-hide-stars 'nil))
 
 
 ;; NOTE A fancy render-engine for org is useless.
 (use-package org-bullets
-    :ensure t
-    :hook (org-mode . org-bullets-mode))
+  :ensure t
+  :hook (org-mode . org-bullets-mode))
+
+(use-package org-pomodoro
+  :disabled t
+  :ensure t
+  :config
+
+  )
+
+
 
 (defun --->chat () "Chat with AI.")
 (use-package ellama
   :ensure t
   :commands (ellama-transient-main-menu)
+  :after (evil)
+  :init
+  (evil-define-key '(normal visual) 'global (kbd "SPC g") 'ellama-transient-main-menu)
   :config
   ;; NOTE It's recommemded to host an open-source chat-model locally.
   ;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
   ;; TIP Use `ollama run llama3.1' to download the model and use `ellama-provider-select' to select a model.
-  (evil-define-key '(normal visual) 'global (kbd "SPC g") 'ellama-transient-main-menu)
   (add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
 
   ;; Customize the LLM model.
   (setq ellama-provider (make-llm-ollama
-			 :chat-model "phi4"
-			 :embedding-model "phi4"))
+                         :chat-model "phi4"
+                         :embedding-model "phi4"))
 
   (setq ellama--current-session-id nil)
   (setq ellama-session-auto-save nil)
@@ -473,15 +496,32 @@
 
   ;; Enable globally.
   (setq hl-todo-keyword-faces
-	'(("TODO"   . "#FFFF00")
-	  ("FIXME"  . "#FF0000")
-	  ("NOTE"  . "#0000FF")
-	  ("TIP"  . "#00FF00")))
+        '(("TODO"   . "#FFFF00")
+          ("FIXME"  . "#FF0000")
+          ("NOTE"  . "#0000FF")
+          ("TIP"  . "#00FF00")))
   (global-hl-todo-mode)
 
   ;; Bind.
   ;; (evil-define-key '(normal) 'global (kbd "SPC u t") 'hl-todo-occur)
   )
+
+(defun --->feed () "The stable and topic-oriented information source.")
+(use-package newsticker
+  :ensure nil
+  :commands (newsticker-treeview)
+  :custom
+  (newsticker-url-list '(("Emacs Wiki" "https://www.emacswiki.org/emacs?action=rss" nil 3600 nil)
+                         ("Hacker News" "https://news.ycombinator.com/rss" nil 3600 nil)))
+  :init
+  ;; Keymap.
+  (evil-define-key '(normal) 'global (kbd "SPC u r") 'newsticker-treeview)
+  (evil-define-key '(normal) newsticker-treeview-mode-map (kbd "q") 'newsticker-treeview-quit))
+
+;; (use-package elfeed
+;;   :ensure t
+;;   :config
+;;   )
 
 (defun <view> () "The display for Emacs.")
 ;; NOTE Exwm is still buggy, and easy to hang. I would try it again in the future. (The model used by exwm is buggy, due to the single-threaded event handling of Emacs)
@@ -502,8 +542,8 @@
       (pop-to-buffer
        (if (bufferp buf)
            buf  ; Existing scratch buffer
-	 ;; New scratch buffer
-	 (with-current-buffer (get-buffer-create name)
+         ;; New scratch buffer
+         (with-current-buffer (get-buffer-create name)
            (current-buffer))))))
 
   ;; NOTE I have to ask the point of displaying line number of a file.
@@ -532,23 +572,23 @@
 
   ;; NOTE Instead of defining a new theme, we modify the existing one for convinence.
   (setq base16-sakura-theme-colors
-	'(:base00 "#000000" ;; default background: window
-		  :base01 "#1C1C1C" ;; status bar, line numbers and folding marks
-		  :base02 "#383838" ;; modeline, selection
-		  :base03 "#545454" ;; comment
-		  :base04 "#A2A2A2" ;; dark-theme foreground: doc-string
-		  :base05 "#FFFFFF" ;; default foreground: text
-		  :base06 "#DEDEDE" ;; light-theme foreground (not often used)
-		  :base07 "#FCFCFC" ;; light-theme background (not often used)
-		  :base08 "#FC5454" ;; cursor, symbol flags, sldb-condition
-		  :base09 "#FFA500" ;; self-evaluating object, tab name.
-		  :base0A "#FFFF00" ;; type, class
-		  :base0B "#00FF00" ;; string
-		  :base0C "#00FFFF" ;; keyword symbol
-		  :base0D "#5454fc" ;; function name
-		  :base0E "#FF00FF" ;; operator name
-		  :base0F "#008000" ;; deprecated (opening/closing embedded language tags, e.g. '<?php ?>')
-		  ))
+        '(:base00 "#000000" ;; default background: window
+                  :base01 "#1C1C1C" ;; status bar, line numbers and folding marks
+                  :base02 "#383838" ;; modeline, selection
+                  :base03 "#545454" ;; comment
+                  :base04 "#A2A2A2" ;; dark-theme foreground: doc-string
+                  :base05 "#FFFFFF" ;; default foreground: text
+                  :base06 "#DEDEDE" ;; light-theme foreground (not often used)
+                  :base07 "#FCFCFC" ;; light-theme background (not often used)
+                  :base08 "#FC5454" ;; cursor, symbol flags, sldb-condition
+                  :base09 "#FFA500" ;; self-evaluating object, tab name.
+                  :base0A "#FFFF00" ;; type, class
+                  :base0B "#00FF00" ;; string
+                  :base0C "#00FFFF" ;; keyword symbol
+                  :base0D "#5454fc" ;; function name
+                  :base0E "#FF00FF" ;; operator name
+                  :base0F "#008000" ;; deprecated (opening/closing embedded language tags, e.g. '<?php ?>')
+                  ))
   (load-theme 'base16-sakura t)
 
   (set-face-foreground 'tab-bar-tab "dodger blue")
@@ -645,8 +685,8 @@
   ;; Customize helm-menu module.
   ;; TIP Use `helm-imenu' module provided by `helm' pakcage instead of `imenu-anywhere' package.
   (setq helm-imenu-all-buffer-assoc '((emacs-lisp-mode . lisp-mode)
-				      (lisp-mode . c-mode)
-				      (c-mode . c++-mode)))
+                                      (lisp-mode . c-mode)
+                                      (c-mode . c++-mode)))
   (setq helm-imenu-fuzzy-match t)
   (setq helm-imenu-use-icon t))
 
@@ -720,9 +760,19 @@
   ;; TIP The 'helm-mini' combines 'list-buffers' and 'recentf' as multiple sources.
   (evil-define-key '(normal) 'global (kbd "SPC b b") 'helm-mini)
   (evil-define-key '(normal) 'global (kbd "SPC b B") (lambda ()
-						       (interactive)
-						       (call-interactively 'tab-bar-new-tab)
-						       (call-interactively 'helm-mini)))
+                                                       (interactive)
+                                                       (call-interactively 'tab-bar-new-tab)
+                                                       (call-interactively 'helm-mini)))
+
+  (defun my/indent-buffer ()
+    "Indents an entire buffer using the default intenting scheme."
+    (interactive)
+    (point-to-register 'o)
+    (delete-trailing-whitespace)
+    (indent-region (point-min) (point-max) nil)
+    (untabify (point-min) (point-max))
+    (jump-to-register 'o))
+  (evil-define-key '(normal) 'global (kbd "SPC b f") 'my/indent-buffer)
 
   (evil-define-key '(normal) 'global (kbd "SPC b l") 'list-buffers)
 
@@ -739,14 +789,14 @@
   :config
   ;; TIP It's okay to use vim window related bindings: 'C-w-{s/v}', 'C-w-{hjklw}', 'C-w{qx}'
   (evil-define-key '(normal) 'global (kbd "SPC s h") (lambda ()
-						       (interactive)
-						       (call-interactively 'split-window-horizontally)
-						       (call-interactively 'evil-window-next)))
+                                                       (interactive)
+                                                       (call-interactively 'split-window-horizontally)
+                                                       (call-interactively 'evil-window-next)))
 
   (evil-define-key '(normal) 'global (kbd "SPC s v") (lambda ()
-						       (interactive)
-						       (call-interactively 'split-window-vertically)
-						       (call-interactively 'evil-window-next)))
+                                                       (interactive)
+                                                       (call-interactively 'split-window-vertically)
+                                                       (call-interactively 'evil-window-next)))
 
   ;; TIP The 'window-swap-states' can 'transpose' current-window and next-window.
   ;; NOTE To write window layout rules, use a window manager -> https://depp.brause.cc/shackle/
@@ -820,7 +870,6 @@
   ;; Fix: the lsp-mode buffer wil trigger <tab-bar> <mouse-movement> is undefined
   (define-key tab-bar-map (kbd "<mouse-movement>") #'ignore)
 
-
   ;; Macros. (Deprecated)
   (defmacro with-new-tab-bar (&rest body)
     "Create a new tab and execute BODY in the new tab context."
@@ -861,7 +910,7 @@
   (add-to-list 'recentf-exclude ".*pdf.*")
   (add-to-list 'recentf-exclude (temporary-file-directory))
   (add-to-list 'recentf-exclude (concat (file-name-as-directory package-user-dir)
-					".*-autoloads\\.el\\'")))
+                                        ".*-autoloads\\.el\\'")))
 
 (use-package dired
   :ensure nil
@@ -871,16 +920,21 @@
   (evil-define-key '(normal) dired-mode-map (kbd "h") 'dired-up-directory)
   (evil-define-key '(normal) dired-mode-map (kbd "l") 'dired-find-file))
 
-(use-package visual-replace
-  :disabled t
-  :ensure t
-  ;; :bind (("C-c r" . visual-replace)
-  ;;        :map isearch-mode-map
-  ;;        ("C-c r" . visual-replace-from-isearch))
+;; (use-package visual-replace
+;;   :disabled t
+;;   :ensure t
+;;   ;; :bind (("C-c r" . visual-replace)
+;;   ;;        :map isearch-mode-map
+;;   ;;        ("C-c r" . visual-replace-from-isearch))
 
-  :config
-  (visual-replace-global-mode 1)
-  )
+;;   :config
+;;   (visual-replace-global-mode 1)
+;;   )
+
+(use-package visual-regexp
+  :ensure t
+  :commands (vr/query-replace)
+  :config)
 
 (use-package treemacs
   :ensure t
@@ -898,8 +952,8 @@
   (evil-define-key '(normal) 'global (kbd "SPC f c") 'treemacs-create-file)
   (evil-define-key '(normal) 'global (kbd "SPC f C") 'treemacs-create-dir)
 
-  (evil-define-key '(normal) 'global (kbd "SPC f g") 'query-replace)
-  (evil-define-key '(normal) 'global (kbd "SPC f G") 'query-replace-regexp)
+  (evil-define-key '(normal) 'global (kbd "SPC f g") 'vr/query-replace)
+  ;; (evil-define-key '(normal) 'global (kbd "SPC f G") 'anzu-query-replace-regexp)
 
 
   (evil-define-key '(normal) 'global (kbd "SPC f w s") 'treemacs-switch-workspace)
@@ -914,60 +968,60 @@
   ;; TIP To navigate in treemacs-window, use 'hjkl' and 'C-{j/k}'.
   ;; TIP Use 'M-m' to mark multiple files.
   (progn
-    (setq treemacs-collapse-dirs		       (if treemacs-python-executable 3 0)
-	  treemacs-deferred-git-apply-delay	     0.5
-	  treemacs-directory-name-transformer	     #'identity
-	  treemacs-display-in-side-window	     t
-	  treemacs-eldoc-display		     'simple
-	  treemacs-file-event-delay		     2000
-	  treemacs-file-extension-regex	     treemacs-last-period-regex-value
-	  treemacs-file-follow-delay		     0.2
-	  treemacs-file-name-transformer	     #'identity
-	  treemacs-follow-after-init		     t
-	  treemacs-expand-after-init		     t
-	  treemacs-find-workspace-method	     'find-for-file-or-pick-first
-	  treemacs-git-command-pipe		     ""
-	  treemacs-goto-tag-strategy		     'refetch-index
-	  treemacs-header-scroll-indicators	     '(nil . "^^^^^^")
-	  treemacs-hide-dot-git-directory	     nil
-	  treemacs-indentation		     2
-	  treemacs-indentation-string		     " "
-	  treemacs-indent-guide-style		     'line
-	  treemacs-is-never-other-window	     nil
-	  treemacs-max-git-entries		     5000
-	  treemacs-missing-project-action	     'ask
-	  treemacs-move-files-by-mouse-dragging    t
-	  treemacs-move-forward-on-expand	     nil
-	  treemacs-no-png-images		     nil
-	  treemacs-no-delete-other-windows	     t
-	  treemacs-project-follow-cleanup	     nil
-	  treemacs-persist-file		     (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-	  treemacs-position			     'left
-	  treemacs-read-string-input		     'from-child-frame
-	  treemacs-recenter-distance		     0.1
-	  treemacs-recenter-after-file-follow	     nil
-	  treemacs-recenter-after-tag-follow	     nil
-	  treemacs-recenter-after-project-jump     'always
-	  treemacs-recenter-after-project-expand   'on-distance
-	  treemacs-litter-directories		     '("/node_modules" "/.venv" "/.cask")
-	  treemacs-project-follow-into-home	     nil
-	  treemacs-show-cursor		     nil
-	  treemacs-show-hidden-files		     t
-	  treemacs-silent-filewatch		     nil
-	  treemacs-silent-refresh		     nil
-	  treemacs-sorting			     'alphabetic-asc
-	  treemacs-select-when-already-in-treemacs 'move-back
-	  treemacs-space-between-root-nodes	     t
-	  treemacs-tag-follow-cleanup		     t
-	  treemacs-tag-follow-delay		     1.5
-	  treemacs-text-scale			     nil
-	  treemacs-user-mode-line-format	     nil
-	  treemacs-user-header-line-format	     nil
-	  treemacs-wide-toggle-width		     70
-	  treemacs-width			     30
-	  treemacs-width-increment		     1
-	  treemacs-width-is-initially-locked	     t
-	  treemacs-workspace-switch-cleanup	     nil)
+    (setq treemacs-collapse-dirs                       (if treemacs-python-executable 3 0)
+          treemacs-deferred-git-apply-delay          0.5
+          treemacs-directory-name-transformer        #'identity
+          treemacs-display-in-side-window            t
+          treemacs-eldoc-display                     'simple
+          treemacs-file-event-delay                  2000
+          treemacs-file-extension-regex      treemacs-last-period-regex-value
+          treemacs-file-follow-delay                 0.2
+          treemacs-file-name-transformer             #'identity
+          treemacs-follow-after-init                 t
+          treemacs-expand-after-init                 t
+          treemacs-find-workspace-method             'find-for-file-or-pick-first
+          treemacs-git-command-pipe                  ""
+          treemacs-goto-tag-strategy                 'refetch-index
+          treemacs-header-scroll-indicators          '(nil . "^^^^^^")
+          treemacs-hide-dot-git-directory            nil
+          treemacs-indentation               2
+          treemacs-indentation-string                " "
+          treemacs-indent-guide-style                'line
+          treemacs-is-never-other-window             nil
+          treemacs-max-git-entries                   5000
+          treemacs-missing-project-action            'ask
+          treemacs-move-files-by-mouse-dragging    t
+          treemacs-move-forward-on-expand            nil
+          treemacs-no-png-images                     nil
+          treemacs-no-delete-other-windows           t
+          treemacs-project-follow-cleanup            nil
+          treemacs-persist-file              (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+          treemacs-position                          'left
+          treemacs-read-string-input                 'from-child-frame
+          treemacs-recenter-distance                 0.1
+          treemacs-recenter-after-file-follow        nil
+          treemacs-recenter-after-tag-follow         nil
+          treemacs-recenter-after-project-jump     'always
+          treemacs-recenter-after-project-expand   'on-distance
+          treemacs-litter-directories                '("/node_modules" "/.venv" "/.cask")
+          treemacs-project-follow-into-home          nil
+          treemacs-show-cursor               nil
+          treemacs-show-hidden-files                 t
+          treemacs-silent-filewatch                  nil
+          treemacs-silent-refresh                    nil
+          treemacs-sorting                           'alphabetic-asc
+          treemacs-select-when-already-in-treemacs 'move-back
+          treemacs-space-between-root-nodes          t
+          treemacs-tag-follow-cleanup                t
+          treemacs-tag-follow-delay                  1.5
+          treemacs-text-scale                        nil
+          treemacs-user-mode-line-format             nil
+          treemacs-user-header-line-format           nil
+          treemacs-wide-toggle-width                 70
+          treemacs-width                             30
+          treemacs-width-increment                   1
+          treemacs-width-is-initially-locked         t
+          treemacs-workspace-switch-cleanup          nil)
 
     ;; icon
     (treemacs-resize-icons 22)
@@ -982,7 +1036,7 @@
       (treemacs-git-commit-diff-mode t))
 
     (pcase (cons (not (null (executable-find "git")))
-		 (not (null treemacs-python-executable)))
+                 (not (null treemacs-python-executable)))
       (`(t . t)
        (treemacs-git-mode 'deferred))
       (`(t . _)
@@ -1000,19 +1054,22 @@
     (evil-define-key 'treemacs treemacs-mode-map (kbd "SPC j") 'avy-goto-word-0)))
 
 (use-package treemacs-evil
+  :ensure nil
   :after (treemacs evil)
   :ensure t)
 
 (use-package treemacs-projectile
+  :ensure nil
   :after (treemacs projectile)
   :ensure t)
 
 (use-package treemacs-magit
+  :ensure nil
   :after (treemacs magit)
   :ensure t)
 
 (use-package treemacs-icons-dired
-  :ensure t
+  :ensure nil
   :after (treemacs dired)
   :config
   ;; Decorate the `dired' command with `icons' version.
@@ -1032,7 +1089,7 @@
   :after (tab-bar)
   :config
   ;; TIP Enforce the 'projectile-commands' to be executed inside a 'project' indicated by a 'project-makrer'. (I don't want to use projectile commands in the home directory.)
-  (setq projectile-require-project-root t)
+  (setq projectile-require-project-root nil)
 
   ;; Include current project in the project switcher.
   (setq projectile-current-project-on-switch 'keep)
@@ -1050,9 +1107,9 @@
   ;; Bind
   (evil-define-key '(normal) 'global (kbd "SPC p p") 'projectile-switch-project)
   (evil-define-key '(normal) 'global (kbd "SPC p P") (lambda ()
-						       (interactive)
-						       (tab-bar-new-tab)
-						       (projectile-switch-project)))
+                                                       (interactive)
+                                                       (tab-bar-new-tab)
+                                                       (projectile-switch-project)))
 
   (evil-define-key '(normal) 'global (kbd "SPC p b") 'projectile-switch-to-buffer)
   (evil-define-key '(normal) 'global (kbd "SPC SPC") 'helm-projectile-find-file)
@@ -1074,9 +1131,9 @@
   ;; TIP Use 'C-j' and 'C-k' to show the details in 'grep-result-window'.
   ;; TIP Use `ripgrep' for: better result highlight, respect .gitignore file.
   (evil-define-key '(normal) 'global (kbd "SPC p g") (lambda () (interactive)
-						       ;; Push the 4 as prefix-arg to enable the regex pattern.
-						       (let ((current-prefix-arg 4))
-							 (call-interactively #'projectile-ripgrep))))
+                                                       ;; Push the 4 as prefix-arg to enable the regex pattern.
+                                                       (let ((current-prefix-arg 4))
+                                                         (call-interactively #'projectile-ripgrep))))
   (evil-define-key '(normal) 'global (kbd "SPC p G") 'projectile-replace-regexp)
 
   (evil-define-key '(normal) 'global (kbd "SPC p !") 'projectile-run-shell-command-in-root)
@@ -1107,7 +1164,7 @@
   :config
   ;; Set a high-contrast color for hunk high-light. Or #000066, #001847.
   (set-face-attribute 'magit-diff-context-highlight nil
-		      :background "navy"))
+                      :background "navy"))
 
 (use-package diff-hl
   :ensure t
@@ -1124,8 +1181,8 @@
 
 (defun <navigation> () "The navigation in Emacs.")
 (defun --->goto () "Goto commands for vi.")
-
 (use-package emacs
+  :ensure nil
   :config
   ;; TIP The 'g' and 'z' are prefix-key left for user.
   ;; gj / gk ---> logical line
@@ -1160,11 +1217,20 @@
   (evil-define-key '(normal) 'global (kbd "g o") 'helm-occur)
 
   ;; Yank and kill-ring.
-  (evil-define-key '(normal) 'global (kbd "g p") 'yank-from-kill-ring)
+  (evil-define-key '(normal) 'global (kbd "g p") 'helm-show-kill-ring)
 
   ;; TIP Use `gf' and `gF' to find file at point.
   (evil-define-key '(normal) 'global (kbd "g x") 'browse-url-at-point)
   (evil-define-key '(normal) 'global (kbd "g X") 'browse-url-xdg-open))
+
+(defun --->impaired () "Impaired commands for vi.")
+
+(use-package emacs
+  :ensure nil
+  :config
+  ;; TIP Use `}}' to forward `paragraph', and use `]]' to forward `section'.
+  (evil-define-key '(normal) 'global (kbd "[ [") 'evil-backward-section-begin)
+  (evil-define-key '(normal) 'global (kbd "] ]") 'evil-forward-section-begin))
 
 (defun --->jump-anywhere () "Jump to anywhere.")
 
@@ -1178,17 +1244,17 @@
 
   ;; Define the face to be clearer.
   (set-face-attribute 'avy-lead-face nil
-		      :foreground "white"
-		      :background "#e52b50")
+                      :foreground "white"
+                      :background "#e52b50")
   (set-face-attribute 'avy-lead-face-0 nil
-		      :foreground "white"
-		      :background "#4f5769")
+                      :foreground "white"
+                      :background "#4f5769")
   (set-face-attribute 'avy-lead-face-1 nil
-		      :foreground "white"
-		      :background "#4f5769")
+                      :foreground "white"
+                      :background "#4f5769")
   (set-face-attribute 'avy-lead-face-2 nil
-		      :foreground "white"
-		      :background "#4f5769"))
+                      :foreground "white"
+                      :background "#4f5769"))
 
 (defun --->jump-list () "The jump-list in vi.")
 ;; TIP To navigate the 'jump-list', use 'C-i' and 'C-o'. (Use double ' to 'jump-back-and-forth')
@@ -1223,10 +1289,10 @@
 
   ;; The instant method, performance may be poor.
   ;; (defun save-buffer-instantly (begin end prev-text)
-  ;;	 (when (and (buffer-file-name)
-  ;;	     (file-writable-p (buffer-file-name))
-  ;;	     (buffer-modified-p))
-  ;;	   (save-buffer)))
+  ;;     (when (and (buffer-file-name)
+  ;;         (file-writable-p (buffer-file-name))
+  ;;         (buffer-modified-p))
+  ;;       (save-buffer)))
   ;; (add-hook 'after-change-functions 'save-buffer-instantly)
 
   ;; (add-hook 'before-save-hook 'delete-trailing-whitespace*)
@@ -1235,38 +1301,47 @@
   ;;     (delete-trailing-whitespace)))
 
   ;; Delete trailing whitespace on save.
-  (defun save-buffer* ()
+  (defun my/save-buffer ()
     (interactive)
     (when (and (buffer-file-name)
-	       (buffer-modified-p)
-	       (evil-normal-state-p))
+               (buffer-modified-p)
+               (evil-normal-state-p))
       (save-buffer)))
 
   ;; Save buffer when Emacs lose the focus.
-  (add-hook 'focus-out-hook 'save-buffer*)
+  (add-hook 'focus-out-hook 'my/save-buffer)
 
   ;; Save buffer when Vi enters the normal-state.
-  (add-hook 'evil-normal-state-entry-hook 'save-buffer*)
+  (add-hook 'evil-normal-state-entry-hook 'my/save-buffer)
 
   ;; Save buffer after execution of some commands.
   (add-hook 'post-command-hook (lambda ()
-				 (when (or (eq this-command 'evil-delete)
-					   (eq this-command 'evil-delete-char)
-					   (eq this-command 'evil-join))
-				   (save-buffer*))))
+                                 (when (or (eq this-command 'evil-delete)
+                                           (eq this-command 'evil-delete-char)
+                                           (eq this-command 'evil-join))
+                                   (my/save-buffer))))
 
   ;; Save buffer when window state changed.
-  (add-hook 'window-state-change-hook 'save-buffer*)
+  (add-hook 'window-state-change-hook 'my/save-buffer)
   )
 
 (defun --->read-only () "Read-only files.")
 (use-package hardhat
   :ensure t
   :config
+  ;; TIP Need to re-enable the global mode to apply user option changes.
   (global-hardhat-mode 1)
 
+  ;; Source of lisp implementations.
   (push ".*/.roswell/src/.*" hardhat-fullpath-protected-regexps)
+
+  ;; Source of libraries.
+  (push ".*/.roswell/lisp/quicklisp/dists/.*" hardhat-fullpath-protected-regexps)
+
+  ;; Source of Emacs.
   (push ".*/github/emacs/.*" hardhat-fullpath-protected-regexps)
+  (push ".*/.cache/yay/.*" hardhat-fullpath-protected-regexps)
+
   ;; (push ".*/github/raylib/.*" hardhat-fullpath-protected-regexps)
   )
 
@@ -1282,7 +1357,7 @@
   ;; Trigger the completion with only 1 prefix character.
   (setq company-minimum-prefix-length 1)
   (setq company-idle-delay
-	(lambda () (if (company-in-string-or-comment) nil 0)))
+        (lambda () (if (company-in-string-or-comment) nil 0)))
 
   ;; Inhibit the completion inside symbol.
   ;; TODO The company completion will not replace the behind characters, making it hard to use inside symbol.
@@ -1302,15 +1377,15 @@
 
   ;; (add-hook 'c-mode-hook (lambda ()
 
-  ;; 			   ;; Add yasnippet company-backend with slime company-backend.
-  ;; 			   ;; (when (member 'company-slime company-backends)
-  ;; 			   ;;   (delete 'company-slime company-backends)
-  ;; 			   ;;   (push '(company-slime :with company-yasnippet) company-backends))
+  ;;                       ;; Add yasnippet company-backend with slime company-backend.
+  ;;                       ;; (when (member 'company-slime company-backends)
+  ;;                       ;;   (delete 'company-slime company-backends)
+  ;;                       ;;   (push '(company-slime :with company-yasnippet) company-backends))
 
-  ;; 			   (when (member 'company-capf company-backends)
-  ;; 			     (delete 'company-capf company-backends)
-  ;; 			     (push '(company-capf :with company-yasnippet) company-backends))
-  ;; 			   ))
+  ;;                       (when (member 'company-capf company-backends)
+  ;;                         (delete 'company-capf company-backends)
+  ;;                         (push '(company-capf :with company-yasnippet) company-backends))
+  ;;                       ))
 
   (defmacro company-backend-for-hook (hook backends)
     "Add a HOOK to set `company-backends' dynamically.
@@ -1331,6 +1406,10 @@ buffers to include `company-capf' (with optional yasnippet) and
     `(add-hook ,hook (lambda()
                        (set (make-local-variable 'company-backends)
                             ,backends))))
+
+
+  ;; Fix: for `(sb-vm:)' string, you can't press tab key to open the company completion window.
+  (define-key evil-insert-state-map (kbd "<tab>") 'company-indent-or-complete-common)
 
   ;; Enable global mode.
   (add-hook 'after-init-hook 'global-company-mode))
@@ -1386,7 +1465,7 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; - https://github.com/flycheck/flycheck/pull/1744/files
   ;; - https://emacs.stackexchange.com/questions/52829/fringe-indicators-very-tiny
   (setq-default left-fringe-width 16 right-fringe-width 16
-		left-margin-width 0 right-margin-width 0)
+                left-margin-width 0 right-margin-width 0)
 
   ;; User options.
   (setq flycheck-display-errors-delay 2.0)
@@ -1489,6 +1568,7 @@ buffers to include `company-capf' (with optional yasnippet) and
   :ensure t
   :after (tree-sitter)
   :config
+  ;; TIP Extend the evil with custom `text-object' and `goto' based on tree-sitter is a killer-feature.
   ;; NOTE The evil-textobj-tree-sitter doesn't provide parsers for lisp-family languages in tree-sitter parsers.
   (define-key evil-inner-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj "parameter.inner"))
   (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj "parameter.outer"))
@@ -1514,9 +1594,9 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; Ignore the case.
   (setq highlight-thing-case-sensitive-p nil)
   (set-face-attribute 'highlight nil
-		      :background nil
-		      :underline '(:color "#00FF00"
-					  :style line)))
+                      :background nil
+                      :underline '(:color "#00FF00"
+                                          :style line)))
 
 (defun --->comment () "Comment text.")
 (use-package evil-nerd-commenter
@@ -1525,7 +1605,12 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; NOTE The `newcomment' package has bugs in evil-mode: it will also comment the next line.
   ;; TIP Only use the `line-comment' in all languages, the semantics of line-comment is better than `region-comment'.
   ;; TIP You can execute the commadn in `evil-visual-state', it worsk efficiently.
-  (evil-define-key '(normal visual) 'global (kbd "SPC c") 'evilnc-comment-or-uncomment-lines))
+  (defun my/comment-or-uncomment-lines ()
+    (interactive)
+    (call-interactively 'evilnc-comment-or-uncomment-lines)
+    (call-interactively 'my/save-buffer))
+
+  (evil-define-key '(normal visual) 'global (kbd "SPC c") 'my/comment-or-uncomment-lines))
 
 (defun --->parenthesis () "Parenthesis related.")
 (use-package smartparens
@@ -1592,9 +1677,9 @@ buffers to include `company-capf' (with optional yasnippet) and
   :config
   ;; Set the world clocks.
   (setq world-clock-list
-	'(("Asia/Tokyo" "Tokyo")
-	  ("Asia/Shanghai" "Beijing")
-	  ("America/Los_Angeles" "Seattle")
+        '(("Asia/Tokyo" "Tokyo")
+          ("Asia/Shanghai" "Beijing")
+          ("America/Los_Angeles" "Seattle")
           ("America/New_York" "New York")
           ("Europe/London" "London")
           ("Europe/Paris" "Paris")
@@ -1662,10 +1747,11 @@ buffers to include `company-capf' (with optional yasnippet) and
   (define-key global-map (kbd "C-c 9") (lambda () (interactive) (tab-select 9))))
 
 (use-package eww
-  :commands (eww-browse eww-browse-url-new-window-is-tab)
+  :commands (eww-browse eww-browse-url eww-browse-url-new-window-is-tab)
+  :init
+  (setq browse-url-browser-function 'eww-browse-url)
   :config
   ;; TIP To browse the firefox, use 'vimium' extension. (It's convenient to read manual online.)
-  (setq browse-url-browser-function 'eww-browse-url)
 
   (evil-define-key '(normal) eww-mode-map (kbd "SPC") nil)
   (evil-define-key '(normal) eww-mode-map (kbd "i") 'evil-insert-state))
@@ -1700,13 +1786,13 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
   :hook (
-	 ;; NOTE To let clangd indexing the project (or includes the proper header files.), you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 (or set the flag in CMakeList.txt file)
-	 ;; NOTE Since the AST is generated via compiling, so the pre-processor works for source file, be careful with the #ifdef macro!
-	 ;; https://clangd.llvm.org/config#files
-	 (c-mode . lsp)
-	 (c++-mode . lsp)
-	 (java-mode . lsp)
-	 (yaml-ts-mode . lsp))
+         ;; NOTE To let clangd indexing the project (or includes the proper header files.), you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 (or set the flag in CMakeList.txt file)
+         ;; NOTE Since the AST is generated via compiling, so the pre-processor works for source file, be careful with the #ifdef macro!
+         ;; https://clangd.llvm.org/config#files
+         (c-mode . lsp)
+         (c++-mode . lsp)
+         (java-mode . lsp)
+         (yaml-ts-mode . lsp))
   :commands lsp
   :config
 
@@ -1775,12 +1861,13 @@ buffers to include `company-capf' (with optional yasnippet) and
 
   ;; Open hydra if breakpoint hit.
   (add-hook 'dap-stopped-hook
-	    (lambda (arg) (call-interactively #'dap-hydra))))
+            (lambda (arg) (call-interactively #'dap-hydra))))
 
 (defun --->language:lisp () "Lisp Language.")
 
 (use-package slime
   :ensure t
+  :commands (slime-repl)
   :hook (lisp-mode . ignore)
   :config
   ;; NOTE The 'slime' env is composed by 'emacs' as the 'client-side', and 'swank' as the 'server-side'.
@@ -1797,26 +1884,30 @@ buffers to include `company-capf' (with optional yasnippet) and
 
   ;; NOTE Use 'slime-setup' instead of `(setq slime-contribs '(slime-fancy))`.
   (slime-setup '(
-		 slime-asdf
-		 slime-quicklisp
-		 ;; TIP The 'slime-fancy' contrib includes the following packages: slime-repl slime-autodoc slime-c-p-c slime-editing-commands slime-fancy-inspector slime-fancy-trace slime-fuzzy slime-mdot-fu slime-macrostep slime-presentations slime-scratch slime-references slime-package-fu slime-fontifying-fu slime-trace-dialog slime-indentation.
-		 slime-fancy
-		 slime-banner
-		 slime-xref-browser
-		 ;; slime-highlight-edits (this only works for compile)
-		 slime-company))
+                 slime-asdf
+                 slime-quicklisp
+                 ;; TIP The 'slime-fancy' contrib includes the following packages: slime-repl slime-autodoc slime-c-p-c slime-editing-commands slime-fancy-inspector slime-fancy-trace slime-fuzzy slime-mdot-fu slime-macrostep slime-presentations slime-scratch slime-references slime-package-fu slime-fontifying-fu slime-trace-dialog slime-indentation.
+                 slime-fancy
+                 slime-banner
+                 slime-xref-browser
+                 ;; slime-highlight-edits (this only works for compile)
+                 slime-company))
 
 
   ;; Options for contribs.
   (setq slime-startup-animation nil)
 
+  ;; Color the apropos command.
+  (set-face-attribute 'slime-apropos-symbol nil
+		      :foreground "#00FF00")
+
   ;; Start slime automatically if needed.
   (setq slime-auto-start 'always)
   ;; NOTE Auto execute 'slime' command.
   ;;(add-hook 'slime-mode-hook
-  ;;		(lambda ()
-  ;;		  (unless (slime-connected-p)
-  ;;		(save-excursion (slime)))))
+  ;;            (lambda ()
+  ;;              (unless (slime-connected-p)
+  ;;            (save-excursion (slime)))))
 
   ;; Set instantly slime-autodoc in echo-area.
   (setq eldoc-idle-delay 0)
@@ -1828,21 +1919,21 @@ buffers to include `company-capf' (with optional yasnippet) and
     (defvar slime-repl-font-lock-keywords lisp-font-lock-keywords-2)
     (defun slime-repl-font-lock-setup ()
       (setq font-lock-defaults '(slime-repl-font-lock-keywords
-				 ;; From lisp-mode.el
-				 nil nil (("+-*/.<>=!?$%_&~^:@" . "w")) nil
-				 (font-lock-syntactic-face-function
-				  . lisp-font-lock-syntactic-face-function))))
+                                 ;; From lisp-mode.el
+                                 nil nil (("+-*/.<>=!?$%_&~^:@" . "w")) nil
+                                 (font-lock-syntactic-face-function
+                                  . lisp-font-lock-syntactic-face-function))))
 
     (add-hook 'slime-repl-mode-hook 'slime-repl-font-lock-setup)
 
     (defadvice slime-repl-insert-prompt (after font-lock-face activate)
       (let ((inhibit-read-only t))
-	(add-text-properties
-	 slime-repl-prompt-start-mark (1- (point))
-	 '(font-lock-face
-	   slime-repl-prompt-face
-	   rear-nonsticky
-	   (slime-repl-prompt read-only font-lock-face intangible))))))
+        (add-text-properties
+         slime-repl-prompt-start-mark (1- (point))
+         '(font-lock-face
+           slime-repl-prompt-face
+           rear-nonsticky
+           (slime-repl-prompt read-only font-lock-face intangible))))))
 
   ;; Enable will remove the font-face of loggers.
   ;; (enable-slime-repl-font-lock)
@@ -1871,9 +1962,9 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 ;; NOTE If you start 'slime' via 'slime' command, then all the IO will be re-directed to the REPL by default. (https://slime.common-lisp.dev/doc/html/Global-IO-Redirection.html)
 (evil-define-key '(normal) 'global (kbd "SPC r r") (lambda ()
-						     (interactive)
-						     (slime-repl)
-						     (slime-restart-inferior-lisp)))
+                                                     (interactive)
+                                                     (slime-repl)
+                                                     (slime-restart-inferior-lisp)))
 (evil-define-key '(normal) 'global (kbd "SPC r l") 'slime-list-connections)
 (evil-define-key '(normal) 'global (kbd "SPC r t") 'slime-list-threads)
 
@@ -1913,10 +2004,10 @@ buffers to include `company-capf' (with optional yasnippet) and
     (call-interactively 'evil-insert-state)))
 
 (evil-define-key '(normal) 'global (kbd "SPC e w") (lambda ()
-						     (interactive)
-						     (if (emacs-lisp-mode-p)
-							 (switch-to-emacs-lisp-repl-buffer)
-						       (switch-to-lisp-repl-buffer))))
+                                                     (interactive)
+                                                     (if (emacs-lisp-mode-p)
+                                                         (switch-to-emacs-lisp-repl-buffer)
+                                                       (switch-to-lisp-repl-buffer))))
 (evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e c") 'slime-handle-repl-shortcut)
 
 ;; NOTE We bind keys into `slime-autodoc-mode' minor mode, since this mode will be enabled in both `lisp-mode' and `slime-repl-mode'.
@@ -1929,10 +2020,10 @@ buffers to include `company-capf' (with optional yasnippet) and
 (evil-define-key '(visual) 'slime-autodoc-mode (kbd "SPC e r") 'slime-eval-region)
 ;; TIP Use repl to 'resend' the last form to repl.
 (evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e R") (lambda ()
-								 (interactive)
-								 ;; The slime-repl-resend only works in slime-repl window.
-								 (call-interactively 'slime-repl)
-								 (call-interactively 'slime-repl-resend)))
+                                                                 (interactive)
+                                                                 ;; The slime-repl-resend only works in slime-repl window.
+                                                                 (call-interactively 'slime-repl)
+                                                                 (call-interactively 'slime-repl-resend)))
 
 
 (evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e q") 'slime-repl-quicklisp-quickload)
@@ -1941,10 +2032,10 @@ buffers to include `company-capf' (with optional yasnippet) and
 (evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e D") 'slime-disassemble-symbol)
 
 (evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e p") (lambda ()
-								 (interactive)
-								 (call-interactively 'slime-sync-package-and-default-directory)
-								 (call-interactively 'slime-repl)
-								 (call-interactively 'evil-insert-state)))
+                                                                 (interactive)
+                                                                 (call-interactively 'slime-sync-package-and-default-directory)
+                                                                 (call-interactively 'slime-repl)
+                                                                 (call-interactively 'evil-insert-state)))
 
 (evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e t") 'slime-toggle-trace-fdefinition)
 (evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e T") 'slime-trace-dialog)
@@ -1979,10 +2070,10 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 ;; TIP if there is no symbol under cursor, then the command will ask for a form to inspect.
 (evil-define-key '(normal) 'global (kbd "SPC e i") (lambda ()
-						     (interactive)
-						     (condition-case err
-							 (call-interactively 'slime-inspect)
-						       (call-interactively 'slime-inspect-presentation-at-point))))
+                                                     (interactive)
+                                                     (condition-case err
+                                                         (call-interactively 'slime-inspect)
+                                                       (call-interactively 'slime-inspect-presentation-at-point))))
 
 (evil-define-key '(normal) 'global (kbd "SPC e I") 'slime-interrupt)
 
@@ -2049,21 +2140,28 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;; TIP The command will ask for string if not string at point.
 (evil-define-key '(normal) 'global (kbd "SPC d m") 'slime-documentation-lookup)
 (evil-define-key '(normal) 'global (kbd "SPC d M") (lambda ()
-						     (interactive)
-						     (let ((browse-url-browser-function 'browse-url-default-browser))
-						       (slime-documentation-lookup))))
+                                                     (interactive)
+                                                     (let ((browse-url-browser-function 'browse-url-default-browser))
+                                                       (slime-documentation-lookup))))
 
 (defun --->language:markdown () "Markdown language.")
 (use-package markdown-mode
-    :ensure t
-    :mode ("README\\.md\\'" . gfm-mode)
-    :init (setq markdown-command "multimarkdown")
-    :bind (:map markdown-mode-map
-	      ("C-c C-e" . markdown-do)))
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "multimarkdown")
+  :bind (:map markdown-mode-map
+              ("C-c C-e" . markdown-do)))
 
 
 (defun --->language:latex () "LaTeX language.")
 ;; NOTE For latex language, use the built-in 'reftex' package.
+
+(use-package auctex
+  :ensure t
+  :config
+
+  )
+
 (use-package company-auctex
   :ensure t
   :hook (tex-mode . ignore)
@@ -2097,17 +2195,17 @@ buffers to include `company-capf' (with optional yasnippet) and
   (setq eval-expression-print-length nil)
 
   ;; Set emacs source dir.
-  (setq find-function-C-source-directory (expand-file-name "~/Workspace/github/emacs/src")))
+  (setq find-function-C-source-directory (expand-file-name "~/.cache/yay/emacs-git/src/emacs-git/src")))
 
 (use-package ielm
   :config
 
   ;; Fix the xref backend functions for ielm mode.
   (add-hook 'ielm-mode-hook (lambda ()
-			      (push 'elisp--xref-backend xref-backend-functions)))
+                              (push 'elisp--xref-backend xref-backend-functions)))
 
   (add-hook 'apropos-mode-hook (lambda ()
-				 (push 'elisp--xref-backend xref-backend-functions)))
+                                 (push 'elisp--xref-backend xref-backend-functions)))
 
   ;; Evaluate.
   (evil-define-key '(normal) emacs-lisp-mode-map (kbd "SPC e d") 'eval-defun)
@@ -2120,6 +2218,7 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; Key binding.
   (evil-define-key '(normal) 'global (kbd "SPC u e") 'ielm))
 
+(defun --->language:pdf () "The pdf filetype.")
 (use-package pdf-tools
   :ensure t
   :hook (pdf-view-mode . ignore)
