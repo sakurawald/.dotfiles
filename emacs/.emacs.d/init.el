@@ -77,18 +77,15 @@
 ;; - Information Quality: text (book > article) > image > audio > video.
 ;; stupid sentences ends here.
 
-
-;; TODO The `company-yasnippet' backend does't play well with other backends in `company-backends'.
-
-;; TODO better debugger in emacs. (a gdb front-end)
 ;; TODO explore calc command
 
-;; TODO buffer alist to configure buffer layout.
+;; TODO explore tree-sitter, try to write own parser.
 
 ;; TODO grep on file/project scope.
-;; TODO learn some vim phrase.
-;; TODO the evil layer: v% is not equals to vgm
+
 ;; TODO on the fly git status in treemacs.
+
+;; TODO explore https://github.com/karthink/gptel
 
 ;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -96,7 +93,7 @@
 ;; NOTE It's also okay to steal some ideas from others' dotfiles.
 ;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script.
 ;; TIP Reduce the following inputs, to stay in the home row: `F1-F12', `Caps_Lock', `Escape', `Tab', `Return', `Backspace', `ArrowKeys', `NumberKeys', `MouseInput'.
-;; TIP All the modifier keys are your friend: `Ctrl', `Shift', `Meta', `Super'.
+;; TIP All the modifier keys are your friend: `Ctrl', `Shift', `Meta', `Super'. (Treat modifier keys as the decorator/combinator to alphabet keys)
 ;; TIP What I learned from Vim is to remap `CapsLock' into `Ctrl'. CapsLock is useless, since it's not a modifier-key, and you can replace it with Shift+{a-z}. (https://emacsredux.com/blog/2017/12/31/a-crazy-productivity-boost-remapping-return-to-control-2017-edition/)
 ;; TIP Get some good ideas from https://github.com/t3chnoboy/awesome-awesome-awesome
 ;; TIP Daily computing programs: Terminal (Interact with the OS), Emacs (As application platform), Firefox (As application platform).
@@ -190,10 +187,11 @@
   :config
   ;; NOTE The manual of vim: https://neovim.io/
   ;; NOTE The vim golf makes the text-editing interesting: https://www.vimgolf.com/
+  ;; NOTE Define keys for evil-mode: https://evil.readthedocs.io/en/latest/keymaps.html#evil-define-key
   ;; TIP Use 'C-z' to toggle between 'vi-mode' and 'emacs-mode'.
   ;; TIP To edit 'similar-text', use 'vi-visual-block-mode', 'vim-macro' or 'vim-repeat-command'.
 
-  ;; NOTE The kill-ring in Emacs can be replaced by evil registers.
+  ;; NOTE The kill-ring in Emacs can be replaced by evil registers. (We don't want to use the Emacs registers, to see it use `list-registers' command)
   ;; TIP To list registers ':reg'. Useful registers: 0 (last yank), " (unnamed register), * (x11 clipboard).
   ;; TIP To access a register, use '"<register-name>{py}'.
 
@@ -206,6 +204,9 @@
 
   ;; TIP Use `f/F/t/T' to find/till char in current line, and `;' and `,' to repeat.
   ;; TIP Use `Tab' and `Shift-Tab' to jump to next/previous `semantic-unit' (token).
+
+  ;; TIP Useful combination of vi-commands: `v{w/W}', `v{b/B}', `v{e/E}'.
+  ;; TIP For `v{i/o}{text-object}', the `i' means `inner', and the `o' means `outer'.
 
   ;; Navigate mini-buffer history entries.
   (evil-define-key '(normal insert visual) minibuffer-mode-map (kbd "C-j") 'next-history-element)
@@ -316,7 +317,8 @@
   )
 
 (use-package emacs
-  :config
+  :init
+
   ;; Shadow bindings.
   (evil-define-key '(normal) help-mode-map (kbd "SPC") nil)
   (evil-define-key '(normal) help-mode-map (kbd "S-SPC") nil)
@@ -355,6 +357,9 @@
   (evil-define-key '(normal) 'global (kbd "SPC h v") 'helpful-variable)
   (evil-define-key '(normal) 'global (kbd "SPC h V") 'apropos-variable)
 
+  (evil-define-key '(normal) 'global (kbd "SPC h l") 'apropos-local-variable)
+  (evil-define-key '(normal) 'global (kbd "SPC h L") 'apropos-local-value)
+
   (evil-define-key '(normal) 'global (kbd "SPC h c") 'helpful-command)
   (evil-define-key '(normal) 'global (kbd "SPC h C") 'apropos-command)
 
@@ -363,6 +368,14 @@
 
   (evil-define-key '(normal) 'global (kbd "SPC h o") 'apropos-user-option)
   (evil-define-key '(normal) 'global (kbd "SPC h O") 'apropos-value))
+
+(use-package apropos
+  :defer t
+  :config
+  ;; Color the apropos command.
+  (set-face-attribute 'apropos-symbol nil
+		      :foreground "#00FF00"))
+
 
 (defun --->key-cast () "Display the inputed key and executed command.")
 (use-package keycast
@@ -381,6 +394,7 @@
   ;; TIP Use 'S-{arrow}' to control the 'priority' and 'status'. (Or 'SPC o {hjkl}')
   ;; TIP Use 'M-{arrow}' to control 'order' and 'level'.
   ;; TIP Use 'C-Ret' to insert a 'contextual-heading'.
+  ;; TIP Use `info' command to read the manual of `org' package inside `Emacs'.
   (evil-define-key '(normal) org-mode-map (kbd "SPC o h") 'org-shiftleft)
   (evil-define-key '(normal) org-mode-map (kbd "SPC o j") 'org-shiftdown)
   (evil-define-key '(normal) org-mode-map (kbd "SPC o k") 'org-shiftup)
@@ -723,10 +737,10 @@
   ;; Display match counts in visual-replace.
   (setq visual-replace-display-total t))
 
-(use-package which-func
-  :config
-  ;; TIP Display the function name at point in mode-line.
-  (which-function-mode))
+;; (use-package which-func
+;;   :config
+;;   ;; TIP Display the function name at point in mode-line.
+;;   (which-function-mode))
 
 (use-package time
   :custom
@@ -834,13 +848,15 @@
   ;; TIP The `tab-switch` will switch to the named tab or create it.
 
   ;; Customize the view of tabs.
-  (toggle-tab-bar-mode-from-frame)
   (setq tab-bar-close-button-show nil)
   (setq tab-bar-new-button-show nil)
   (setq tab-bar-tab-hints t)
 
   ;; Disable the auto-width function.
   (setq tab-bar-auto-width nil)
+
+  ;; Set tab naming function.
+  (setq tab-bar-tab-name-function 'tab-bar-tab-name-truncated)
 
   (evil-define-key '(normal) 'global (kbd "SPC t t") 'tab-switch)
   (evil-define-key '(normal) 'global (kbd "SPC t c") 'tab-bar-new-tab)
@@ -1160,7 +1176,7 @@
 
 (use-package magit
   :ensure t
-  :commands (magit)
+  ;; :commands (magit)
   :config
   ;; Set a high-contrast color for hunk high-light. Or #000066, #001847.
   (set-face-attribute 'magit-diff-context-highlight nil
@@ -1203,7 +1219,7 @@
   (evil-define-key '(normal) 'global (kbd "g C") 'lsp-treemacs-errors-list)
 
   ;; gm -> as a shortcut of '%'.
-  (evil-define-key '(normal) 'global (kbd "g m") 'evil-jump-item)
+  (evil-define-key '(normal visual) 'global (kbd "g m") 'evil-jump-item)
 
   (evil-define-key '(normal) 'global (kbd "g b") 'beginning-of-defun)
 
@@ -1409,7 +1425,17 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 
   ;; Fix: for `(sb-vm:)' string, you can't press tab key to open the company completion window.
-  (define-key evil-insert-state-map (kbd "<tab>") 'company-indent-or-complete-common)
+  ;; NOTE: Only set the <tab> key for `prog-mode'. Should not set it for helm-M-x mode, or you will get `Company not enabled.' in mini-buffer.
+  (add-hook 'prog-mode-hook
+	    (lambda ()
+	      (define-key evil-insert-state-local-map (kbd "<tab>") 'indent-for-tab-command)))
+
+  ;; (define-key evil-insert-state-map (kbd "<tab>") 'company-indent-or-complete-common)
+  ;; (add-hook 'helm-mode-hook
+  ;; 	    (lambda ()
+  ;; 	      (define-key evil-insert-state-local-map
+  ;; 			  (kbd "<tab>") 'indent-for-tab-command)))
+  ;; (define-key evil-insert-state-map (kbd "<tab>") 'company-indent-or-complete-common)
 
   ;; Enable global mode.
   (add-hook 'after-init-hook 'global-company-mode))
@@ -1436,14 +1462,14 @@ buffers to include `company-capf' (with optional yasnippet) and
 (defun --->snippet () "Snippet text.")
 (use-package yasnippet
   :ensure t
-  ;; :after (company)
+  :after (company)
   :hook (prog-mode . yas-minor-mode)
   :config
   ;; TIP Good to have a 'template' system to avoid stupid codes in some stupid languages. (I am not saying about Java).
   ;; TIP Use 'Tab' in `vi-insert-mode' to expand the key into snippet. e.g. 'cls<Tab>' in common-lisp mode.
 
   ;; Add company backend
-  ;; (push 'company-yasnippet company-backends)
+  (add-to-list 'company-backends '(company-clang :with company-yasnippet))
 
   ;;TriggerKey
   ;; (evil-define-key 'insert yas-minor-mode-map (kbd "SPC") 'yas-expand)
@@ -1549,6 +1575,8 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;; TIP Useful vi text-objects: 'b' = 'parenthesis', 'B' = 'curly', 't' = 'tag', 's' = 'sentence', 'a' = 'argument', 'f' = 'function', 'c' = 'class', 'o' = 'symbol'.
 ;; TIP To select cuurent function and jump between beginning and end: 'vifoo'
 ;; TIP It's very useful to use `vio' and `vib' in lisp family language.
+;; TIP To list all possible `va{text-object}', see `evil-outer-text-objects-map'.
+
 
 ;; TIP The built-in package is named `treesit' package, use `{language}-ts-mode' to enable tree-sitter for the buffer.
 (use-package tree-sitter
@@ -1692,6 +1720,10 @@ buffers to include `company-capf' (with optional yasnippet) and
   :ensure t
   :after (evil hl-line)
   :commands (vterm)
+  :init
+  ;;; Keymap.
+  ;; TIP The function to set window layout https://emacsredux.com/blog/2013/03/29/terminal-at-your-fingertips/
+  (evil-define-key '(normal) 'global (kbd "SPC u s") 'vterm)
   :custom
   ;; TIP As a convention, the prefix key `C-c <key-to-send>' is used as `escape-sequence', to send next-key into libvterm directly.
   (vterm-keymap-exceptions '("C-c"))
@@ -1720,10 +1752,6 @@ buffers to include `company-capf' (with optional yasnippet) and
 
   ;; Start with insert-state.
   (evil-set-initial-state 'vterm-mode 'insert)
-
-  ;;; Keymap.
-  ;; TIP The function to set window layout https://emacsredux.com/blog/2013/03/29/terminal-at-your-fingertips/
-  (evil-define-key '(normal) 'global (kbd "SPC u s") 'vterm)
 
   ;; Toggle between `Emacs' and `Vim' mode.
   ;; Set the default state to insert mode, since most of terminal programs are not interactive, so they work well in evil-insert-state.
@@ -1759,10 +1787,10 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;; TIP Alternatives: monkeytype, typit
 (use-package speed-type
   :ensure t
-  :commands (speed-type-text)
-  :config
+  :init
   ;; TIP Typing-game is the most useful game.
-  (evil-define-key '(normal) 'global (kbd "SPC u g") 'speed-type-text))
+  (evil-define-key '(normal) 'global (kbd "SPC u g") 'speed-type-text)
+  :commands (speed-type-text))
 
 (defun --->customize () "The customize in Emacs.")
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
@@ -1844,9 +1872,14 @@ buffers to include `company-capf' (with optional yasnippet) and
 
   (setq lsp-treemacs-error-list-expand-depth 2))
 
+;; NOTE The `dap-mode' package seems buggy, and IDE from jetbrains works perfect.
+;; NOTE You can try other external gdb frontend, may be it will solve your problem.
+;; TIP A better solution is to run `gdb --tui' in vterm.
 (use-package dap-mode
+  :disabled t
   :ensure t
   :hook (lsp-mode . ignore)
+  :commands (dap-register-debug-template)
   :config
   ;; TIP To configure the debugger: https://sourceware.org/gdb/current/onlinedocs/gdb.html/Debugger-Adapter-Protocol.html
 
@@ -1883,6 +1916,7 @@ buffers to include `company-capf' (with optional yasnippet) and
   (setq inferior-lisp-program "ros dynamic-space-size=4GiB run")
 
   ;; NOTE Use 'slime-setup' instead of `(setq slime-contribs '(slime-fancy))`.
+
   (slime-setup '(
                  slime-asdf
                  slime-quicklisp
@@ -1891,8 +1925,9 @@ buffers to include `company-capf' (with optional yasnippet) and
                  slime-banner
                  slime-xref-browser
                  ;; slime-highlight-edits (this only works for compile)
-                 slime-company))
 
+                 slime-company
+		 ))
 
   ;; Options for contribs.
   (setq slime-startup-animation nil)
@@ -1949,6 +1984,11 @@ buffers to include `company-capf' (with optional yasnippet) and
 
   ;; NOTE 'slime-company' must put after 'slime' to work.
   (setq slime-company-completion 'fuzzy)
+
+  ;; Integrate with yasnippet.
+  ;; (advice-add 'slime-company-maybe-enable :after (lambda ()
+  ;; 						   (add-to-list 'company-backends '(company-slime :with company-yasnippet))))
+
   ;;(setq slime-company-after-completion nil)
   ;;(setq slime-company-after-completion 'slime-company-just-one-space)
   )
@@ -2194,6 +2234,11 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; Disable output truncate.
   (setq eval-expression-print-length nil)
 
+  ;; Set window rules for *ielm* buffer.
+  (push '("*ielm*"
+	  display-buffer-pop-up-window)
+	display-buffer-alist)
+
   ;; Set emacs source dir.
   (setq find-function-C-source-directory (expand-file-name "~/.cache/yay/emacs-git/src/emacs-git/src")))
 
@@ -2216,7 +2261,7 @@ buffers to include `company-capf' (with optional yasnippet) and
   (evil-define-key '(visual) emacs-lisp-mode-map (kbd "SPC e r") 'eval-region)
 
   ;; Key binding.
-  (evil-define-key '(normal) 'global (kbd "SPC u e") 'ielm))
+  (evil-define-key '(normal) 'global (kbd "SPC u e") 'switch-to-emacs-lisp-repl-buffer))
 
 (defun --->language:pdf () "The pdf filetype.")
 (use-package pdf-tools
