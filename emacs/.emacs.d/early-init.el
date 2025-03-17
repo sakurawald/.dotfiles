@@ -8,7 +8,7 @@
                   gc-cons-percentage 0.1)))
 
 ;; Increase the external IO chunk size.
-(setq read-process-output-max (* 1 1024 1024))
+(setq read-process-output-max (* 8 1024 1024))
 
 ;; Hide un-used views.
 (menu-bar-mode -1)

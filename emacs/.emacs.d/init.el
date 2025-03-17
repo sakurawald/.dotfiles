@@ -85,8 +85,6 @@
 
 ;; TODO on the fly git status in treemacs.
 
-;; TODO explore https://github.com/karthink/gptel
-
 ;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -132,6 +130,7 @@
 
 ;; NOTE Use `use-package' package for its defer loading.
 ;; (require 'use-package)
+;; NOTE To bypass the package requirement restriction, use `package-vc-install'.
 
 ;; NOTE The `benchmark-init' package gives the wrong sample time.
 ;; NOTE A shorten startup-time doesn't means a better user-experience. (You will get stutter when loading packages while using commands.)
@@ -374,7 +373,7 @@
   :config
   ;; Color the apropos command.
   (set-face-attribute 'apropos-symbol nil
-		      :foreground "#00FF00"))
+                      :foreground "#00FF00"))
 
 
 (defun --->key-cast () "Display the inputed key and executed command.")
@@ -409,13 +408,21 @@
   (evil-define-key '(visual) org-mode-map (kbd "SPC o s") 'org-sort)
   (evil-define-key '(normal) org-mode-map (kbd "SPC o m") 'org-babel-mark-block)
 
+  ;; face
+  (set-face-background 'org-block-begin-line "#000000")
+  (set-face-background 'org-block-end-line "#000000")
+
   ;; babel
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . nil)
      (lisp . t)
+     ;; Use return(42) to provide the result value.
      (python . t)
+     (C . t)
      (plantuml . t)))
+
+  ;; (add-to-list 'org-babel-tangle-lang-exts '("c" "cpp"))
 
   ;; (setq org-plantuml-jar-path (expand-file-name "~/.emacs.d/plantuml.jar"))
   ;; (setq org-plantuml-exec-mode 'jar)
@@ -478,16 +485,85 @@
 
 
 (defun --->chat () "Chat with AI.")
+(use-package gptel
+  :ensure t
+  :after (evil helm)
+  :commands (gptel)
+  :init
+  (defun gptel-start-or-menu ()
+    (interactive)
+    (if (bound-and-true-p gptel-mode)
+	(call-interactively 'gptel-menu)
+      (call-interactively 'gptel)))
+
+  (evil-define-key '(normal visual) 'global (kbd "SPC g") 'gptel-start-or-menu)
+  :config
+  ;; NOTE It's recommemded to host an open-source chat-model locally.
+  ;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
+  ;; TIP Use `C-x' in `gptel-menu' to show advanced-menu.
+  ;; TIP Use GPT for broad-phase exploration.
+  ;; TIP Combine `gpt' with `org-babel', to evaluate the source code.
+
+  ;; Define api keys.
+  (load "~/.emacs.d/token.el")
+
+  ;; Transient
+  ;; (setq transient-display-buffer-action
+  ;; 	'(display-buffer-below-selected
+  ;;         (dedicated . t)
+  ;;         (inhibit-same-window . t)))
+
+  ;; Use org-mode.
+  (setq gptel-default-mode 'org-mode)
+
+  ;; Disable line truncate.
+  (add-hook 'gptel-mode-hook 'toggle-truncate-lines)
+
+  ;; Set backends and models.
+  ;; TIP One backend/provider can contains more than one model.
+  (setq gptel-model 'phi4:latest)
+  (setq gptel-backend (gptel-make-ollama "Ollama"
+			:host "localhost:11434"
+			:stream t
+			:models '(phi4:latest
+				  llama3.2:latest
+				  deepseek-r1:1.5b
+				  deepseek-r1:8b
+				  deepseek-r1:14b
+				  )))
+
+  (setq gptel-model 'gemini-2.0-flash)
+  (setq gptel-backend (gptel-make-gemini "Gemini"
+                        :key (my/gemini-api-key)
+                        :stream t))
+
+  ;; Fix conflicting between helm and transient. (https://github.com/magit/transient/discussions/361)
+  (defun helm-current-window-configuration ()
+    "Like `current-window-configuration' but deal with Transient incompatibility."
+    (when (and (fboundp 'transient--preserve-window-p)
+               (fboundp 'transient--delete-window)
+               (not (transient--preserve-window-p)))
+      ;; Noop if `transient--window' isn't a live window.
+      (transient--delete-window))
+    (current-window-configuration))
+
+  (setq helm-save-configuration-functions '(set-window-configuration
+					    ;; Replacing `current-window-configuration':
+					    . helm-current-window-configuration))
+
+
+  )
+
 (use-package ellama
+  :disabled t
   :ensure t
   :commands (ellama-transient-main-menu)
   :after (evil)
   :init
   (evil-define-key '(normal visual) 'global (kbd "SPC g") 'ellama-transient-main-menu)
   :config
-  ;; NOTE It's recommemded to host an open-source chat-model locally.
-  ;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
   ;; TIP Use `ollama run llama3.1' to download the model and use `ellama-provider-select' to select a model.
+
   (add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
 
   ;; Customize the LLM model.
@@ -1177,6 +1253,7 @@
 (use-package magit
   :ensure t
   ;; :commands (magit)
+  ;; :hook (prog-mode . ignore)
   :config
   ;; Set a high-contrast color for hunk high-light. Or #000066, #001847.
   (set-face-attribute 'magit-diff-context-highlight nil
@@ -1427,14 +1504,14 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; Fix: for `(sb-vm:)' string, you can't press tab key to open the company completion window.
   ;; NOTE: Only set the <tab> key for `prog-mode'. Should not set it for helm-M-x mode, or you will get `Company not enabled.' in mini-buffer.
   (add-hook 'prog-mode-hook
-	    (lambda ()
-	      (define-key evil-insert-state-local-map (kbd "<tab>") 'indent-for-tab-command)))
+            (lambda ()
+              (define-key evil-insert-state-local-map (kbd "<tab>") 'indent-for-tab-command)))
 
   ;; (define-key evil-insert-state-map (kbd "<tab>") 'company-indent-or-complete-common)
   ;; (add-hook 'helm-mode-hook
-  ;; 	    (lambda ()
-  ;; 	      (define-key evil-insert-state-local-map
-  ;; 			  (kbd "<tab>") 'indent-for-tab-command)))
+  ;;        (lambda ()
+  ;;          (define-key evil-insert-state-local-map
+  ;;                      (kbd "<tab>") 'indent-for-tab-command)))
   ;; (define-key evil-insert-state-map (kbd "<tab>") 'company-indent-or-complete-common)
 
   ;; Enable global mode.
@@ -1487,15 +1564,15 @@ buffers to include `company-capf' (with optional yasnippet) and
   :config
   ;; NOTE flycheck = the external executable 'checker' + the abstraction for 'error' object.
 
-  ;; The fringe indicator is too tiny in hi-res mode:
-  ;; - https://github.com/flycheck/flycheck/pull/1744/files
-  ;; - https://emacs.stackexchange.com/questions/52829/fringe-indicators-very-tiny
-  (setq-default left-fringe-width 16 right-fringe-width 16
-                left-margin-width 0 right-margin-width 0)
-
   ;; User options.
   (setq flycheck-display-errors-delay 2.0)
 
+  ;; The fringe indicator is too tiny in hi-res mode:
+  ;; - https://github.com/flycheck/flycheck/pull/1744/files
+  ;; - https://emacs.stackexchange.com/questions/52829/fringe-indicators-very-tiny
+  ;; - https://debbugs.gnu.org/cgi/bugreport.cgi?bug=31203
+  (setq-default left-fringe-width 16 right-fringe-width 16
+                left-margin-width 0 right-margin-width 0)
 
   ;; Enable it.
   (global-flycheck-mode)
@@ -1876,10 +1953,9 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;; NOTE You can try other external gdb frontend, may be it will solve your problem.
 ;; TIP A better solution is to run `gdb --tui' in vterm.
 (use-package dap-mode
-  :disabled t
   :ensure t
-  :hook (lsp-mode . ignore)
-  :commands (dap-register-debug-template)
+  ;; :hook (lsp-mode . ignore)
+  ;; :commands (dap-register-debug-template)
   :config
   ;; TIP To configure the debugger: https://sourceware.org/gdb/current/onlinedocs/gdb.html/Debugger-Adapter-Protocol.html
 
@@ -1927,14 +2003,14 @@ buffers to include `company-capf' (with optional yasnippet) and
                  ;; slime-highlight-edits (this only works for compile)
 
                  slime-company
-		 ))
+                 ))
 
   ;; Options for contribs.
   (setq slime-startup-animation nil)
 
   ;; Color the apropos command.
   (set-face-attribute 'slime-apropos-symbol nil
-		      :foreground "#00FF00")
+                      :foreground "#00FF00")
 
   ;; Start slime automatically if needed.
   (setq slime-auto-start 'always)
@@ -1987,7 +2063,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 
   ;; Integrate with yasnippet.
   ;; (advice-add 'slime-company-maybe-enable :after (lambda ()
-  ;; 						   (add-to-list 'company-backends '(company-slime :with company-yasnippet))))
+  ;;                                               (add-to-list 'company-backends '(company-slime :with company-yasnippet))))
 
   ;;(setq slime-company-after-completion nil)
   ;;(setq slime-company-after-completion 'slime-company-just-one-space)
@@ -2235,9 +2311,8 @@ buffers to include `company-capf' (with optional yasnippet) and
   (setq eval-expression-print-length nil)
 
   ;; Set window rules for *ielm* buffer.
-  (push '("*ielm*"
-	  display-buffer-pop-up-window)
-	display-buffer-alist)
+  (push '("*ielm*" display-buffer-pop-up-window)
+        display-buffer-alist)
 
   ;; Set emacs source dir.
   (setq find-function-C-source-directory (expand-file-name "~/.cache/yay/emacs-git/src/emacs-git/src")))
