@@ -4,7 +4,7 @@
 (setq gc-cons-percentage 0.6)
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (setq gc-cons-threshold (* 8 1000 1000)
+            (setq gc-cons-threshold (* 100 1000 1000)
                   gc-cons-percentage 0.1)))
 
 ;; Increase the external IO chunk size.

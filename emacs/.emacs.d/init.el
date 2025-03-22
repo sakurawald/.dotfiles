@@ -77,13 +77,12 @@
 ;; - Information Quality: text (book > article) > image > audio > video.
 ;; stupid sentences ends here.
 
-;; TODO explore calc command
+;; TODO on the fly git status in treemacs.
 
 ;; TODO explore tree-sitter, try to write own parser.
 
 ;; TODO grep on file/project scope.
-
-;; TODO on the fly git status in treemacs.
+;; TODO explore vim like pdf viewer in emacs eco.
 
 ;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
@@ -106,6 +105,8 @@
                     (float-time
                      (time-subtract after-init-time before-init-time)))
             gcs-done)))
+
+;; NOTE `defun' is not a special-form, read the `info' packge for `special-form'.
 
 (defun <package> () "Emacs package manage.")
 (defun --->package-manager () "Add melpa-repo into the package.el.")
@@ -220,6 +221,9 @@
   (define-key evil-normal-state-map (kbd "C-p") 'helm-show-kill-ring)
   (define-key evil-insert-state-map (kbd "C-p") 'helm-show-kill-ring)
 
+  ;; Disable the evil digraph mode. (See more in evil-ex-show-diagraphs command.)
+  (define-key evil-insert-state-map (kbd "C-k") nil)
+
   ;; TIP Use `C-c' prefix to be compatible with the `vterm' package.
   (evil-set-toggle-key "C-c z")
 
@@ -317,7 +321,6 @@
 
 (use-package emacs
   :init
-
   ;; Shadow bindings.
   (evil-define-key '(normal) help-mode-map (kbd "SPC") nil)
   (evil-define-key '(normal) help-mode-map (kbd "S-SPC") nil)
@@ -366,7 +369,10 @@
   (evil-define-key '(normal) 'global (kbd "SPC h P") 'apropos-library)
 
   (evil-define-key '(normal) 'global (kbd "SPC h o") 'apropos-user-option)
-  (evil-define-key '(normal) 'global (kbd "SPC h O") 'apropos-value))
+  (evil-define-key '(normal) 'global (kbd "SPC h O") 'apropos-value)
+  :config
+  ;; TIP Use `view-emacs-news' command to read Emacs change log.
+  )
 
 (use-package apropos
   :defer t
@@ -408,9 +414,18 @@
   (evil-define-key '(visual) org-mode-map (kbd "SPC o s") 'org-sort)
   (evil-define-key '(normal) org-mode-map (kbd "SPC o m") 'org-babel-mark-block)
 
-  ;; face
+  ;; Face
   (set-face-background 'org-block-begin-line "#000000")
   (set-face-background 'org-block-end-line "#000000")
+
+  (set-face-foreground 'org-headline-done "#00FF00")
+
+  (set-face-foreground 'org-level-1 "#5454FC")
+  (set-face-foreground 'org-level-2 "#FF0000")
+  (set-face-foreground 'org-level-3 "#FFFF00")
+  (set-face-foreground 'org-level-4 "orange")
+  (set-face-foreground 'org-level-5 "sky blue")
+  (set-face-foreground 'org-level-6 "SeaGreen1")
 
   ;; babel
   (org-babel-do-load-languages
@@ -461,6 +476,11 @@
    org-agenda-current-time-string
    "◀── now ─────────────────────────────────────────────────")
 
+  ;; Face
+  (set-face-foreground 'org-modern-priority "gray")
+  (set-face-foreground 'org-modern-todo "red")
+  (set-face-foreground 'org-modern-done "green")
+
   ;; Ellipsis styling
   (setq org-ellipsis "…")
   (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
@@ -479,10 +499,7 @@
   :disabled t
   :ensure t
   :config
-
   )
-
-
 
 (defun --->chat () "Chat with AI.")
 (use-package gptel
@@ -493,23 +510,33 @@
   (defun gptel-start-or-menu ()
     (interactive)
     (if (bound-and-true-p gptel-mode)
-	(call-interactively 'gptel-menu)
+        (call-interactively 'gptel-menu)
       (call-interactively 'gptel)))
 
-  (evil-define-key '(normal visual) 'global (kbd "SPC g") 'gptel-start-or-menu)
+  (evil-define-key '(normal visual) 'global (kbd "SPC g") 'gptel-menu)
+  (evil-define-key '(normal visual) 'global (kbd "SPC G") 'gptel)
   :config
   ;; NOTE It's recommemded to host an open-source chat-model locally.
+  ;; TIP The key-point of `gptel' is `gpt-everywhere-interactively' and `use-tools'.
+  ;; TIP gptel marks the model response with text-properties, so you can `append' or `in-place-editting' new input text freely without a prompt-prefix.
+  ;; TIP Hover the `cursor' on `gpt-response', you can `tweak' the response.
+
   ;; TIP The possibility of chat includes: text generate, text complete, text improve, text expand, text shorten, text translate.
   ;; TIP Use `C-x' in `gptel-menu' to show advanced-menu.
   ;; TIP Use GPT for broad-phase exploration.
   ;; TIP Combine `gpt' with `org-babel', to evaluate the source code.
+  ;; TIP Use `GPT' to `explore' new ideas, and get some inspiration.
+  ;; TIP Use `G' to goto the last-line within prompt.
+  ;; TIP Press `Ret' in `rewrite-mark' to accepr or reject the result.
+
+  ;; TIP Image you are using a control pad to launch projectile. (gptel-menu)
 
   ;; Define api keys.
   (load "~/.emacs.d/token.el")
 
   ;; Transient
   ;; (setq transient-display-buffer-action
-  ;; 	'(display-buffer-below-selected
+  ;;    '(display-buffer-below-selected
   ;;         (dedicated . t)
   ;;         (inhibit-same-window . t)))
 
@@ -522,20 +549,28 @@
   ;; Set backends and models.
   ;; TIP One backend/provider can contains more than one model.
   (setq gptel-model 'phi4:latest)
-  (setq gptel-backend (gptel-make-ollama "Ollama"
-			:host "localhost:11434"
-			:stream t
-			:models '(phi4:latest
-				  llama3.2:latest
-				  deepseek-r1:1.5b
-				  deepseek-r1:8b
-				  deepseek-r1:14b
-				  )))
+
+  (gptel-make-ollama "Ollama"
+    :host "localhost:11434"
+    :stream t
+    :models '(phi4:latest
+              llama3.2:latest
+              deepseek-r1:1.5b
+              deepseek-r1:8b
+              deepseek-r1:14b
+              llava:13b
+              ))
+
+  (put 'llava:13b :capabilities '(media))
 
   (setq gptel-model 'gemini-2.0-flash)
   (setq gptel-backend (gptel-make-gemini "Gemini"
                         :key (my/gemini-api-key)
                         :stream t))
+
+
+  ;; (setq gptel-backend )
+
 
   ;; Fix conflicting between helm and transient. (https://github.com/magit/transient/discussions/361)
   (defun helm-current-window-configuration ()
@@ -548,8 +583,8 @@
     (current-window-configuration))
 
   (setq helm-save-configuration-functions '(set-window-configuration
-					    ;; Replacing `current-window-configuration':
-					    . helm-current-window-configuration))
+                                            ;; Replacing `current-window-configuration':
+                                            . helm-current-window-configuration))
 
 
   )
@@ -1045,7 +1080,7 @@
   (evil-define-key '(normal) 'global (kbd "SPC f C") 'treemacs-create-dir)
 
   (evil-define-key '(normal) 'global (kbd "SPC f g") 'vr/query-replace)
-  ;; (evil-define-key '(normal) 'global (kbd "SPC f G") 'anzu-query-replace-regexp)
+  (evil-define-key '(normal) 'global (kbd "SPC f G") 'rg)
 
 
   (evil-define-key '(normal) 'global (kbd "SPC f w s") 'treemacs-switch-workspace)
@@ -1449,8 +1484,15 @@
 
   ;; Trigger the completion with only 1 prefix character.
   (setq company-minimum-prefix-length 1)
-  (setq company-idle-delay
-        (lambda () (if (company-in-string-or-comment) nil 0)))
+  ;; (setq company-idle-delay
+  ;;       (lambda () (if (company-in-string-or-comment) nil 0)))
+
+  (setq company-idle-delay 0)
+
+  ;; Transform the sorted result.
+  (setq company-transformers '(delete-consecutive-dups
+                               company-sort-by-occurrence
+			       company-sort-prefer-same-case-prefix))
 
   ;; Inhibit the completion inside symbol.
   ;; TODO The company completion will not replace the behind characters, making it hard to use inside symbol.
@@ -1616,6 +1658,11 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; Set indent-offset for human readable.
   (setq lisp-indent-offset nil))
 
+(use-package editorconfig
+  :ensure nil
+  :config
+  (editorconfig-mode))
+
 ;; NOTE The indent highlight is distracting, just use the auto formatter and the space characters width.
 ;; (use-package indent-bars
 ;;   :ensure t
@@ -1691,7 +1738,8 @@ buffers to include `company-capf' (with optional yasnippet) and
   (global-highlight-thing-mode)
 
   ;; Set excluded modes.
-  (setq highlight-thing-excluded-major-modes '(pdf-view-mode))
+  (add-to-list 'highlight-thing-excluded-major-modes 'pdf-view-mode)
+  (add-to-list 'highlight-thing-excluded-major-modes 'vterm-mode)
 
   ;; Highlight the thing at point instantly. (It's more responsive.)
   (setq highlight-thing-delay-seconds 0) ;; Or 0.5
@@ -1762,6 +1810,18 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;;   )
 
 (defun <utility> () "Utility tools in Emacs.")
+
+;; NOTE Don't use un-stable applications, or you have to fix it yourself.
+;; [Useful Tools]
+;; Operation System: Arch Linux
+;; Desktop Environment: KDE, x11
+;; System: Alacritty, Spectacle, Wine
+;; Input Method: fcitx
+;; Encrypt: KeePassXC
+;; Office: only-office, Acrobat Reader
+;; Development: Emacs, Jetbrains Toolbox (DataGrip, IDEA, CLion, WebStorm), Qt Creator
+;; Media: OBS Studio, VLC
+;; Internet: Spicy, Chromium, Tor Browser, Wireshark.
 
 (defun --->utility () "Minor utility tools.")
 (use-package dictionary
@@ -1897,9 +1957,12 @@ buffers to include `company-capf' (with optional yasnippet) and
          (c-mode . lsp)
          (c++-mode . lsp)
          (java-mode . lsp)
-         (yaml-ts-mode . lsp))
+         ;; (yaml-ts-mode . lsp)
+         (glsl-mode . lsp)
+	 )
   :commands lsp
   :config
+  ;; TIP Use `lsp-describe-session' command to check the abilities of the active lsp server.
 
   ;; Options
   ;; (push "--compile-commands-dir=./build" lsp-clients-clangd-args)
@@ -2051,7 +2114,9 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 
   ;; Fix bindings.
-  (evil-define-key 'normal slime-mode-map "gr" 'slime-edit-uses))
+  (evil-define-key 'normal slime-mode-map "gr" 'slime-edit-uses)
+  ;; (evil-define-key 'normal slime-mode-map "C-m" 'slime-repl-return)
+  )
 
 (use-package slime-company
   :ensure t
@@ -2062,8 +2127,8 @@ buffers to include `company-capf' (with optional yasnippet) and
   (setq slime-company-completion 'fuzzy)
 
   ;; Integrate with yasnippet.
-  ;; (advice-add 'slime-company-maybe-enable :after (lambda ()
-  ;;                                               (add-to-list 'company-backends '(company-slime :with company-yasnippet))))
+  (advice-add 'slime-company-maybe-enable :after (lambda ()
+                                                   (add-to-list 'company-backends '(company-slime :with company-yasnippet))))
 
   ;;(setq slime-company-after-completion nil)
   ;;(setq slime-company-after-completion 'slime-company-just-one-space)
@@ -2275,6 +2340,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 (use-package auctex
   :ensure t
   :config
+  ;; TIP The correct command is `LaTeX-mode'.
 
   )
 
@@ -2343,6 +2409,27 @@ buffers to include `company-capf' (with optional yasnippet) and
   :ensure t
   :hook (pdf-view-mode . ignore)
   :config)
+
+(defun --->language:glsl () "Glsl language.")
+(use-package glsl-mode
+  :ensure t
+  :after (lsp-mode)
+  :mode (("\\.glsl\\'" . glsl-mode)
+	 ("\\.fs\\'" . glsl-mode)
+	 ("\\.vs\\'" . glsl-mode)
+	 ("\\.gs\\'" . glsl-mode)
+	 ("\\.ts\\'" . glsl-mode)
+	 ("\\.vert\\'" . glsl-mode)
+	 ("\\.tesc\\'" . glsl-mode)
+	 ("\\.tese\\'" . glsl-mode)
+	 ("\\.geom\\'" . glsl-mode)
+	 ("\\.comp\\'" . glsl-mode))
+  :config
+  (setf lsp-glsl-executable "glsl_analyzer")
+
+  ;; (glsl-mode)
+  )
+
 
 (provide '.emacs)
 ;;; .emacs ends here
