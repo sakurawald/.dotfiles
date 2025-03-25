@@ -77,13 +77,21 @@
 ;; - Information Quality: text (book > article) > image > audio > video.
 ;; stupid sentences ends here.
 
-;; TODO on the fly git status in treemacs.
+;; TODO bookmark to add known path: github, script, .config ... (with dired command)
 
 ;; TODO explore tree-sitter, try to write own parser.
 
-;; TODO grep on file/project scope.
+;; TODO grep (saerch and replace) on file/project scope.
+
 ;; TODO explore vim like pdf viewer in emacs eco.
 
+;; TODO let helm support multi pattern for all commands. (gs command)
+
+;; TODO sometimes buffers opened by lsp-java mode out of sync.
+
+;; TODO Set a japanese font for emacs.
+
+;; NOTE Emacs 30.1 build 2 is very fast. (Build it yourself)
 ;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
@@ -114,14 +122,14 @@
 ;; Load `package'
 (require 'package)
 ;; Set package archive.
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(setq package-archive-priorities
-      '(("gnu"      . 100)
-        ("nongnu"   . 50)
-        ("melpa"    . 10)))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+;; (setq package-archive-priorities
+;;       '(("gnu"      . 100)
+;;         ("nongnu"   . 50)
+;;         ("melpa"    . 10)))
 
 ;; Initialize packages.
-(setq package-quickstart t)
+;; (setq package-quickstart t)
 (package-initialize)
 ;; (package-refresh-contents t)
 
@@ -131,7 +139,7 @@
 
 ;; NOTE Use `use-package' package for its defer loading.
 ;; (require 'use-package)
-;; NOTE To bypass the package requirement restriction, use `package-vc-install'.
+;; NOTE To bypass the package requirement restriction, use `package-vc-install'. (Or just upgrade the Emacs version)
 
 ;; NOTE The `benchmark-init' package gives the wrong sample time.
 ;; NOTE A shorten startup-time doesn't means a better user-experience. (You will get stutter when loading packages while using commands.)
@@ -144,7 +152,8 @@
   ;; TIP See https://zenodo.org/records/3736363
   ;; NOTE Performance comparing: https://www.gnu.org/software/emacs/manual/html_node/elisp/Native-Compilation.html
   ;; Native compile a package when installing it.
-  (setq package-native-compile t))
+  (setq package-native-compile t)
+  )
 
 (use-package emacs
   :ensure nil
@@ -344,6 +353,7 @@
   (evil-define-key '(normal) 'global (kbd "SPC h k") 'helpful-key)
   (evil-define-key '(normal) 'global (kbd "SPC h K") 'describe-keymap)
 
+  ;; TIP Use `zm' to fold all sections.
   (evil-define-key '(normal) 'global (kbd "SPC h m") 'describe-mode)
   (evil-define-key '(normal) 'global (kbd "SPC h M") 'man)
 
@@ -779,6 +789,8 @@
   (evil-define-key '(normal insert) helm-map (kbd "C-d") 'helm-next-page)
   (evil-define-key '(normal insert) helm-map (kbd "C-u") 'helm-previous-page)
 
+  ;; (evil-define-key '(normal insert) helm-map (kbd "C-l") 'helm-execute-persistent-action)
+
   ;; Used to overwrite the `TIP' message.
   (define-key helm-map (kbd "C-j") 'helm-next-line)
 
@@ -1065,7 +1077,6 @@
 
 (use-package treemacs
   :ensure t
-  :defer t
   :after (projectile)
   :init
   ;; NOTE Should not use `treemacs-tab-bar' package, it's buggy. The default model used by treemacs is powerful, which supports to make muptile projects as a workspace.
@@ -1199,7 +1210,7 @@
   :ensure nil
   :after (treemacs dired)
   :config
-  ;; Decorate the `dired' command with `icons' version.
+  ;; TIP Decorate the `dired' command with `icons' version.
   (treemacs-icons-dired-mode))
 
 (defun --->project () "Project related.")
@@ -1316,7 +1327,7 @@
   ;; gj / gk ---> logical line
   ;; ge / GE ---> backward word end / backward broad word end
   ;; GJ ---> join line (without one space) ('J' = join line with one space)
-  ;; Gu / GU ---> downcase / upcase operator (e.g. 'guiw'). (Or you can just press 'u/U' in vi-visual-state)
+  ;; Gu / GU ---> downcase / upcase operator (e.g. 'guiw'). (Or you can just press 'u/U' in vi-visual-state, or use combination `gUiw')
   ;; gz -> goto 'emacs-lisp-repl' provided by 'ielm'.
 
   ;; gd / gr ---> find definition / find references.
@@ -1748,6 +1759,8 @@ buffers to include `company-capf' (with optional yasnippet) and
   (setq highlight-thing-case-sensitive-p nil)
   (set-face-attribute 'highlight nil
                       :background nil
+		      :inverse-video nil
+		      :bold nil
                       :underline '(:color "#00FF00"
                                           :style line)))
 
@@ -1958,22 +1971,24 @@ buffers to include `company-capf' (with optional yasnippet) and
          (c++-mode . lsp)
          (java-mode . lsp)
          ;; (yaml-ts-mode . lsp)
-         (glsl-mode . lsp)
-	 )
+         (glsl-mode . lsp))
   :commands lsp
   :config
   ;; TIP Use `lsp-describe-session' command to check the abilities of the active lsp server.
+
+  ;; Disable copilot server, it's too slow. (Use a specified pakcage for copilot instead.)
+  (setq lsp-copilot-enabled nil)
 
   ;; Options
   ;; (push "--compile-commands-dir=./build" lsp-clients-clangd-args)
 
   ;; Bind find-references function.
   ;; TODO need to re-enter normal mode to apply the keymap.
-  (evil-define-key 'normal lsp-mode-map "gr" 'lsp-find-references)
-  (evil-define-key 'normal lsp-mode-map "ga" 'xref-apropos)
+  (evil-define-key 'normal lsp-mode-map (kbd "gr") 'lsp-find-references)
+  (evil-define-key 'normal lsp-mode-map (kbd "ga") 'xref-apropos)
 
   ;; Bind document function.
-  (evil-define-key 'normal lsp-mode-map "K" 'lsp-describe-thing-at-point)
+  (evil-define-key 'normal lsp-mode-map (kbd "K") 'lsp-describe-thing-at-point)
 
   ;; Bind keys.
   (evil-define-key '(normal) 'global (kbd "SPC l w d") 'lsp-describe-session)
@@ -2114,7 +2129,10 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 
   ;; Fix bindings.
-  (evil-define-key 'normal slime-mode-map "gr" 'slime-edit-uses)
+  (evil-define-key '(normal) slime-mode-map "gr" 'slime-edit-uses)
+
+  (evil-define-key '(insert) slime-repl-mode-map (kbd "C-j") 'slime-repl-next-input)
+  (evil-define-key '(insert) slime-repl-mode-map (kbd "C-k") 'slime-repl-previous-input)
   ;; (evil-define-key 'normal slime-mode-map "C-m" 'slime-repl-return)
   )
 
@@ -2189,7 +2207,10 @@ buffers to include `company-capf' (with optional yasnippet) and
                                                      (if (emacs-lisp-mode-p)
                                                          (switch-to-emacs-lisp-repl-buffer)
                                                        (switch-to-lisp-repl-buffer))))
-(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e c") 'slime-handle-repl-shortcut)
+(evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e c") (lambda ()
+								 (interactive)
+								 (call-interactively 'switch-to-lisp-repl-buffer)
+								 (call-interactively 'slime-handle-repl-shortcut)))
 
 ;; NOTE We bind keys into `slime-autodoc-mode' minor mode, since this mode will be enabled in both `lisp-mode' and `slime-repl-mode'.
 ;; TIP Don't use `slime-repl-region`, use `eval-defun` to treat the `defun-like-form` as minimal unit.
@@ -2250,11 +2271,13 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;; . ---> show-source
 
 ;; TIP if there is no symbol under cursor, then the command will ask for a form to inspect.
-(evil-define-key '(normal) 'global (kbd "SPC e i") (lambda ()
-                                                     (interactive)
-                                                     (condition-case err
-                                                         (call-interactively 'slime-inspect)
-                                                       (call-interactively 'slime-inspect-presentation-at-point))))
+(evil-define-key '(normal) 'global (kbd "SPC e i") (lambda (point)
+                                                     (interactive "d")
+						     (cl-multiple-value-bind (presentation start end whole-p)
+							 (slime-presentation-around-or-before-point (point))
+						       (if presentation
+							   (call-interactively 'slime-inspect-presentation-at-point)
+							 (call-interactively 'slime-inspect)))))
 
 (evil-define-key '(normal) 'global (kbd "SPC e I") 'slime-interrupt)
 
@@ -2369,6 +2392,39 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; Bind hook.
   (add-hook 'java-mode-hook #'lsp))
 
+(defun java-bytecode-view ()
+  "Run javap command to view the bytecode of a .class file."
+  (interactive)
+  (let ((filename (buffer-file-name)))
+    (if (not filename)
+        (error "Buffer is not visiting a file"))
+    (let ((cmd (concat "javap -verbose -classpath " (java-get-jar-file-name)
+		       " " (shell-quote-argument (file-name-base filename))))
+	  (output-buffer (switch-to-buffer-other-window "*java-bytecode-viewer*")))
+      (with-current-buffer output-buffer
+	(setq-local buffer-read-only nil)
+	(erase-buffer)
+	(shell-command-to-string cmd)
+	(insert (shell-command-to-string cmd))
+	(goto-char (point-min))
+	(setq-local buffer-read-only t)))))
+
+(defun java-get-jar-file-name ()
+  "Get .jar file name for current .java file in lsp-java mode."
+  (interactive)
+  (let ((buffer-file-directory (file-name-directory (buffer-file-name)))
+	(buffer-uri lsp-buffer-uri)
+	(magic-string nil))
+    ;; Get .jar file name.
+    (setf magic-string (s-match "%5C\\(.+?\\)=" buffer-uri))
+    (if magic-string
+	(setf magic-string (car magic-string)))
+    (setf magic-string (s-replace "=" "" magic-string))
+    (setf magic-string (s-replace "%5C" "" magic-string))
+
+    ;; Return the .jar file name.
+    magic-string))
+
 (defun --->language:elisp () "Elisp language.")
 ;; Fix the xref backend function for elisp in ielm mode.
 (use-package emacs
@@ -2401,6 +2457,10 @@ buffers to include `company-capf' (with optional yasnippet) and
   (evil-define-key '(normal) emacs-lisp-mode-map (kbd "SPC e E") 'eval-print-last-sexp)
   (evil-define-key '(visual) emacs-lisp-mode-map (kbd "SPC e r") 'eval-region)
 
+  ;; REPL
+  (evil-define-key '(insert) inferior-emacs-lisp-mode-map (kbd "C-j") 'comint-next-input)
+  (evil-define-key '(insert) inferior-emacs-lisp-mode-map (kbd "C-k") 'comint-previous-input)
+
   ;; Key binding.
   (evil-define-key '(normal) 'global (kbd "SPC u e") 'switch-to-emacs-lisp-repl-buffer))
 
@@ -2429,6 +2489,13 @@ buffers to include `company-capf' (with optional yasnippet) and
 
   ;; (glsl-mode)
   )
+
+(defun --->language:yaml () "Yaml language.")
+(use-package yaml-ts-mode
+  :ensure nil
+  :mode (("\\.yaml\\'" . yaml-ts-mode)
+	 ("\\.yml\\'" . yaml-ts-mode))
+  :config)
 
 
 (provide '.emacs)

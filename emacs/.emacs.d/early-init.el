@@ -16,6 +16,13 @@
 (scroll-bar-mode -1)
 (tab-bar-mode)
 
+;; Set font.
+;; TIP Evaluate (font-family-list) to list available fonts.
+(add-to-list 'default-frame-alist
+             '(font . "Source Code Pro"))
+;;(set-frame-font "Source Code Pro 24" nil t)
+;; (global-text-scale-adjust -30)
+
 ;; Maximize the initial frame on startup: https://emacsredux.com/blog/2020/12/04/maximize-the-emacs-frame-on-startup/
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 
