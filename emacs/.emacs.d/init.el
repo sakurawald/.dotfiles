@@ -17,6 +17,9 @@
 ;; - https://github.com/emacs-tw/awesome-emacs
 ;; - https://www.gutenberg.org/about/
 ;;
+;; Blogs:
+;; - https://nullprogram.com/index/
+;;
 ;; Lisp resources:
 ;; - https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node1.html
 ;; - http://www.sbcl.org/sbcl-internals/
@@ -28,6 +31,9 @@
 ;; - https://github.com/sergeyklay/.emacs.d
 ;; - https://github.com/hrs/dotfiles
 ;; - https://github.com/protesilaos/dotfiles
+;;
+;; Misc:
+;; https://keepachangelog.com/zh-TW/1.1.0/
 ;;
 ;; Some interesting sentences:
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -91,12 +97,16 @@
 
 ;; TODO Set a japanese font for emacs.
 
+;; TODO emacs mark / highlight line (integrate with evil-mode marks)
+
+;; TODO refactor for cpp and java -> https://github.com/thoni56/c-xrefactory
+
 ;; NOTE Emacs 30.1 build 2 is very fast. (Build it yourself)
 ;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
 ;; NOTE To operate on an object, using the CRUD name-conversion: 'create', 'read', 'update', 'delete'.
 ;; NOTE The default 'prefix-keymap': https://www.gnu.org/software/emacs/manual/html_node/emacs/Prefix-Keymaps.html
 ;; NOTE It's also okay to steal some ideas from others' dotfiles.
-;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script.
+;; TIP Basically, you need a good text-editor and a good compiler to work on a project. And a keymap-machine to define a key-macro to run a script (like `magit' package).
 ;; TIP Reduce the following inputs, to stay in the home row: `F1-F12', `Caps_Lock', `Escape', `Tab', `Return', `Backspace', `ArrowKeys', `NumberKeys', `MouseInput'.
 ;; TIP All the modifier keys are your friend: `Ctrl', `Shift', `Meta', `Super'. (Treat modifier keys as the decorator/combinator to alphabet keys)
 ;; TIP What I learned from Vim is to remap `CapsLock' into `Ctrl'. CapsLock is useless, since it's not a modifier-key, and you can replace it with Shift+{a-z}. (https://emacsredux.com/blog/2017/12/31/a-crazy-productivity-boost-remapping-return-to-control-2017-edition/)
@@ -1051,6 +1061,12 @@
   (add-to-list 'recentf-exclude (concat (file-name-as-directory package-user-dir)
                                         ".*-autoloads\\.el\\'")))
 
+(use-package bm
+  :ensure t
+  :config
+  ;; TIP One-time buffer-local bookmark with line-highlighting.
+  (evil-define-key '(normal) global-map (kbd "SPC b m") 'bm-toggle))
+
 (use-package dired
   :ensure nil
   :config
@@ -1128,7 +1144,8 @@
           treemacs-is-never-other-window             nil
           treemacs-max-git-entries                   5000
           treemacs-missing-project-action            'ask
-          treemacs-move-files-by-mouse-dragging    t
+	  ;; Disable mouse-dragging action.
+          treemacs-move-files-by-mouse-dragging    nil
           treemacs-move-forward-on-expand            nil
           treemacs-no-png-images                     nil
           treemacs-no-delete-other-windows           t
@@ -1967,6 +1984,8 @@ buffers to include `company-capf' (with optional yasnippet) and
          ;; NOTE To let clangd indexing the project (or includes the proper header files.), you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 (or set the flag in CMakeList.txt file)
          ;; NOTE Since the AST is generated via compiling, so the pre-processor works for source file, be careful with the #ifdef macro!
          ;; https://clangd.llvm.org/config#files
+	 ;; NOTE Specify `gcc' for `c' and `g++' for `cpp' in `Makefile'.
+	 ;; NOTE The `lsp-mode' will identify the `c' or `cpp' by `file-extension' name.
          (c-mode . lsp)
          (c++-mode . lsp)
          (java-mode . lsp)
@@ -2284,7 +2303,6 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;; Define keys for 'slime-inspector-mode' major-mode.
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC v") 'slime-inspector-toggle-verbose)
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC h") 'slime-inspector-history)
-(evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC RET") 'slime-inspector-fetch)
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC >") 'slime-inspector-fetch-all)
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC l") 'slime-inspector-pop)
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC n") 'slime-inspector-next)
@@ -2297,6 +2315,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC e") 'slime-inspector-eval)
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC p") 'slime-inspector-pprint)
 
+;; NOTE This does the same functionality as `gd' command.
 (evil-define-key '(normal) slime-inspector-mode-map (kbd "SPC .") 'slime-inspector-show-source)
 
 (defun --->sldb () "Lisp debugger.")
@@ -2497,6 +2516,13 @@ buffers to include `company-capf' (with optional yasnippet) and
 	 ("\\.yml\\'" . yaml-ts-mode))
   :config)
 
+(defun --->language:binary () "Binary language.")
+;; TIP Use `hexl-mode' to edit any binary files.
+;; TIP Use `elf-mode' to edit elf binary files.
+
+(use-package elf-mode
+  :ensure t
+  )
 
 (provide '.emacs)
 ;;; .emacs ends here
