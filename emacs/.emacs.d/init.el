@@ -2076,6 +2076,7 @@ buffers to include `company-capf' (with optional yasnippet) and
   :commands (slime-repl)
   :hook (lisp-mode . ignore)
   :config
+  ;; TIP Some useful tips -> https://www.tumblr.com/slime-tips
   ;; NOTE The 'slime' env is composed by 'emacs' as the 'client-side', and 'swank' as the 'server-side'.
   ;; NOTE The 'slime-who-references', 'slime-who-binds' and 'slime-who-sets' only works for 'global-variable'.
   ;; NOTE The 'slime-who-calls', 'slime-calls-who', 'slime-list-callers' and 'slime-list-callees' only works for 'function' and 'method'.
@@ -2089,7 +2090,6 @@ buffers to include `company-capf' (with optional yasnippet) and
   (setq inferior-lisp-program "ros dynamic-space-size=4GiB run")
 
   ;; NOTE Use 'slime-setup' instead of `(setq slime-contribs '(slime-fancy))`.
-
   (slime-setup '(
                  slime-asdf
                  slime-quicklisp
