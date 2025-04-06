@@ -81,7 +81,8 @@
 ;; - Only do optimizatoin after a profiler report.
 ;; - Read log before debug.
 ;; - Information Quality: text (book > article) > image > audio > video.
-;; stupid sentences ends here.
+;; - It will merely be more complicated to learn two things at the same time.
+;; - Document the use-case of the function, not what the function it does.
 
 ;; TODO bookmark to add known path: github, script, .config ... (with dired command)
 
@@ -95,9 +96,7 @@
 
 ;; TODO sometimes buffers opened by lsp-java mode out of sync.
 
-;; TODO Set a japanese font for emacs.
-
-;; TODO emacs mark / highlight line (integrate with evil-mode marks)
+;; TODO combine evil-mode with bm.
 
 ;; TODO refactor for cpp and java -> https://github.com/thoni56/c-xrefactory
 
@@ -700,6 +699,11 @@
   ;; Don't blank the cursor.
   (blink-cursor-mode 0))
 
+;; (use-package ultra-scroll
+;;   :ensure t
+;;   :config
+;;   )
+
 (defun --->dimmer () "Dim other windows.")
 
 (use-package dimmer
@@ -736,7 +740,7 @@
                   ))
   (load-theme 'base16-sakura t)
 
-  (set-face-foreground 'tab-bar-tab "dodger blue")
+  (set-face-foreground 'tab-bar-tab "#00FF00")
 
   ;; Set the mark-region color.
   (set-face-background 'region "#006280")
@@ -896,6 +900,21 @@
   :config
   ;; NOTE Enable hit-counter for evil-isearch in mode-line.
   (global-anzu-mode +1))
+
+;; (use-package sideline
+;;   :ensure t
+;;   :init
+;;   (setq sideline-backends-left '(sideline-flycheck)
+;;         sideline-backends-right '(sideline-lsp))
+
+;;   (setq sideline-backends-left-skip-current-line t   ; don't display on current line (left)
+;; 	sideline-backends-right-skip-current-line t  ; don't display on current line (right)
+;; 	sideline-order-left 'down                    ; or 'up
+;; 	sideline-order-right 'up                     ; or 'down
+;; 	sideline-format-left "%s   "                 ; format for left aligment
+;; 	sideline-format-right "   %s"                ; format for right aligment
+;; 	sideline-priority 100                        ; overlays' priority
+;; 	sideline-display-backend-name t))            ; display the backend name
 
 (defun --->buffer () "Buffer related.")
 
@@ -1065,7 +1084,15 @@
   :ensure t
   :config
   ;; TIP One-time buffer-local bookmark with line-highlighting.
-  (evil-define-key '(normal) global-map (kbd "SPC b m") 'bm-toggle))
+
+  ;; Keymap.
+  (evil-define-key '(normal) global-map (kbd "SPC m m") 'bm-toggle)
+  (evil-define-key '(normal) global-map (kbd "SPC m p") 'bm-previous)
+  (evil-define-key '(normal) global-map (kbd "SPC m n") 'bm-next)
+
+  ;; Face.
+  (set-face-background 'bm-face "gray50"))
+
 
 (use-package dired
   :ensure nil
@@ -1229,6 +1256,12 @@
   :config
   ;; TIP Decorate the `dired' command with `icons' version.
   (treemacs-icons-dired-mode))
+
+(use-package quickrun
+  :ensure t
+  :config
+  ;; TIP Compile and run anything using single-file project.
+  (evil-define-key '(normal) global-map (kbd "SPC b r") 'quickrun))
 
 (defun --->project () "Project related.")
 (use-package rg
@@ -1657,6 +1690,14 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;;   :config
 ;;   (jinx-mode))
 
+(use-package eldoc
+  :ensure nil
+  :config
+  ;; NOTE For `slime-autodoc', you need to load the lisp system first, to get the documentation.
+
+  ;; Display the documentation instantly in echo area.
+  (setq eldoc-idle-delay 0))
+
 (use-package emacs
   :config
   ;; TIP Highlight the trailing whitespace.
@@ -1959,6 +2000,26 @@ buffers to include `company-capf' (with optional yasnippet) and
   (evil-define-key '(normal) 'global (kbd "SPC u g") 'speed-type-text)
   :commands (speed-type-text))
 
+(use-package emacs
+  :ensure nil
+  :config
+  ;; TIP List the sub-processes of Emacs process.
+  (evil-define-key '(normal) 'global (kbd "SPC q p") 'list-processes)
+  )
+
+(use-package webpaste
+  :ensure t
+  :config
+  ;; Configure the service provider.
+  (setq webpaste-provider-priority '("ix.io" "paste.rs" "dpaste.com" "dpaste.org" "paste.mozilla.org"
+				     "paste.ubuntu.com" "gist.github.com" "bpa.st"))
+
+  ;; Require confirmation for creating a paste.
+  (setq webpaste-paste-confirmation t)
+
+  ;; Keymap.
+  (evil-define-key '(normal visual) 'global (kbd "SPC u p") 'webpaste-paste-buffer-or-region))
+
 (defun --->customize () "The customize in Emacs.")
 ;; TIP Use 'customize' command to list the options provided by a package, and export them into '.emacs' later.
 (setq custom-file (concat user-emacs-directory "custom.el"))
@@ -1989,8 +2050,10 @@ buffers to include `company-capf' (with optional yasnippet) and
          (c-mode . lsp)
          (c++-mode . lsp)
          (java-mode . lsp)
+         (glsl-mode . lsp)
+
          ;; (yaml-ts-mode . lsp)
-         (glsl-mode . lsp))
+	 )
   :commands lsp
   :config
   ;; TIP Use `lsp-describe-session' command to check the abilities of the active lsp server.
@@ -2069,6 +2132,14 @@ buffers to include `company-capf' (with optional yasnippet) and
   (add-hook 'dap-stopped-hook
             (lambda (arg) (call-interactively #'dap-hydra))))
 
+;; NOTE The `lsp-bridge' package has a poor integration with Emacs environment.
+;; (use-package emacs
+;;   :after (yasnippet)
+;; :config
+;; (add-to-list 'load-path "/home/sakurawald/.emacs.d/elpa/lsp-bridge")
+;;   (require 'lsp-bridge)
+;;   (global-lsp-bridge-mode))
+
 (defun --->language:lisp () "Lisp Language.")
 
 (use-package slime
@@ -2116,9 +2187,6 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;;            (lambda ()
   ;;              (unless (slime-connected-p)
   ;;            (save-excursion (slime)))))
-
-  ;; Set instantly slime-autodoc in echo-area.
-  (setq eldoc-idle-delay 0)
 
   ;; Add font-lock in slime-repl mode.
   ;; https://stackoverflow.com/questions/25809493/how-can-i-get-syntax-highlighting-for-common-lisp-in-slimes-repl
@@ -2399,14 +2467,26 @@ buffers to include `company-capf' (with optional yasnippet) and
   :after (lsp-mode)
   :config
   ;; Download a newer version jdtls server, to support Java 21.
-  (setq lsp-java-jdt-download-url "https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.45.0/jdt-language-server-1.45.0-202502271238.tar.gz")
+  (setq lsp-java-jdt-download-url "https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.46.0/jdt-language-server-1.46.0-202503271314.tar.gz")
 
   ;; Choose a better decompiler. (FernFlower sucks)
   ;; TIP Use `cfr' decompiler saves your life: https://www.benf.org/other/cfr/
+  ;; TIP The built-in `cfr' decompiler bundled with `jdtls' in `<jdtls-instllation-path>/bundles/dg.jdt.ls.decompiler.cfr-0.0.2-201802221740.jar' is old. You need to extract the .jar file first, and replace the old one with the latest one, and re-compress the files into a .jar file.
   (setq lsp-java-content-provider-preferred "cfr")
 
+  ;; Set JVM args for jdtls.
   ;; Set vmargs for jdtls server. (Attach lombok java-agent.)
-  (push "-javaagent:/home/sakurawald/Programs/lombok/lombok.jar" lsp-java-vmargs)
+  (setq lsp-java-vmargs '(
+			  ;; Add lombok support.
+			  "-javaagent:/home/sakurawald/Programs/lombok/lombok.jar"
+			  "-XX:+UseParallelGC" "-XX:GCTimeRatio=4"
+			  "-XX:AdaptiveSizePolicyWeight=90"
+			  "-Dsun.zip.disableMemoryMapping=true"
+			  ;; Increase the memory to reduce lag.
+			  "-Xmx8G"
+			  "-Xms2G"))
+
+  (setq lsp-java-completion-match-case "off")
 
   ;; Bind hook.
   (add-hook 'java-mode-hook #'lsp))
