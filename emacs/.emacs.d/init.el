@@ -70,7 +70,7 @@
 ;; - Grep is powerful, since it works in string level (escaped from the semantics), and always works.
 ;; - Comment is one of the most important meta-data for a document.
 ;; - 95% of tech problems can be solved via RTFM and STFW.
-;; - Function as a black-box.
+;; - Function as a black box.
 ;; - You can learn Emacs everyday.
 ;; - Operating systems, GUI toolkits and competing editors come and go, but Emacs is forever!
 ;; - Figure out the problems solves half of the problem.
@@ -83,14 +83,18 @@
 ;; - Information Quality: text (book > article) > image > audio > video.
 ;; - It will merely be more complicated to learn two things at the same time.
 ;; - Document the use-case of the function, not what the function it does.
+;; - Websites that block Tor network are not worth reading.
+;; - Emacs does a good abstration for applications.
+;; - Vim is a keymap, not a text editor.
+;; - Find the source.
+;; - Words for separation.
+;; - A good text should increase the understanding of the reader.
 
 ;; TODO bookmark to add known path: github, script, .config ... (with dired command)
 
 ;; TODO explore tree-sitter, try to write own parser.
 
 ;; TODO grep (saerch and replace) on file/project scope.
-
-;; TODO explore vim like pdf viewer in emacs eco.
 
 ;; TODO let helm support multi pattern for all commands. (gs command)
 
@@ -110,7 +114,23 @@
 ;; TIP All the modifier keys are your friend: `Ctrl', `Shift', `Meta', `Super'. (Treat modifier keys as the decorator/combinator to alphabet keys)
 ;; TIP What I learned from Vim is to remap `CapsLock' into `Ctrl'. CapsLock is useless, since it's not a modifier-key, and you can replace it with Shift+{a-z}. (https://emacsredux.com/blog/2017/12/31/a-crazy-productivity-boost-remapping-return-to-control-2017-edition/)
 ;; TIP Get some good ideas from https://github.com/t3chnoboy/awesome-awesome-awesome
-;; TIP Daily computing programs: Terminal (Interact with the OS), Emacs (As application platform), Firefox (As application platform).
+
+;; [My Computing Software]
+;; Terminal (Alacritty + Tmux): Interact with the OS.
+;; Emacs: As application platform.
+;; Browser (Tor Browser + Firefox): As application platform.
+;; Jetbrains IDEs: Very useful for some languages.
+;; Image Editor: gimp
+;; Wireshark: Traffic analyzer.
+;; VLC: media player.
+;; OBS Studio: media recording.
+;; KeePassXC: password manager.
+;; Spectacle: screen-shot.
+
+;; [My Computing Hardware]
+;; Keyboard: HHKB (The bluetooth connection is slow, use the wired connection)
+;; Mouse: GPro (The wireless connection is stable and fast)
+;; Monitor: at least 4K 120Hz
 
 (defun <top-level> () "Top-level init form.")
 ;; Measure the current start up time.
@@ -643,7 +663,12 @@
         '(("TODO"   . "#FFFF00")
           ("FIXME"  . "#FF0000")
           ("NOTE"  . "#0000FF")
-          ("TIP"  . "#00FF00")))
+          ("TIP"  . "#00FF00")
+	  ("QUESTION" . "chocolate")
+	  ("HERE" . "dark green")
+	  ("DOC" . "gray50")
+	  ("SUB-STEP" . "#00FF00")
+	  ("STEP" . "#FFFF00")))
   (global-hl-todo-mode)
 
   ;; Bind.
@@ -669,6 +694,7 @@
 
 (defun <view> () "The display for Emacs.")
 ;; NOTE Exwm is still buggy, and easy to hang. I would try it again in the future. (The model used by exwm is buggy, due to the single-threaded event handling of Emacs)
+;; NOTE KWin worsk, and I only needs less than 3 applications running in the fore-ground.
 
 (defun --->display () "The appeareance of Emacs.")
 
@@ -874,10 +900,10 @@
   ;; Display match counts in visual-replace.
   (setq visual-replace-display-total t))
 
-;; (use-package which-func
-;;   :config
-;;   ;; TIP Display the function name at point in mode-line.
-;;   (which-function-mode))
+(use-package which-func
+  :config
+  ;; TIP Display the function name at point in mode-line.
+  (which-function-mode))
 
 (use-package time
   :custom
@@ -1290,7 +1316,8 @@
 
   ;; Auto-discovery projects.
   (setq projectile-auto-discover t)
-  (setq projectile-project-search-path '("~/Workspace/github"))
+  (setq projectile-project-search-path '("~/Workspace/github"
+					 "~/.roswell/lisp/quicklisp/local-projects/"))
 
   ;; Bind
   (evil-define-key '(normal) 'global (kbd "SPC p p") 'projectile-switch-project)
@@ -1817,10 +1844,12 @@ buffers to include `company-capf' (with optional yasnippet) and
   (setq highlight-thing-case-sensitive-p nil)
   (set-face-attribute 'highlight nil
                       :background nil
-		      :inverse-video nil
+		      :inverse-video t
 		      :bold nil
-                      :underline '(:color "#00FF00"
-                                          :style line)))
+		      :underline nil
+                      ;; :underline '(:color "#00FF00"
+                      ;;                     :style line)
+		      ))
 
 (defun --->comment () "Comment text.")
 (use-package evil-nerd-commenter
@@ -2566,8 +2595,62 @@ buffers to include `company-capf' (with optional yasnippet) and
 (defun --->language:pdf () "The pdf filetype.")
 (use-package pdf-tools
   :ensure t
-  :hook (pdf-view-mode . ignore)
-  :config)
+  :hook (doc-view-mode . pdf-view-mode)
+  :config
+  ;; TIP Need to install the `libpoppler' package to render the pdf document.
+  ;; TIP The `pdf-tools' package supports the `pdfview' commands.
+  ;; TIP Better to treat `pdf' documents as the `pure-text' document, which can enable the power of `isearch' and `occur'.
+  ;; TIP Use `pdf-outline' command to get the TOC of the document.
+  ;; TIP Use `right-click' on the pdf page to discover functions.
+  ;; TIP Use `annotation' to make notes on pdf.
+  ;; TIP Use `F' key to `follow' a link in pdf.
+
+
+  (evil-define-key '(normal) pdf-view-mode-map (kbd "SPC") nil)
+  (evil-define-key '(normal) pdf-view-mode-map (kbd "g o") 'pdf-occur)
+
+  ;; (evil-define-key '(normal) pdf-view-mode-map (kbd "v") nil)
+  (evil-define-key '(normal) pdf-occur-buffer-mode-map (kbd "SPC") nil)
+
+  ;; Use `evil-search-forward' as the default search engine.
+  (evil-define-key '(normal) pdf-occur-buffer-mode-map (kbd "/") nil)
+
+  (evil-define-key '(normal) pdf-occur-buffer-mode-map (kbd "C-j") (lambda ()
+								     (interactive)
+								     (call-interactively 'evil-next-line)
+								     ;; (call-interactively 'pdf-occur-goto-occurrence)
+								     ))
+  (evil-define-key '(normal) pdf-occur-buffer-mode-map (kbd "C-k") (lambda ()
+								     (interactive)
+								     (call-interactively 'evil-previous-line)
+								     ;; (call-interactively 'pdf-occur-goto-occurrence)
+								     ))
+
+  (evil-define-key '(normal) pdf-outline-buffer-mode-map (kbd "SPC") nil)
+
+  ;; Execute commands when open a pdf file.
+  (add-hook 'pdf-view-mode-hook (lambda ()
+				  (interactive)
+				  (call-interactively 'pdf-view-fit-page-to-window)))
+
+  ;; Document fold.
+  (add-hook 'pdf-outline-buffer-mode-hook 'outline-minor-mode)
+
+  ;; Document Imenu.
+  (setq pdf-outline-enable-imenu t)
+
+  ;; Document Annotation
+  (add-hook 'pdf-view-mode-hook 'pdf-annot-minor-mode)
+  (setq pdf-view-selection-style 'glyph)
+  (add-hook 'activate-mark-hook (lambda ()
+				  (when (and (eq major-mode 'pdf-view-mode)
+					     (region-active-p)
+					     mark-active)
+				    (call-interactively 'pdf-annot-add-highlight-markup-annotation))))
+
+
+
+  )
 
 (defun --->language:glsl () "Glsl language.")
 (use-package glsl-mode
@@ -2585,7 +2668,6 @@ buffers to include `company-capf' (with optional yasnippet) and
 	 ("\\.comp\\'" . glsl-mode))
   :config
   (setf lsp-glsl-executable "glsl_analyzer")
-
   ;; (glsl-mode)
   )
 
@@ -2602,6 +2684,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 (use-package elf-mode
   :ensure t
+  :config
   )
 
 (provide '.emacs)
