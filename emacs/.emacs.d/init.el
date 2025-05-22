@@ -35,6 +35,22 @@
 ;; Misc:
 ;; https://keepachangelog.com/zh-TW/1.1.0/
 ;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
 ;; Some interesting sentences:
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
@@ -717,7 +733,16 @@
            (current-buffer))))))
 
   ;; NOTE I have to ask the point of displaying line number of a file.
-  ;; (global-display-line-numbers-mode)
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+  (add-hook 'after-init-hook (lambda ()
+			       ;; Current line.
+			       (set-face-foreground 'line-number-current-line "blue")
+			       (set-face-background 'line-number-current-line "white")
+			       (set-face-bold 'line-number-current-line t)
+
+			       ;; Other lines.
+			       (set-face-foreground 'line-number "green")
+			       ))
 
   ;; (toggle-word-wrap)
   (setq-default inhibit-startup-screen t)
@@ -766,7 +791,8 @@
                   ))
   (load-theme 'base16-sakura t)
 
-  (set-face-foreground 'tab-bar-tab "#00FF00")
+  ;; Tab bar face
+  (set-face-foreground 'tab-bar-tab "cyan")
 
   ;; Set the mark-region color.
   (set-face-background 'region "#006280")
@@ -1117,7 +1143,9 @@
   (evil-define-key '(normal) global-map (kbd "SPC m n") 'bm-next)
 
   ;; Face.
-  (set-face-background 'bm-face "gray50"))
+  (set-face-foreground 'bm-face "#000000")
+  (set-face-background 'bm-face "yellow")
+  )
 
 
 (use-package dired
@@ -2187,7 +2215,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 
   ;; Set the inferior-program.
   ;; TIP Put (sb-ext:set-sbcl-source-location "~/.roswell/src/sbcl-2.5.1") in ~/.roswell/init.lisp to set the src files of sbcl.
-  (setq inferior-lisp-program "ros dynamic-space-size=4GiB run")
+  (setq inferior-lisp-program "ros dynamic-space-size=8GiB run")
 
   ;; NOTE Use 'slime-setup' instead of `(setq slime-contribs '(slime-fancy))`.
   (slime-setup '(
@@ -2689,3 +2717,4 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 (provide '.emacs)
 ;;; .emacs ends here
+
