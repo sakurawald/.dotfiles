@@ -50,7 +50,6 @@
 ;;
 ;;
 ;;
-;;
 ;; Some interesting sentences:
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
@@ -78,6 +77,7 @@
 ;; - Programs must be written for people to read, and only incidentally for machines to execute. -- Harold Abelson (SICP)
 ;; - I want a map if i am in forest.
 ;; - Garbage in, garbage out.
+;; - Unstable in, unstable out.
 ;; - Noise or book, that's a question.
 ;; - Entertainment is not teaching.
 ;; - To learn a language is to use it.
@@ -85,7 +85,7 @@
 ;; - Composition over inheritance. (We love atom/primitives)
 ;; - Grep is powerful, since it works in string level (escaped from the semantics), and always works.
 ;; - Comment is one of the most important meta-data for a document.
-;; - 95% of tech problems can be solved via RTFM and STFW.
+;; - At least 95% of tech problems can be solved via RTFM and STFW.
 ;; - Function as a black box.
 ;; - You can learn Emacs everyday.
 ;; - Operating systems, GUI toolkits and competing editors come and go, but Emacs is forever!
@@ -102,9 +102,20 @@
 ;; - Websites that block Tor network are not worth reading.
 ;; - Emacs does a good abstration for applications.
 ;; - Vim is a keymap, not a text editor.
-;; - Find the source.
+;; - Find the source, or the end.
+;; - Find the source, and read the source.
 ;; - Words for separation.
 ;; - A good text should increase the understanding of the reader.
+;; - For a function, don't document what it does, just document what you want.
+;; - A good programming language should allow you to put all relative things in one place, or at least closer.
+;; - Find a solution, or find a solution to find a solution.
+;; - Remember or compute.
+;; - Define the problem, before you solve the problem.
+;; - Assume nothing when debugging.
+;; - An error is maed to be faced and handled, not to be ignored, wrapped, or thrown.
+;; - Describe the intention, group the intention.
+;; - Make no assumption when debugging, even don't assume you are debugging.
+;; - Start counting: first, second, third, repeat.
 
 ;; TODO bookmark to add known path: github, script, .config ... (with dired command)
 
@@ -734,6 +745,7 @@
 
   ;; NOTE I have to ask the point of displaying line number of a file.
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+  (add-hook 'text-mode-hook 'display-line-numbers-mode)
   (add-hook 'after-init-hook (lambda ()
 			       ;; Current line.
 			       (set-face-foreground 'line-number-current-line "blue")
@@ -1145,6 +1157,8 @@
   ;; Face.
   (set-face-foreground 'bm-face "#000000")
   (set-face-background 'bm-face "yellow")
+  ;; (set-face-foreground 'bm-face "yellow")
+  ;; (set-face-background 'bm-face "red")
   )
 
 
@@ -1773,7 +1787,7 @@ buffers to include `company-capf' (with optional yasnippet) and
   (add-hook 'lisp-data-mode #'aggressive-indent-mode)
   ;; (add-hook 'c-mode-hook #'aggressive-indent-mode)
   ;; (add-hook 'java-mode-hook #'aggressive-indent-mode)
-  (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
+  ;; (add-hook 'markdown-mode-hook #'aggressive-indent-mode)
   (add-hook 'tex-mode-hook #'aggressive-indent-mode)
 
   ;; NOTE Code is text that read by human, the indentation means the level of code, should be human-readable. (at least 4 spaces width, or just use tab character.)
