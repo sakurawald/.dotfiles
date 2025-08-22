@@ -104,7 +104,7 @@ nmap <leader>sf <Action>(ShowFilePath)
 nmap <leader>si <Action>(SelectIn)
 nmap <leader>fp <Action>(FindInPath)
 nmap <leader>rp <Action>(ReplaceInPath)
-nmap <leader>sw <Action>($SearchWeb)
+"nmap <leader>sw <Action>($SearchWeb)
 
 " tag
 nmap <leader>fs <Action>(FileStructurePopup)
@@ -148,7 +148,7 @@ nmap <leader>bb <Action>(BuildMenu)
 nmap <leader>rn <Action>(RenameElement)
 nmap <leader>re <Action>(Refactorings.QuickListPopupAction)
 nmap <leader>uw <Action>(Unwrap)
-xmap <leader>sw <Action>(SurroundWith)
+map <leader>sw <Action>(SurroundWith)
 nmap <leader>sd <Action>(SafeDelete)
 nmap <leader>oi <Action>(OptimizeImports)
 
@@ -158,9 +158,11 @@ nmap <leader>hm <Action>(MethodHierarchy)
 nmap <leader>ht <Action>(TypeHierarchy)
 
 " collapse
-nmap zz <Action>(ExpandCollapseToggleAction)
-nmap za <Action>(CollapseAllRegions)
-nmap zA <Action>(ExpandAllRegions)
+nmap zz <Action>(EditorScrollToCenter)
+nmap za <Action>(ExpandCollapseToggleAction)
+
+nmap zc <Action>(CollapseAllRegions)
+nmap zo <Action>(ExpandAllRegions)
 
 " zen
 nmap <leader>z <Action>(ToggleZenMode)

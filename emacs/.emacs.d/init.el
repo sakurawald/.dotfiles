@@ -116,6 +116,9 @@
 ;; - Describe the intention, group the intention.
 ;; - Make no assumption when debugging, even don't assume you are debugging.
 ;; - Start counting: first, second, third, repeat.
+;; - Do it, or make tools to do it.
+;; - Pass the null value along the function chain, losing the bits.
+;; - To understand the solution, is to understand the problem.
 
 ;; TODO bookmark to add known path: github, script, .config ... (with dired command)
 
