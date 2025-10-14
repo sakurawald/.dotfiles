@@ -50,7 +50,7 @@
 ;;
 ;;
 ;;
-;; Some interesting sentences:
+;; Funny Sentences (Words Playing & Humor)
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
 ;; - While Vim is a text editor, the Emacs has a text editor.
@@ -106,6 +106,7 @@
 ;; - Find the source, and read the source.
 ;; - Words for separation.
 ;; - A good text should increase the understanding of the reader.
+;; - A dangerous text can change how the reader thinks.
 ;; - For a function, don't document what it does, just document what you want.
 ;; - A good programming language should allow you to put all relative things in one place, or at least closer.
 ;; - Find a solution, or find a solution to find a solution.
@@ -119,6 +120,36 @@
 ;; - Do it, or make tools to do it.
 ;; - Pass the null value along the function chain, losing the bits.
 ;; - To understand the solution, is to understand the problem.
+;; - Solve things one by one is much easier to solve two things together.
+;; - Spliting is much harder than merging.
+;; - Don't lose your taste.
+;; - Type safe or typo safe.
+;; - The power of a language is limited by native functions.
+;; - Earlier is better.
+;; - Special first.
+;; - The problem is complex enough, the solution must be simple.
+;; - Ask the meaning of asking the meaning.
+;; - The producer wins.
+;; - The inspector functions and predicate functions are useful when exploring.
+;; - A typical document tree = header + body + footer
+;; - Read a use-case by stacktrace.
+;; - Read a project by grep.
+;; - Read a project by use-case.
+;; - Read a project by stack trace.
+;; - Read a project by file system tree.
+;; - Read a project by random walk.
+;; - Read a project by facility.
+;; - Everything is linear, if you are brave enough.
+;; - The structure of a good program is simiar to an onion.
+;; - A perfect dependency structure allows you to delete any folder in filesystem, and the program compiles and runs normally.
+;; - The duck is a duck.
+;; - Shorter means earlier.
+;; - Eairlier means common.
+;; - Common means important.
+;; - A game is a loop.
+;; - A good codebase is like a dictionary.
+;; - A sentence is a tree.
+
 
 ;; TODO bookmark to add known path: github, script, .config ... (with dired command)
 
@@ -632,7 +663,7 @@
 
   (put 'llava:13b :capabilities '(media))
 
-  (setq gptel-model 'gemini-2.0-flash)
+  (setq gptel-model 'gemini-2.5-flash)
   (setq gptel-backend (gptel-make-gemini "Gemini"
                         :key (my/gemini-api-key)
                         :stream t))
@@ -694,11 +725,11 @@
           ("FIXME"  . "#FF0000")
           ("NOTE"  . "#0000FF")
           ("TIP"  . "#00FF00")
-	  ("QUESTION" . "chocolate")
-	  ("HERE" . "dark green")
-	  ("DOC" . "gray50")
-	  ("SUB-STEP" . "#00FF00")
-	  ("STEP" . "#FFFF00")))
+          ("QUESTION" . "chocolate")
+          ("HERE" . "dark green")
+          ("DOC" . "gray50")
+          ("SUB-STEP" . "#00FF00")
+          ("STEP" . "#FFFF00")))
   (global-hl-todo-mode)
 
   ;; Bind.
@@ -750,14 +781,14 @@
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
   (add-hook 'text-mode-hook 'display-line-numbers-mode)
   (add-hook 'after-init-hook (lambda ()
-			       ;; Current line.
-			       (set-face-foreground 'line-number-current-line "blue")
-			       (set-face-background 'line-number-current-line "white")
-			       (set-face-bold 'line-number-current-line t)
+                               ;; Current line.
+                               (set-face-foreground 'line-number-current-line "blue")
+                               (set-face-background 'line-number-current-line "white")
+                               (set-face-bold 'line-number-current-line t)
 
-			       ;; Other lines.
-			       (set-face-foreground 'line-number "green")
-			       ))
+                               ;; Other lines.
+                               (set-face-foreground 'line-number "green")
+                               ))
 
   ;; (toggle-word-wrap)
   (setq-default inhibit-startup-screen t)
@@ -975,13 +1006,13 @@
 ;;         sideline-backends-right '(sideline-lsp))
 
 ;;   (setq sideline-backends-left-skip-current-line t   ; don't display on current line (left)
-;; 	sideline-backends-right-skip-current-line t  ; don't display on current line (right)
-;; 	sideline-order-left 'down                    ; or 'up
-;; 	sideline-order-right 'up                     ; or 'down
-;; 	sideline-format-left "%s   "                 ; format for left aligment
-;; 	sideline-format-right "   %s"                ; format for right aligment
-;; 	sideline-priority 100                        ; overlays' priority
-;; 	sideline-display-backend-name t))            ; display the backend name
+;;      sideline-backends-right-skip-current-line t  ; don't display on current line (right)
+;;      sideline-order-left 'down                    ; or 'up
+;;      sideline-order-right 'up                     ; or 'down
+;;      sideline-format-left "%s   "                 ; format for left aligment
+;;      sideline-format-right "   %s"                ; format for right aligment
+;;      sideline-priority 100                        ; overlays' priority
+;;      sideline-display-backend-name t))            ; display the backend name
 
 (defun --->buffer () "Buffer related.")
 
@@ -1242,7 +1273,7 @@
           treemacs-is-never-other-window             nil
           treemacs-max-git-entries                   5000
           treemacs-missing-project-action            'ask
-	  ;; Disable mouse-dragging action.
+          ;; Disable mouse-dragging action.
           treemacs-move-files-by-mouse-dragging    nil
           treemacs-move-forward-on-expand            nil
           treemacs-no-png-images                     nil
@@ -1362,7 +1393,7 @@
   ;; Auto-discovery projects.
   (setq projectile-auto-discover t)
   (setq projectile-project-search-path '("~/Workspace/github"
-					 "~/.roswell/lisp/quicklisp/local-projects/"))
+                                         "~/.roswell/lisp/quicklisp/local-projects/"))
 
   ;; Bind
   (evil-define-key '(normal) 'global (kbd "SPC p p") 'projectile-switch-project)
@@ -1625,7 +1656,7 @@
   ;; Transform the sorted result.
   (setq company-transformers '(delete-consecutive-dups
                                company-sort-by-occurrence
-			       company-sort-prefer-same-case-prefix))
+                               company-sort-prefer-same-case-prefix))
 
   ;; Inhibit the completion inside symbol.
   ;; TODO The company completion will not replace the behind characters, making it hard to use inside symbol.
@@ -1889,12 +1920,12 @@ buffers to include `company-capf' (with optional yasnippet) and
   (setq highlight-thing-case-sensitive-p nil)
   (set-face-attribute 'highlight nil
                       :background nil
-		      :inverse-video t
-		      :bold nil
-		      :underline nil
+                      :inverse-video t
+                      :bold nil
+                      :underline nil
                       ;; :underline '(:color "#00FF00"
                       ;;                     :style line)
-		      ))
+                      ))
 
 (defun --->comment () "Comment text.")
 (use-package evil-nerd-commenter
@@ -1977,7 +2008,9 @@ buffers to include `company-capf' (with optional yasnippet) and
   :config
   ;; NOTE Always use a online dict server, instead of the offline server named `dictd'.
   ;; NOTE Other dict service https://www.collinsdictionary.com/jp/dictionary/english/
-  (setq dictionary-server "dict.org"))
+  (setq dictionary-server "dict.org")
+
+  )
 
 (use-package calendar
   :config
@@ -2086,7 +2119,7 @@ buffers to include `company-capf' (with optional yasnippet) and
   :config
   ;; Configure the service provider.
   (setq webpaste-provider-priority '("ix.io" "paste.rs" "dpaste.com" "dpaste.org" "paste.mozilla.org"
-				     "paste.ubuntu.com" "gist.github.com" "bpa.st"))
+                                     "paste.ubuntu.com" "gist.github.com" "bpa.st"))
 
   ;; Require confirmation for creating a paste.
   (setq webpaste-paste-confirmation t)
@@ -2119,15 +2152,15 @@ buffers to include `company-capf' (with optional yasnippet) and
          ;; NOTE To let clangd indexing the project (or includes the proper header files.), you should let the compiler generate the compile flags file: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 (or set the flag in CMakeList.txt file)
          ;; NOTE Since the AST is generated via compiling, so the pre-processor works for source file, be careful with the #ifdef macro!
          ;; https://clangd.llvm.org/config#files
-	 ;; NOTE Specify `gcc' for `c' and `g++' for `cpp' in `Makefile'.
-	 ;; NOTE The `lsp-mode' will identify the `c' or `cpp' by `file-extension' name.
+         ;; NOTE Specify `gcc' for `c' and `g++' for `cpp' in `Makefile'.
+         ;; NOTE The `lsp-mode' will identify the `c' or `cpp' by `file-extension' name.
          (c-mode . lsp)
          (c++-mode . lsp)
          (java-mode . lsp)
          (glsl-mode . lsp)
 
          ;; (yaml-ts-mode . lsp)
-	 )
+         )
   :commands lsp
   :config
   ;; TIP Use `lsp-describe-session' command to check the abilities of the active lsp server.
@@ -2369,9 +2402,9 @@ buffers to include `company-capf' (with optional yasnippet) and
                                                          (switch-to-emacs-lisp-repl-buffer)
                                                        (switch-to-lisp-repl-buffer))))
 (evil-define-key '(normal) 'slime-autodoc-mode (kbd "SPC e c") (lambda ()
-								 (interactive)
-								 (call-interactively 'switch-to-lisp-repl-buffer)
-								 (call-interactively 'slime-handle-repl-shortcut)))
+                                                                 (interactive)
+                                                                 (call-interactively 'switch-to-lisp-repl-buffer)
+                                                                 (call-interactively 'slime-handle-repl-shortcut)))
 
 ;; NOTE We bind keys into `slime-autodoc-mode' minor mode, since this mode will be enabled in both `lisp-mode' and `slime-repl-mode'.
 ;; TIP Don't use `slime-repl-region`, use `eval-defun` to treat the `defun-like-form` as minimal unit.
@@ -2434,11 +2467,11 @@ buffers to include `company-capf' (with optional yasnippet) and
 ;; TIP if there is no symbol under cursor, then the command will ask for a form to inspect.
 (evil-define-key '(normal) 'global (kbd "SPC e i") (lambda (point)
                                                      (interactive "d")
-						     (cl-multiple-value-bind (presentation start end whole-p)
-							 (slime-presentation-around-or-before-point (point))
-						       (if presentation
-							   (call-interactively 'slime-inspect-presentation-at-point)
-							 (call-interactively 'slime-inspect)))))
+                                                     (cl-multiple-value-bind (presentation start end whole-p)
+                                                         (slime-presentation-around-or-before-point (point))
+                                                       (if presentation
+                                                           (call-interactively 'slime-inspect-presentation-at-point)
+                                                         (call-interactively 'slime-inspect)))))
 
 (evil-define-key '(normal) 'global (kbd "SPC e I") 'slime-interrupt)
 
@@ -2551,14 +2584,14 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; Set JVM args for jdtls.
   ;; Set vmargs for jdtls server. (Attach lombok java-agent.)
   (setq lsp-java-vmargs '(
-			  ;; Add lombok support.
-			  "-javaagent:/home/sakurawald/Programs/lombok/lombok.jar"
-			  "-XX:+UseParallelGC" "-XX:GCTimeRatio=4"
-			  "-XX:AdaptiveSizePolicyWeight=90"
-			  "-Dsun.zip.disableMemoryMapping=true"
-			  ;; Increase the memory to reduce lag.
-			  "-Xmx8G"
-			  "-Xms2G"))
+                          ;; Add lombok support.
+                          "-javaagent:/home/sakurawald/Programs/lombok/lombok.jar"
+                          "-XX:+UseParallelGC" "-XX:GCTimeRatio=4"
+                          "-XX:AdaptiveSizePolicyWeight=90"
+                          "-Dsun.zip.disableMemoryMapping=true"
+                          ;; Increase the memory to reduce lag.
+                          "-Xmx8G"
+                          "-Xms2G"))
 
   (setq lsp-java-completion-match-case "off")
 
@@ -2572,26 +2605,26 @@ buffers to include `company-capf' (with optional yasnippet) and
     (if (not filename)
         (error "Buffer is not visiting a file"))
     (let ((cmd (concat "javap -verbose -classpath " (java-get-jar-file-name)
-		       " " (shell-quote-argument (file-name-base filename))))
-	  (output-buffer (switch-to-buffer-other-window "*java-bytecode-viewer*")))
+                       " " (shell-quote-argument (file-name-base filename))))
+          (output-buffer (switch-to-buffer-other-window "*java-bytecode-viewer*")))
       (with-current-buffer output-buffer
-	(setq-local buffer-read-only nil)
-	(erase-buffer)
-	(shell-command-to-string cmd)
-	(insert (shell-command-to-string cmd))
-	(goto-char (point-min))
-	(setq-local buffer-read-only t)))))
+        (setq-local buffer-read-only nil)
+        (erase-buffer)
+        (shell-command-to-string cmd)
+        (insert (shell-command-to-string cmd))
+        (goto-char (point-min))
+        (setq-local buffer-read-only t)))))
 
 (defun java-get-jar-file-name ()
   "Get .jar file name for current .java file in lsp-java mode."
   (interactive)
   (let ((buffer-file-directory (file-name-directory (buffer-file-name)))
-	(buffer-uri lsp-buffer-uri)
-	(magic-string nil))
+        (buffer-uri lsp-buffer-uri)
+        (magic-string nil))
     ;; Get .jar file name.
     (setf magic-string (s-match "%5C\\(.+?\\)=" buffer-uri))
     (if magic-string
-	(setf magic-string (car magic-string)))
+        (setf magic-string (car magic-string)))
     (setf magic-string (s-replace "=" "" magic-string))
     (setf magic-string (s-replace "%5C" "" magic-string))
 
@@ -2661,22 +2694,22 @@ buffers to include `company-capf' (with optional yasnippet) and
   (evil-define-key '(normal) pdf-occur-buffer-mode-map (kbd "/") nil)
 
   (evil-define-key '(normal) pdf-occur-buffer-mode-map (kbd "C-j") (lambda ()
-								     (interactive)
-								     (call-interactively 'evil-next-line)
-								     ;; (call-interactively 'pdf-occur-goto-occurrence)
-								     ))
+                                                                     (interactive)
+                                                                     (call-interactively 'evil-next-line)
+                                                                     ;; (call-interactively 'pdf-occur-goto-occurrence)
+                                                                     ))
   (evil-define-key '(normal) pdf-occur-buffer-mode-map (kbd "C-k") (lambda ()
-								     (interactive)
-								     (call-interactively 'evil-previous-line)
-								     ;; (call-interactively 'pdf-occur-goto-occurrence)
-								     ))
+                                                                     (interactive)
+                                                                     (call-interactively 'evil-previous-line)
+                                                                     ;; (call-interactively 'pdf-occur-goto-occurrence)
+                                                                     ))
 
   (evil-define-key '(normal) pdf-outline-buffer-mode-map (kbd "SPC") nil)
 
   ;; Execute commands when open a pdf file.
   (add-hook 'pdf-view-mode-hook (lambda ()
-				  (interactive)
-				  (call-interactively 'pdf-view-fit-page-to-window)))
+                                  (interactive)
+                                  (call-interactively 'pdf-view-fit-page-to-window)))
 
   ;; Document fold.
   (add-hook 'pdf-outline-buffer-mode-hook 'outline-minor-mode)
@@ -2688,10 +2721,10 @@ buffers to include `company-capf' (with optional yasnippet) and
   (add-hook 'pdf-view-mode-hook 'pdf-annot-minor-mode)
   (setq pdf-view-selection-style 'glyph)
   (add-hook 'activate-mark-hook (lambda ()
-				  (when (and (eq major-mode 'pdf-view-mode)
-					     (region-active-p)
-					     mark-active)
-				    (call-interactively 'pdf-annot-add-highlight-markup-annotation))))
+                                  (when (and (eq major-mode 'pdf-view-mode)
+                                             (region-active-p)
+                                             mark-active)
+                                    (call-interactively 'pdf-annot-add-highlight-markup-annotation))))
 
 
 
@@ -2702,15 +2735,15 @@ buffers to include `company-capf' (with optional yasnippet) and
   :ensure t
   :after (lsp-mode)
   :mode (("\\.glsl\\'" . glsl-mode)
-	 ("\\.fs\\'" . glsl-mode)
-	 ("\\.vs\\'" . glsl-mode)
-	 ("\\.gs\\'" . glsl-mode)
-	 ("\\.ts\\'" . glsl-mode)
-	 ("\\.vert\\'" . glsl-mode)
-	 ("\\.tesc\\'" . glsl-mode)
-	 ("\\.tese\\'" . glsl-mode)
-	 ("\\.geom\\'" . glsl-mode)
-	 ("\\.comp\\'" . glsl-mode))
+         ("\\.fs\\'" . glsl-mode)
+         ("\\.vs\\'" . glsl-mode)
+         ("\\.gs\\'" . glsl-mode)
+         ("\\.ts\\'" . glsl-mode)
+         ("\\.vert\\'" . glsl-mode)
+         ("\\.tesc\\'" . glsl-mode)
+         ("\\.tese\\'" . glsl-mode)
+         ("\\.geom\\'" . glsl-mode)
+         ("\\.comp\\'" . glsl-mode))
   :config
   (setf lsp-glsl-executable "glsl_analyzer")
   ;; (glsl-mode)
@@ -2720,7 +2753,7 @@ buffers to include `company-capf' (with optional yasnippet) and
 (use-package yaml-ts-mode
   :ensure nil
   :mode (("\\.yaml\\'" . yaml-ts-mode)
-	 ("\\.yml\\'" . yaml-ts-mode))
+         ("\\.yml\\'" . yaml-ts-mode))
   :config)
 
 (defun --->language:binary () "Binary language.")
@@ -2734,4 +2767,3 @@ buffers to include `company-capf' (with optional yasnippet) and
 
 (provide '.emacs)
 ;;; .emacs ends here
-
