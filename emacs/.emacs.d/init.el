@@ -33,22 +33,13 @@
 ;; - https://github.com/protesilaos/dotfiles
 ;;
 ;; Misc:
-;; https://keepachangelog.com/zh-TW/1.1.0/
+;; - https://keepachangelog.com/zh-TW/1.1.0/
+;; - https://alternativeto.net/
+;; - https://supermemo.guru/wiki/SuperMemo_Guru
+;; - https://supermemo.guru/wiki/Myths
 ;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
-;;
+;; Humor:
+;; https://xkcd.com/
 ;;
 ;; Funny Sentences (Words Playing & Humor)
 ;; - While any text editor can save your files, only Emacs can save your soul.
@@ -57,8 +48,10 @@
 ;; - Emacs is a Lisp-machine (environment) that supports Elisp as one of its languages.
 ;; - A nice Vim macro a day, keeps the VS Code away.
 ;; - An idiot admires complexity, a genius admires simplicity. -- Terry Davis
+;; - It's simple to make it complex, it's complex to make it simple.
 ;; - Finally, There are only 2 great languages: C and Lisp.
 ;; - To learn, is to connect.
+;; - To master, is to reinforce the connection.
 ;; - Patterns mean "I have run out of language." -- Rich Hickey
 ;; - Design patterns is a compromise to the lack of expressiveness of the language (evaluator).
 ;; - Premature optimization is the root of all evil. -- Donald Knuth (https://wiki.c2.com/?PrematureOptimization)
@@ -78,9 +71,11 @@
 ;; - I want a map if i am in forest.
 ;; - Garbage in, garbage out.
 ;; - Unstable in, unstable out.
+;; - Incomprehensible input is noise.
 ;; - Noise or book, that's a question.
 ;; - Entertainment is not teaching.
 ;; - To learn a language is to use it.
+;; - To use a language, you have to learn it.
 ;; - Some text are just hard to read, that's the problem of the author.
 ;; - Composition over inheritance. (We love atom/primitives)
 ;; - Grep is powerful, since it works in string level (escaped from the semantics), and always works.
@@ -96,7 +91,7 @@
 ;; - Emacs as a general solution compared to specialized programs.
 ;; - Only do optimizatoin after a profiler report.
 ;; - Read log before debug.
-;; - Information Quality: text (book > article) > image > audio > video.
+;; - Information Quality: text (book > paper > article) > image > audio > video > GPT
 ;; - It will merely be more complicated to learn two things at the same time.
 ;; - Document the use-case of the function, not what the function it does.
 ;; - Websites that block Tor network are not worth reading.
@@ -130,15 +125,10 @@
 ;; - The problem is complex enough, the solution must be simple.
 ;; - Ask the meaning of asking the meaning.
 ;; - The producer wins.
+;; - Recreating one thing is a good method to understand how it works.
 ;; - The inspector functions and predicate functions are useful when exploring.
 ;; - A typical document tree = header + body + footer
-;; - Read a use-case by stacktrace.
-;; - Read a project by grep.
-;; - Read a project by use-case.
-;; - Read a project by stack trace.
-;; - Read a project by file system tree.
-;; - Read a project by random walk.
-;; - Read a project by facility.
+;; - Read a use-case by grep/use-case/stack-trace/import-statement/file-system-tree/facility/random-walk.
 ;; - Everything is linear, if you are brave enough.
 ;; - The structure of a good program is simiar to an onion.
 ;; - A perfect dependency structure allows you to delete any folder in filesystem, and the program compiles and runs normally.
@@ -149,6 +139,16 @@
 ;; - A game is a loop.
 ;; - A good codebase is like a dictionary.
 ;; - A sentence is a tree.
+;; - To master the basic skills in a specific domain, is to re-learn the history (in English).
+;; - Concretion before abstration. / Do x before doing f(x)
+;; - To memorize is to RE-call.
+;; - Translator is not dictionary.
+;; - The association of image and sound, is the true native language. (I/S/C/S/E)
+;; - Grammar is a phenomenon, not a rule.
+;; - Even Pavlov's dog knows how to use anki. (Fire together, wire together)
+;; - Even Skinner's rat knows how to reward.
+;; - A computer is like air conditioning – it becomes useless when you open Windows.
+;; - Linux is free if your time is worthless.
 
 
 ;; TODO bookmark to add known path: github, script, .config ... (with dired command)
@@ -177,16 +177,20 @@
 ;; TIP Get some good ideas from https://github.com/t3chnoboy/awesome-awesome-awesome
 
 ;; [My Computing Software]
-;; Terminal (Alacritty + Tmux): Interact with the OS.
-;; Emacs: As application platform.
-;; Browser (Tor Browser + Firefox): As application platform.
-;; Jetbrains IDEs: Very useful for some languages.
+;; Terminal: Alacritty + tmux
+;; Browser: Tor Browser, Firefox (Vimium, AD Blocker, Custom Context Menu, Sidebery, Simple Translate, Smart TOC, Auto Highlight, Tampermonkey, Simple Translate)
+;; Development: Emacs, Vim, Jetbrains Toolbox (DataGrip, IDEA, CLion, WebStorm), Qt Creator
 ;; Image Editor: gimp
-;; Wireshark: Traffic analyzer.
-;; VLC: media player.
-;; OBS Studio: media recording.
-;; KeePassXC: password manager.
 ;; Spectacle: screen-shot.
+;; Emulator: Wine (For Windows), AVD (For Android), QEMU(For other operating systems)
+;; Input Method: fcitx
+;; Encrypt: KeePassXC
+;; Office: only-office, Acrobat Reader, Sioyek
+;; Media: OBS Studio, VLC
+;; Internet: Spicy, Remove Viewer, Wireshark.
+;; Input Macro: Input Remapper
+;; Version Control: Git
+
 
 ;; [My Computing Hardware]
 ;; Keyboard: HHKB (The bluetooth connection is slow, use the wired connection)
@@ -1988,17 +1992,6 @@ buffers to include `company-capf' (with optional yasnippet) and
 (defun <utility> () "Utility tools in Emacs.")
 
 ;; NOTE Don't use un-stable applications, or you have to fix it yourself.
-;; [Useful Tools]
-;; Operation System: Arch Linux
-;; Desktop Environment: KDE, x11
-;; System: Alacritty, Spectacle, Wine
-;; Input Method: fcitx
-;; Encrypt: KeePassXC
-;; Office: only-office, Acrobat Reader
-;; Development: Emacs, Jetbrains Toolbox (DataGrip, IDEA, CLion, WebStorm), Qt Creator
-;; Media: OBS Studio, VLC
-;; Internet: Spicy, Chromium, Tor Browser, Wireshark.
-
 (defun --->utility () "Minor utility tools.")
 (use-package dictionary
   :init
@@ -2008,7 +2001,14 @@ buffers to include `company-capf' (with optional yasnippet) and
   :config
   ;; NOTE Always use a online dict server, instead of the offline server named `dictd'.
   ;; NOTE Other dict service https://www.collinsdictionary.com/jp/dictionary/english/
+  ;; NOTE https://www.collinsdictionary.com
+  ;; TIP A translator extention in firefox browser will be good.
   (setq dictionary-server "dict.org")
+
+  (setq dictionary-use-single-buffer nil)
+
+  (push '("*Dictionary*" (display-buffer-same-window))
+	display-buffer-alist)
 
   )
 
@@ -2764,6 +2764,12 @@ buffers to include `company-capf' (with optional yasnippet) and
   :ensure t
   :config
   )
+
+(defun --->language:image () "Image language.")
+(use-package image-mode
+  :config
+  (evil-define-key '(normal) image-mode-map (kbd "SPC") nil))
+
 
 (provide '.emacs)
 ;;; .emacs ends here
