@@ -99,9 +99,9 @@
 ;; - Vim is a keymap, not a text editor.
 ;; - Find the source, or the end.
 ;; - Find the source, and read the source.
-;; - Words for separation.
+;; - Words for distinction.
 ;; - A good text should increase the understanding of the reader.
-;; - A dangerous text can change how the reader thinks.
+;; - A dangerous text can change how the reader reads.
 ;; - For a function, don't document what it does, just document what you want.
 ;; - A good programming language should allow you to put all relative things in one place, or at least closer.
 ;; - Find a solution, or find a solution to find a solution.
@@ -137,18 +137,29 @@
 ;; - Eairlier means common.
 ;; - Common means important.
 ;; - A game is a loop.
+;; - A game is a play-able video.
 ;; - A good codebase is like a dictionary.
 ;; - A sentence is a tree.
 ;; - To master the basic skills in a specific domain, is to re-learn the history (in English).
-;; - Concretion before abstration. / Do x before doing f(x)
-;; - To memorize is to RE-call.
+;; - Concretion before abstration. / Do x before doing f(x) / Do f(x) before doing F(x)
+;; - To memorize is to RE-call. (semantic network helps)
 ;; - Translator is not dictionary.
 ;; - The association of image and sound, is the true native language. (I/S/C/S/E)
 ;; - Grammar is a phenomenon, not a rule.
-;; - Even Pavlov's dog knows how to use anki. (Fire together, wire together)
+;; - Even Pavlov's dog knows how to condition. (Fire together, wire together)
 ;; - Even Skinner's rat knows how to reward.
 ;; - A computer is like air conditioning – it becomes useless when you open Windows.
-;; - Linux is free if your time is worthless.
+;; - Linux is free if your time is free.
+;; - There is a story behind every exception.
+;; - Beautiful 2-way recursion: Value or side-effect, primitive or function, state or action, eval or apply.
+;; - No border, no cell.
+;; - There is only one kind of economics that works.
+;; - No matter what the initial conditions are, honest feedbacks will lead to a good result.
+;; - A successful evaluation requires interest.
+;; - It's better to pick a specific example when analyzing a big project. (by example method)
+;; - Select = List + Filter
+;; - Patches are harmful.
+;; - The semantic reading is the true speed reading.
 
 
 ;; TODO bookmark to add known path: github, script, .config ... (with dired command)
@@ -178,7 +189,7 @@
 
 ;; [My Computing Software]
 ;; Terminal: Alacritty + tmux
-;; Browser: Tor Browser, Firefox (Vimium, AD Blocker, Custom Context Menu, Sidebery, Simple Translate, Smart TOC, Auto Highlight, Tampermonkey, Simple Translate)
+;; Browser: Tor Browser (as Application Environment, as media player, as pdf editor), Firefox (Vimium, AD Blocker, Custom Context Menu, Sidebery, Simple Translate, Smart TOC, Auto Highlight, Tampermonkey, Simple Translate, Swift Selection Saerch)
 ;; Development: Emacs, Vim, Jetbrains Toolbox (DataGrip, IDEA, CLion, WebStorm), Qt Creator
 ;; Image Editor: gimp
 ;; Spectacle: screen-shot.
