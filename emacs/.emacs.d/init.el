@@ -35,29 +35,31 @@
 ;; Misc:
 ;; - https://keepachangelog.com/zh-TW/1.1.0/
 ;; - https://alternativeto.net/
-;; - https://supermemo.guru/wiki/SuperMemo_Guru
 ;; - https://supermemo.guru/wiki/Myths
 ;;
 ;; Humor:
-;; https://xkcd.com/
+;; - https://xkcd.com/
 ;;
-;; Funny Sentences (Words Playing & Humor)
+;; Jokes (Words Playing & Humor):
+;; - Emacs takes a lifetime to learn. So the sooner you start, the longer it will take.
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
 ;; - While Vim is a text editor, the Emacs has a text editor.
 ;; - Emacs is a Lisp-machine (environment) that supports Elisp as one of its languages.
 ;; - A nice Vim macro a day, keeps the VS Code away.
 ;; - An idiot admires complexity, a genius admires simplicity. -- Terry Davis
-;; - It's simple to make it complex, it's complex to make it simple.
+;; - It's simple to make it complex, but it's complex to make it simple.
 ;; - Finally, There are only 2 great languages: C and Lisp.
 ;; - To learn, is to connect.
 ;; - To master, is to reinforce the connection.
 ;; - Patterns mean "I have run out of language." -- Rich Hickey
 ;; - Design patterns is a compromise to the lack of expressiveness of the language (evaluator).
+;; - The interpreter pattern is a pattern to escape from the patterns.
 ;; - Premature optimization is the root of all evil. -- Donald Knuth (https://wiki.c2.com/?PrematureOptimization)
 ;; - If it works, don't touch it.
 ;; - Object is a lie, use function instead.
 ;; - Function as the abstract machine.
+;; - Function as a simple stack machine.
 ;; - Declarative language is like intention language.
 ;; - The only difficulty is the lack of information (bits).
 ;; - I hope symobls from Emacs packages all have a good name, with intuitive prefix and suffix.
@@ -65,7 +67,7 @@
 ;; - Notation is nothing without denotation.
 ;; - Learning Emacs is painful in the beginning, and painful in the end.
 ;; - Deprecated means stable.
-;; - A fancy GUI application usually has less features (configurations).
+;; - A fancy GUI application usually has less features (configurations). -- The Art Of Unix Programming
 ;; - A text editor is a video game.
 ;; - Programs must be written for people to read, and only incidentally for machines to execute. -- Harold Abelson (SICP)
 ;; - I want a map if i am in forest.
@@ -74,9 +76,13 @@
 ;; - Incomprehensible input is noise.
 ;; - Noise or book, that's a question.
 ;; - Entertainment is not teaching.
+;; - Learning must be joyful, or it didn't work.
+;; - Learning without context is useless.
+;; - A text should be read with con-text.
+;; - It's very hard to read the original text without con-image.
 ;; - To learn a language is to use it.
 ;; - To use a language, you have to learn it.
-;; - Some text are just hard to read, that's the problem of the author.
+;; - Some texts are just hard to read, and that's not your fault.
 ;; - Composition over inheritance. (We love atom/primitives)
 ;; - Grep is powerful, since it works in string level (escaped from the semantics), and always works.
 ;; - Comment is one of the most important meta-data for a document.
@@ -84,22 +90,23 @@
 ;; - Function as a black box.
 ;; - You can learn Emacs everyday.
 ;; - Operating systems, GUI toolkits and competing editors come and go, but Emacs is forever!
-;; - Figure out the problems solves half of the problem.
+;; - Figuring out the problem solves half of the problem.
 ;; - The most useful part of a function is its name.
 ;; - When in doubt, try brute-force.
+;; - If you can't solve it, try sleep and bath.
 ;; - No reality, only interpretation.
+;; - Literal or interpretation.
 ;; - Emacs as a general solution compared to specialized programs.
 ;; - Only do optimizatoin after a profiler report.
 ;; - Read log before debug.
-;; - Information Quality: text (book > paper > article) > image > audio > video > GPT
+;; - Information Quality by Medium: text (book > paper > article) > image > audio > video > GPT
 ;; - It will merely be more complicated to learn two things at the same time.
 ;; - Document the use-case of the function, not what the function it does.
 ;; - Websites that block Tor network are not worth reading.
 ;; - Emacs does a good abstration for applications.
 ;; - Vim is a keymap, not a text editor.
-;; - Find the source, or the end.
-;; - Find the source, and read the source.
-;; - Words for distinction.
+;; - Words for differentiation.
+;; - A word is the leaf node in the vocabulary tree.
 ;; - A good text should increase the understanding of the reader.
 ;; - A dangerous text can change how the reader reads.
 ;; - For a function, don't document what it does, just document what you want.
@@ -107,9 +114,8 @@
 ;; - Find a solution, or find a solution to find a solution.
 ;; - Remember or compute.
 ;; - Define the problem, before you solve the problem.
+;; - An error is made to be faced and handled, not to be ignored, wrapped, or thrown.
 ;; - Assume nothing when debugging.
-;; - An error is maed to be faced and handled, not to be ignored, wrapped, or thrown.
-;; - Describe the intention, group the intention.
 ;; - Make no assumption when debugging, even don't assume you are debugging.
 ;; - Start counting: first, second, third, repeat.
 ;; - Do it, or make tools to do it.
@@ -118,16 +124,16 @@
 ;; - Solve things one by one is much easier to solve two things together.
 ;; - Spliting is much harder than merging.
 ;; - Don't lose your taste.
+;; - Inefficiency is the source of learned helplessness.
 ;; - Type safe or typo safe.
 ;; - The power of a language is limited by native functions.
 ;; - Earlier is better.
 ;; - Special first.
-;; - The problem is complex enough, the solution must be simple.
-;; - Ask the meaning of asking the meaning.
+;; - The problem is complex enough, the solution must be simple. (Over Simplification)
 ;; - The producer wins.
-;; - Recreating one thing is a good method to understand how it works.
+;; - Recreating one thing is a good method to understand how it really works.
 ;; - The inspector functions and predicate functions are useful when exploring.
-;; - A typical document tree = header + body + footer
+;; - A document tree = header + body + footer
 ;; - Read a use-case by grep/use-case/stack-trace/import-statement/file-system-tree/facility/random-walk.
 ;; - Everything is linear, if you are brave enough.
 ;; - The structure of a good program is simiar to an onion.
@@ -142,39 +148,64 @@
 ;; - A sentence is a tree.
 ;; - To master the basic skills in a specific domain, is to re-learn the history (in English).
 ;; - Concretion before abstration. / Do x before doing f(x) / Do f(x) before doing F(x)
-;; - To memorize is to RE-call. (semantic network helps)
-;; - Translator is not dictionary.
-;; - The association of image and sound, is the true native language. (I/S/C/S/E)
+;; - The association of image and sound, is the true native language.
 ;; - Grammar is a phenomenon, not a rule.
 ;; - Even Pavlov's dog knows how to condition. (Fire together, wire together)
 ;; - Even Skinner's rat knows how to reward.
 ;; - A computer is like air conditioning – it becomes useless when you open Windows.
 ;; - Linux is free if your time is free.
 ;; - There is a story behind every exception.
-;; - Beautiful 2-way recursion: Value or side-effect, primitive or function, state or action, eval or apply.
+;; - **Yin and Yang**: Value or side-effect, atom or list, primitive or function, state or action, eval or apply, noun or verb, this and that, statement and question, static or dynamic, fact or hypothesis
 ;; - No border, no cell.
 ;; - There is only one kind of economics that works.
 ;; - No matter what the initial conditions are, honest feedbacks will lead to a good result.
+;; - A feedback is a chance for a change.
+;; - No feedback is worse than bad feedback.
+;; - No exploration is worse than bad compensation.
 ;; - A successful evaluation requires interest.
-;; - It's better to pick a specific example when analyzing a big project. (by example method)
+;; - It's better to pick a specific example when analyzing a big project. (There is a minimal set of core texts.)
 ;; - Select = List + Filter
 ;; - Patches are harmful.
 ;; - The semantic reading is the true speed reading.
+;; - There are three great virtues of a programmer; Laziness, Impatience and Hubris -- https://thethreevirtues.com/
+;; - A noun is a selection.
+;; - A verb is a function.
+;; - Translator is harmful.
+;; - The smaller the font, the more important it is.
+;; - Read more to read better, read more to write better.
+;; - Listen more to listen better, listen more to speak better.
+;; - A pronoun is a noun, a pronoun is used to avoid repetition, the pronoun is 'it'.
+;; - `Execute me' is a pro-pro-noun.
+;; - The cat sits on a mat, it is warm.
+;; - A joke that is not funny is a joke.
+;; - But it works.
+;; - A reusable thing must be composable.
+;; - Time as natural order.
+;; - Generalization means losing bits.
+;; - Never underestimate the bandwidth of a station wagon full of tapes hurtling down the highway. -- Andrew Tanenbaum
+;; - All verbs are motion verb. (Except the constructor and de-constructor)
+;; - You can test a writing system by input method, and test the vocabulary tree by dictioanry indexing.
+;; - become := the state of being is coming.
+;; - It must be brave to see a pull request with only 1 line change.
+;; - It's hard to be a good finder.
+;; - The changing itself is unchanged.
+;; - Easy to be powerful, hard to be useful.
+;; - To be remembered is to be called.
+;; - A question is a cloze.
+;; - Sensors for spaces.
+;; - The addition is addictive.
+;; - Use cases are for sensors.
+;; - Incuriosity does more harm than not knowing.
+;; - The underlying logics are the tools made to make tools.
+;; - A language is a tool to express the iedas.
+;; - A person who teaches something is a teacher.
+;; - Food reward is a natural reward.
+;; - A true definition should be definite.
+;; - A false definition can be extremely destructive.
+;; - A bad question is much worse than a bad answer.
+;; - Only your old gramma cares about your grammar.
 
 
-;; TODO bookmark to add known path: github, script, .config ... (with dired command)
-
-;; TODO explore tree-sitter, try to write own parser.
-
-;; TODO grep (saerch and replace) on file/project scope.
-
-;; TODO let helm support multi pattern for all commands. (gs command)
-
-;; TODO sometimes buffers opened by lsp-java mode out of sync.
-
-;; TODO combine evil-mode with bm.
-
-;; TODO refactor for cpp and java -> https://github.com/thoni56/c-xrefactory
 
 ;; NOTE Emacs 30.1 build 2 is very fast. (Build it yourself)
 ;; NOTE Features provided by Jetbrains: https://www.jetbrains.com/idea/features/
@@ -186,27 +217,22 @@
 ;; TIP All the modifier keys are your friend: `Ctrl', `Shift', `Meta', `Super'. (Treat modifier keys as the decorator/combinator to alphabet keys)
 ;; TIP What I learned from Vim is to remap `CapsLock' into `Ctrl'. CapsLock is useless, since it's not a modifier-key, and you can replace it with Shift+{a-z}. (https://emacsredux.com/blog/2017/12/31/a-crazy-productivity-boost-remapping-return-to-control-2017-edition/)
 ;; TIP Get some good ideas from https://github.com/t3chnoboy/awesome-awesome-awesome
+;; NOTE Modern laptops may contain some hardwares that are un-wanted. In this case, you can configure a blacklist to disable these hardwares.
 
 ;; [My Computing Software]
-;; Terminal: Alacritty + tmux
-;; Browser: Tor Browser (as Application Environment, as media player, as pdf editor), Firefox (Vimium, AD Blocker, Custom Context Menu, Sidebery, Simple Translate, Smart TOC, Auto Highlight, Tampermonkey, Simple Translate, Swift Selection Saerch)
+;; Terminal: Emacs (vterm + tmux), built-in shell (Ctrl + Alt + F1~F12)
+;; Browser: Tor Browser (as Application Environment, as media player, as pdf editor), Firefox (Vimium, AD Blocker, Custom Context Menu, Sidebery, Simple Translate, Smart TOC, Auto Highlight, Tampermonkey, Swift Selection Saerch, Yomitan)
 ;; Development: Emacs, Vim, Jetbrains Toolbox (DataGrip, IDEA, CLion, WebStorm), Qt Creator
 ;; Image Editor: gimp
-;; Spectacle: screen-shot.
+;; Screen-shot: spectacle
 ;; Emulator: Wine (For Windows), AVD (For Android), QEMU(For other operating systems)
 ;; Input Method: fcitx
 ;; Encrypt: KeePassXC
-;; Office: only-office, Acrobat Reader, Sioyek
+;; Office: Acrobat Reader, Sioyek, Google Docs
 ;; Media: OBS Studio, VLC
-;; Internet: Spicy, Remove Viewer, Wireshark.
+;; Internet: Spicy, Remote Viewer, Wireshark.
 ;; Input Macro: Input Remapper
-;; Version Control: Git
-
-
-;; [My Computing Hardware]
-;; Keyboard: HHKB (The bluetooth connection is slow, use the wired connection)
-;; Mouse: GPro (The wireless connection is stable and fast)
-;; Monitor: at least 4K 120Hz
+;; Version Control: git
 
 (defun <top-level> () "Top-level init form.")
 ;; Measure the current start up time.
@@ -300,6 +326,7 @@
 
   :config
   ;; NOTE The manual of vim: https://neovim.io/
+  ;; NOTE My vim config is very mininal, it's enough to use.
   ;; NOTE The vim golf makes the text-editing interesting: https://www.vimgolf.com/
   ;; NOTE Define keys for evil-mode: https://evil.readthedocs.io/en/latest/keymaps.html#evil-define-key
   ;; TIP Use 'C-z' to toggle between 'vi-mode' and 'emacs-mode'.
@@ -382,7 +409,7 @@
   :after (evil)
   :custom
   ;; TIP Use 'key-convention': 'C-[' = 'Escape', 'C-i' = 'Tab' and 'C-m' = 'Return'. (Other convention: n/p -> j/k, BackSpace (insert-state) -> C-w/C-u/C-x)
-  ;; TIP The order to escape: 'jk' > 'C-g' > 'C-[' > 'Escape'
+  ;; TIP Level of Escapes: 'jk' < 'C-g' < 'C-[' < 'Escape'
 
   ;; Ignore the case for escape-key-sequence.
   (evil-escape-key-sequence "jk")
@@ -775,6 +802,7 @@
 (defun --->display () "The appeareance of Emacs.")
 
 ;; NOTE Use a mono-spaced-font like 'source code pro' or 'hack'. (Font is set by KDE)
+;; NOTE Recommended fonts for browsers: Noto family fonts (Note {Sans/Serif} Regular)
 (use-package emacs
   :config
   ;;; Customize scratch-buffer.
@@ -2012,8 +2040,11 @@ buffers to include `company-capf' (with optional yasnippet) and
   :config
   ;; NOTE Always use a online dict server, instead of the offline server named `dictd'.
   ;; NOTE Other dict service https://www.collinsdictionary.com/jp/dictionary/english/
-  ;; NOTE https://www.collinsdictionary.com
-  ;; TIP A translator extention in firefox browser will be good.
+  ;; NOTE Vocabulary: https://www.collinsdictionary.com
+  ;; NOTE Grammar: https://grammar.collinsdictionary.com/easy-learning/parts-of-speech
+  ;; NOTE A text-based scanner is much better than an OCR-based scanner. (Especially for languages that have a large alphabet.)
+  ;; TIP A translator extention in firefox browser will be good. (Better to use with a dictionary extension)
+  ;; TIP A dictionary should be represented in eletronic form (better to be off-line format), or it's useless.
   (setq dictionary-server "dict.org")
 
   (setq dictionary-use-single-buffer nil)
@@ -2061,7 +2092,7 @@ buffers to include `company-capf' (with optional yasnippet) and
   ;; NOTE For some interactive terminal programs, like vim, you need to use emacs-state to input keys properly.
 
   ;; Set default shell program.
-  (setq vterm-shell "/usr/bin/zsh")
+  (setq vterm-shell "/usr/bin/zsh -l -c 'tmux new -Asemacs_vterm_tmux'")
 
   ;; Increase max lines of history.
   (setq vterm-max-scrollback 100000)
@@ -2781,6 +2812,11 @@ buffers to include `company-capf' (with optional yasnippet) and
   :config
   (evil-define-key '(normal) image-mode-map (kbd "SPC") nil))
 
+(defun --->language:jsonrpc () "JsonRPC language.")
+
+(use-package jsonrpc
+  :config
+  )
 
 (provide '.emacs)
 ;;; .emacs ends here
