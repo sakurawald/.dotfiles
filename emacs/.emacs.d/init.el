@@ -41,6 +41,7 @@
 ;; - https://xkcd.com/
 ;;
 ;; Jokes (Words Playing & Humor):
+;; - Emotions come and go, humor remains.
 ;; - Emacs takes a lifetime to learn. So the sooner you start, the longer it will take.
 ;; - While any text editor can save your files, only Emacs can save your soul.
 ;; - While Vim is an extensible editor, the Emacs is an extended editor.
@@ -76,7 +77,7 @@
 ;; - Incomprehensible input is noise.
 ;; - Noise or book, that's a question.
 ;; - Entertainment is not teaching.
-;; - Learning must be joyful, or it didn't work.
+;; - Learning must be happy, or it doesn't work.
 ;; - Learning without context is useless.
 ;; - A text should be read with con-text.
 ;; - It's very hard to read the original text without con-image.
@@ -99,7 +100,7 @@
 ;; - Emacs as a general solution compared to specialized programs.
 ;; - Only do optimizatoin after a profiler report.
 ;; - Read log before debug.
-;; - Information Quality by Medium: text (book > paper > article) > image > audio > video > GPT
+;; - Information Quality by Medium from Random Source: text (book > paper > article) > image > audio > video > GPT
 ;; - It will merely be more complicated to learn two things at the same time.
 ;; - Document the use-case of the function, not what the function it does.
 ;; - Websites that block Tor network are not worth reading.
@@ -155,7 +156,7 @@
 ;; - A computer is like air conditioning – it becomes useless when you open Windows.
 ;; - Linux is free if your time is free.
 ;; - There is a story behind every exception.
-;; - **Yin and Yang**: Value or side-effect, atom or list, primitive or function, state or action, eval or apply, noun or verb, this and that, statement and question, static or dynamic, fact or hypothesis
+;; - **Yin and Yang**: Value or side-effect, atom or list, primitive or function, state or action, eval or apply, noun or verb, this and that, statement and question, static or dynamic, fact or hypothesis, true or false, self or other, subject and object
 ;; - No border, no cell.
 ;; - There is only one kind of economics that works.
 ;; - No matter what the initial conditions are, honest feedbacks will lead to a good result.
@@ -174,7 +175,7 @@
 ;; - The smaller the font, the more important it is.
 ;; - Read more to read better, read more to write better.
 ;; - Listen more to listen better, listen more to speak better.
-;; - A pronoun is a noun, a pronoun is used to avoid repetition, the pronoun is 'it'.
+;; - A pro-noun is a placeholder.
 ;; - `Execute me' is a pro-pro-noun.
 ;; - The cat sits on a mat, it is warm.
 ;; - A joke that is not funny is a joke.
@@ -204,6 +205,15 @@
 ;; - A false definition can be extremely destructive.
 ;; - A bad question is much worse than a bad answer.
 ;; - Only your old gramma cares about your grammar.
+;; - Logic never fails. (Except that truth value fails)
+;; - It's the structure that defines the operations.
+;; - Translator, completer and generator. We call it intelligence.
+;; - The con-text defines the text.
+;; - The dictionary words define a sub-set language.
+;; - A type is a way of seeing data.
+;; - The freedom to make mistakes is important.
+;; - There are only two kinds of languages: the ones people complain about and the ones nobody uses. - Bjarne Stroustrup Bjarne
+
 
 
 
