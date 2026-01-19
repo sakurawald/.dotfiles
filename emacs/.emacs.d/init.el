@@ -89,6 +89,7 @@
 ;; - Comment is one of the most important meta-data for a document.
 ;; - At least 95% of tech problems can be solved via RTFM and STFW.
 ;; - Function as a black box.
+;; - LLM as a big black box.
 ;; - You can learn Emacs everyday.
 ;; - Operating systems, GUI toolkits and competing editors come and go, but Emacs is forever!
 ;; - Figuring out the problem solves half of the problem.
@@ -156,7 +157,7 @@
 ;; - A computer is like air conditioning – it becomes useless when you open Windows.
 ;; - Linux is free if your time is free.
 ;; - There is a story behind every exception.
-;; - **Yin and Yang**: Value or side-effect, atom or list, primitive or function, state or action, eval or apply, noun or verb, this and that, statement and question, static or dynamic, fact or hypothesis, true or false, self or other, subject and object
+;; - **Yin and Yang**: Value or side-effect, atom or list, primitive or function, state or action, eval or apply, noun or verb, this and that, statement and question, static or dynamic, fact or hypothesis, true or false, self or other, subject and object, positive and negative, constructor and destructor, think and fact, being and doing
 ;; - No border, no cell.
 ;; - There is only one kind of economics that works.
 ;; - No matter what the initial conditions are, honest feedbacks will lead to a good result.
@@ -188,7 +189,7 @@
 ;; - You can test a writing system by input method, and test the vocabulary tree by dictioanry indexing.
 ;; - become := the state of being is coming.
 ;; - It must be brave to see a pull request with only 1 line change.
-;; - It's hard to be a good finder.
+;; - It's hard to be a good path finder.
 ;; - The changing itself is unchanged.
 ;; - Easy to be powerful, hard to be useful.
 ;; - To be remembered is to be called.
@@ -213,7 +214,19 @@
 ;; - A type is a way of seeing data.
 ;; - The freedom to make mistakes is important.
 ;; - There are only two kinds of languages: the ones people complain about and the ones nobody uses. - Bjarne Stroustrup Bjarne
-
+;; - This bug is memory-safe.
+;; - A good model should be useful.
+;; - Alice throws the ball at Bob.
+;; - Debug = Reproduce + Simplify
+;; - See it to see it.
+;; - All models are wrong, but some are useful.
+;; - There are only two hard things in computer science: cache invalidation, naming things and off-by-one errors, and cahce invalidation.
+;; - Optimize = Sample + Explore
+;; - Some operation systems require you to peek twice to determine a line feed.
+;; - A text is nothing but a determiner.
+;; - Some trees have flowers.
+;; - A sphere is a sphere from any point of view.
+;; - The world is a box.
 
 
 
@@ -1255,7 +1268,15 @@
   ;; Keymap.
   (evil-define-key '(normal) dired-mode-map (kbd "SPC") nil)
   (evil-define-key '(normal) dired-mode-map (kbd "h") 'dired-up-directory)
-  (evil-define-key '(normal) dired-mode-map (kbd "l") 'dired-find-file))
+  (evil-define-key '(normal) dired-mode-map (kbd "l") 'dired-find-file)
+
+  ;; User Options.
+  (setf dired-clean-confirm-killing-deleted-buffers nil)
+
+  )
+
+
+
 
 ;; (use-package visual-replace
 ;;   :disabled t
