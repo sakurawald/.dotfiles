@@ -1,0 +1,9 @@
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS="@im=fcitx"
+
+export NVD_BACKEND="direct"       # VA-API backend
+export LIBVA_DRIVER_NAME="nvidia" # VA-API driver
+export PROTON_HIDE_NVIDIA_GPU=0   # Report as Nvidia
+export PROTON_ENABLE_NVAPI=1      # Enable NVAPI library
+export VKD3D_CONFIG="dxr"         # Enable DirectX Raytracing
